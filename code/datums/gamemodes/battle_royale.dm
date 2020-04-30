@@ -254,7 +254,7 @@ proc/get_accessible_station_areas()
 	for(var/A in areas)
 		var/area/instance = locate(A)
 		for(var/turf/T in instance)
-			if(!isfloor(T) && is_blocked_turf(T) && istype(T,/area/station/test_area) && T.z == 1)
+			if(!isfloor(T) && is_blocked_turf(T) && istype(T,/area/station/test_area) && isstationlevel(T.z))
 				continue
 			L[instance.name] = instance
 	return L

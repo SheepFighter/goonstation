@@ -174,7 +174,7 @@
 			else
 				text += " (Survived!)"
 				survived_count++
-				if (T.z == 2)
+				if (isadminlevel(T.z))
 					var/all_complete = 1
 					for (var/datum/objective/O in leader_mind.objectives)
 						if (istype(O, /datum/objective/specialist/conspiracy))

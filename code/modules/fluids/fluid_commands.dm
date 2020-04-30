@@ -50,7 +50,7 @@ client/proc/special_fullbright()
 	message_admins("[key_name(src)] is making all Z1 Sea Lights static...")
 	SPAWN_DBG(0)
 		for(var/turf/space/fluid/F in world)
-			if (F.z == 1)
+			if (isstationlevel(F.z))
 				F.fullbright = 0.5
 			LAGCHECK(LAG_REALTIME)
 		message_admins("Sea Lights are now Static.")
@@ -131,13 +131,12 @@ client/proc/replace_space_exclusive()
 		ocean_color = R.get_average_color()
 		qdel(R)
 
-#ifndef UNDERWATER_MAP
+	if(~map_settings.flags & UNDERWATER_MAP)
 		map_currently_underwater = 1
 		for(var/turf/space/S in world)
-			if (S.z != 1) continue
-			new /turf/space/fluid( locate(S.x, S.y, S.z) )
+			if(!isstationlevel(S.z))	continue
+			new /turf/space/fluid(locate(S.x, S.y, S.z))
 			LAGCHECK(LAG_REALTIME)
-#endif
 		message_admins("Finished space replace!")
 		map_currently_underwater = 1
 
@@ -167,7 +166,7 @@ client/proc/dereplace_space()
 
 		if (answer == "Yes")
 			for(var/turf/space/fluid/F in world)
-				if (F.z == 1)
+				if (isstationlevel(F.z))
 					new /turf/space( locate(F.x, F.y, F.z) )
 				LAGCHECK(LAG_REALTIME)
 		else

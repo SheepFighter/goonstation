@@ -849,7 +849,7 @@ a.latejoin-card:hover {
 	proc/try_force_into_bill() //try to put the twitch mob into shittbill
 		if (src.client && src.client.ckey == TWITCH_BOT_CKEY)
 			for(var/mob/living/carbon/human/biker/shittybill in mobs)
-				if (shittybill.z == 2) continue
+				if (isadminlevel(shittybill.z)) continue
 				if(!src.mind) src.mind = new(src)
 				src.mind.transfer_to(shittybill)
 				break

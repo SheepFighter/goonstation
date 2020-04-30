@@ -2,13 +2,14 @@
 world
 	mob = /mob/new_player
 
-	#ifdef MOVING_SUB_MAP //Defined in the map-specific .dm configuration file.
+/*	#ifdef MOVING_SUB_MAP //Defined in the map-specific .dm configuration file.
 	turf = /turf/space/fluid/manta
 	#elif defined(UNDERWATER_MAP)
 	turf = /turf/space/fluid
 	#else
 	turf = /turf/space
-	#endif
+	#endif*/
+	turf = /turf/placeholder
 
 	area = /area
 
@@ -16,7 +17,9 @@ world
 
 //END BASIC WORLD DEFINES
 
-
+var/global/turf/default_world_turf
+/turf/placeholder/New()
+	new default_world_turf(src)
 //Let's clarify something. I don't know if it needs clarifying, but here I go anyways.
 
 //The UNDERWATER_MAP define is for things that should only be changed if the map is an underwater one.
@@ -25,11 +28,7 @@ world
 //The map_currently_underwater global var is a variable to change how fluids and other objects interact with the current map.
 //This allows you to put ANY map 'underwater'. However, since underwater-specific maps are always underwater I set that here.
 
-#ifdef UNDERWATER_MAP
-var/global/map_currently_underwater = 1
-#else
 var/global/map_currently_underwater = 0
-#endif
 
 #ifdef TWITCH_BOT_ALLOWED
 var/global/mob/twitch_mob = 0
@@ -229,7 +228,14 @@ var/f_color_selector_handler/F_Color_Selector
 			roundLog << "\[[time2text(world.timeofday,"hh:mm:ss")]] <b>Starting new round</b><br>"
 			roundLog << "========================================<br>"
 			roundLog << "<br>"
+		for(var/MS in childrentypesof(/datum/map_settings))	new MS
 
+		map_settings = fetch_map()
+		map_setting = map_settings.name
+		if(map_settings.flags & MOVING_SUB_MAP)	default_world_turf = /turf/space/fluid/manta
+		else if(map_settings.flags & UNDERWATER_MAP)	default_world_turf = /turf/space/fluid
+		else	default_world_turf = /turf/space
+		preload_world()
 		Z_LOG_DEBUG("Preload", "Applying config...")
 		// apply some settings from config..
 		abandon_allowed = config.respawn
@@ -320,9 +326,29 @@ var/f_color_selector_handler/F_Color_Selector
 
 
 		Z_LOG_DEBUG("Preload", "  /datum/generatorPrefab")
-		for(var/A in childrentypesof(/datum/generatorPrefab))
+		var/list/prfbs = childrentypesof(/datum/generatorPrefab)
+		for(var/P in map_settings.prefabs)
+			var/list/L = map_settings.prefabs[P]
+			for(var/A in L)
+				prfbs -= A
+
+		for(var/A in prfbs)
 			var/datum/generatorPrefab/R = new A()
-			miningModifiers.Add(R)
+			for(var/T in R.tags)
+				if(!miningModifiers[T])
+					miningModifiers[T] = list()
+				var/list/L = miningModifiers[T]
+				L += R
+		for(var/P in map_settings.prefabs)
+			var/list/mdfrs = miningModifiers[P]
+			if(!mdfrs)
+				mdfrs = list()
+				miningModifiers[P] = mdfrs
+
+			var/list/L = map_settings.prefabs[P]
+			for(var/A in L)
+				var/datum/generatorPrefab/R = new A()
+				if(R)	mdfrs += R
 
 		Z_LOG_DEBUG("Preload", "  /datum/faction")
 		for(var/A in childrentypesof(/datum/faction))
@@ -382,6 +408,7 @@ var/f_color_selector_handler/F_Color_Selector
 		..()
 
 /world/New()
+
 	Z_LOG_DEBUG("World/New", "World New()")
 	tick_lag = MIN_TICKLAG//0.4//0.25
 //	loop_checks = 0
@@ -393,6 +420,10 @@ var/f_color_selector_handler/F_Color_Selector
 	diary << "Starting up. [time2text(world.timeofday, "hh:mm.ss")]"
 	diary << "---------------------"
 	diary << ""
+	current_state = GAME_STATE_MAP_LOADING
+	load_world()
+	current_state = GAME_STATE_WORLD_INIT
+	post_load_world()
 
 	//This is used by bans for checking, so we want it very available
 	apiHandler = new()
@@ -518,8 +549,8 @@ var/f_color_selector_handler/F_Color_Selector
 	SetupOccupationsList()
 
 	Z_LOG_DEBUG("World/Init", "Notifying IRC of new round")
-	ircbot.event("serverstart", list("map" = getMapNameFromID(map_setting), "gamemode" = (ticker && ticker.hide_mode) ? "secret" : master_mode))
-	world.log << "Map: [getMapNameFromID(map_setting)]"
+	ircbot.event("serverstart", list("map" = map_settings.name, "gamemode" = (ticker && ticker.hide_mode) ? "secret" : master_mode))
+	world.log << "Map: [map_settings.display_name]"
 
 	Z_LOG_DEBUG("World/Init", "Notifying hub of new round")
 	round_start_data() //Tell the hub site a round is starting
@@ -554,10 +585,10 @@ var/f_color_selector_handler/F_Color_Selector
 	//QM Categories by ZeWaka
 	build_qm_categories()
 
-	#if SKIP_Z5_SETUP == 0
-	Z_LOG_DEBUG("World/Init", "Setting up mining level...")
-	makeMiningLevel()
-	#endif
+//.	#if SKIP_Z5_SETUP == 0
+//	Z_LOG_DEBUG("World/Init", "Setting up mining level...")
+//	makeMiningLevel()
+//	#endif
 
 	Z_LOG_DEBUG("World/Init", "Updating camera visibility...")
 	aiDirty = 2
@@ -572,10 +603,10 @@ var/f_color_selector_handler/F_Color_Selector
 	current_state = GAME_STATE_PREGAME
 	Z_LOG_DEBUG("World/Init", "Now in pre-game state.")
 
-#ifdef MOVING_SUB_MAP
-	Z_LOG_DEBUG("World/Init", "Making Manta start moving...")
-	mantaSetMove(moving=1, doShake=0)
-#endif
+	if(map_settings.flags & MOVING_SUB_MAP)
+		Z_LOG_DEBUG("World/Init", "Making [map_settings.display_name ? map_settings.display_name : map_settings.name] start moving...")
+		mantaSetMove(moving=1, doShake=0)
+
 
 #ifdef TWITCH_BOT_ALLOWED
 	for (var/client/C)
@@ -585,7 +616,6 @@ var/f_color_selector_handler/F_Color_Selector
 
 	Z_LOG_DEBUG("World/Init", "Init() complete")
 	//sleep_offline = 1
-
 
 	// Biodome elevator accident stats
 	bioele_load_stats()
@@ -818,7 +848,7 @@ var/f_color_selector_handler/F_Color_Selector
 				s["player[n]"] = "[(M.client.stealth || M.client.alt_key) ? M.client.fakekey : M.client.key]"
 				n++
 		s["players"] = n
-		s["map_name"] = getMapNameFromID(map_setting)
+		s["map_name"] = map_settings.name
 		return list2params(s)
 
 	else // IRC bot communication (or callbacks)
@@ -1533,7 +1563,7 @@ var/f_color_selector_handler/F_Color_Selector
 
 				var/nick = plist["nick"]
 				var/map = uppertext(plist["map"])
-				var/mapName = getMapNameFromID(map)
+				var/mapName = map_settings.name
 				var/ircmsg[] = new()
 				try
 					mapSwitcher.setNextMap(nick, mapID = map)

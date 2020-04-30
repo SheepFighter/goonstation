@@ -1191,18 +1191,16 @@
 	c_flags = SPACEWEAR
 	body_parts_covered = TORSO|LEGS|ARMS
 	mats = 45 //should not be cheap to make at mechanics, increased from 15.
-
-
-#ifdef UNDERWATER_MAP
-	name = "industrial diving suit"
-	icon_state = "diving_suit-industrial"
-	item_state = "diving_suit-industrial"
-
-#else
 	name = "industrial space armor"
 	icon_state = "indus"
 	item_state = "indus"
-#endif
+
+	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			name = "industrial diving suit"
+			icon_state = "diving_suit-industrial"
+			item_state = "diving_suit-industrial"
+
 	setupProperties()
 		..()
 		setProperty("radprot", 50)

@@ -45,11 +45,7 @@ var/global/list/warp_beacons = list() //wow you should've made one for warp beac
 	miningoutpost
 		name = "mining outpost beacon"
 	miningasteroidbelt
-#ifdef UNDERWATER_MAP
-		name = "underwater mining beacon"
-#else
-		name = "asteroid belt mining beacon"
-#endif
+
 	diner
 		name = "space diner beacon"
 	faint //Manta beacon.
@@ -74,6 +70,12 @@ var/global/list/warp_beacons = list() //wow you should've made one for warp beac
 			warp_beacons = list()
 		warp_beacons.Add(src)
 
+/obj/warp_beacon/miningasteroidbelt/New()
+	if(map_settings.flags & UNDERWATER_MAP)
+		name = "underwater mining beacon"
+	else
+		name = "asteroid belt mining beacon"
+	..()
 /obj/warp_beacon/disposing()
 	..()
 	if (islist(warp_beacons))

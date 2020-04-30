@@ -174,25 +174,23 @@
 	cant_spawn_as_rev = 1
 	announce_on_join = 1
 
+	slot_back = /obj/item/storage/backpack/withO2
+	slot_belt = /obj/item/device/pda2/heads
+	slot_jump = /obj/item/clothing/under/suit/hop
+	slot_foot = /obj/item/clothing/shoes/brown
+	slot_ears = /obj/item/device/radio/headset/command/hop
+	items_in_backpack = list(/obj/item/storage/box/id_kit,/obj/item/device/flash,/obj/item/storage/box/accessimp_kit)
 
-#ifdef SUBMARINE_MAP
-	slot_suit = /obj/item/clothing/suit/armor/hopcoat
-	slot_back = /obj/item/storage/backpack/withO2
-	slot_belt = /obj/item/device/pda2/heads
-	slot_jump = /obj/item/clothing/under/suit/hop
-	slot_foot = /obj/item/clothing/shoes/brown
-	slot_ears = /obj/item/device/radio/headset/command/hop
-	items_in_backpack = list(/obj/item/storage/box/id_kit,/obj/item/device/flash,/obj/item/storage/box/accessimp_kit)
-#else
-	slot_back = /obj/item/storage/backpack/withO2
-	slot_belt = /obj/item/device/pda2/heads
-	slot_jump = /obj/item/clothing/under/suit/hop
-	slot_foot = /obj/item/clothing/shoes/brown
-	slot_ears = /obj/item/device/radio/headset/command/hop
-	items_in_backpack = list(/obj/item/storage/box/id_kit,/obj/item/device/flash,/obj/item/storage/box/accessimp_kit)
-#endif
 
 	New()
+		if(map_settings.flags & SUBMARINE_MAP)
+			slot_suit = /obj/item/clothing/suit/armor/hopcoat
+			slot_back = /obj/item/storage/backpack/withO2
+			slot_belt = /obj/item/device/pda2/heads
+			slot_jump = /obj/item/clothing/under/suit/hop
+			slot_foot = /obj/item/clothing/shoes/brown
+			slot_ears = /obj/item/device/radio/headset/command/hop
+			items_in_backpack = list(/obj/item/storage/box/id_kit,/obj/item/device/flash,/obj/item/storage/box/accessimp_kit)
 		..()
 		src.access = get_access("Head of Personnel")
 		return
@@ -210,19 +208,7 @@
 	receives_disk = 1
 	recieves_implant = /obj/item/implant/health/security
 
-#ifdef SUBMARINE_MAP
-	slot_jump = /obj/item/clothing/under/rank/head_of_securityold/fancy_alt
-	slot_suit = /obj/item/clothing/suit/armor/hoscape
-	slot_back = /obj/item/storage/backpack/withO2
-	slot_belt = /obj/item/gun/energy/taser_gun
-	slot_poc1 = /obj/item/device/pda2/hos
-	slot_foot = /obj/item/clothing/shoes/swat
-	slot_head = /obj/item/clothing/head/helmet/HoS
-	slot_ears = /obj/item/device/radio/headset/command/hos
-	slot_eyes = /obj/item/clothing/glasses/sunglasses/sechud
-	items_in_backpack = list(/obj/item/storage/box/security_starter_kit) // Don't make them spawn with a full backpack again, please.
 
-#else
 	slot_back = /obj/item/storage/backpack/withO2
 	slot_belt = /obj/item/gun/energy/taser_gun
 	slot_poc1 = /obj/item/device/pda2/hos
@@ -233,9 +219,20 @@
 	slot_ears = /obj/item/device/radio/headset/command/hos
 	slot_eyes = /obj/item/clothing/glasses/sunglasses/sechud
 	items_in_backpack = list(/obj/item/storage/box/security_starter_kit) // Don't make them spawn with a full backpack again, please.
-#endif
 
 	New()
+		if(map_settings.flags & SUBMARINE_MAP)
+			slot_jump = /obj/item/clothing/under/rank/head_of_securityold/fancy_alt
+			slot_suit = /obj/item/clothing/suit/armor/hoscape
+			slot_back = /obj/item/storage/backpack/withO2
+			slot_belt = /obj/item/gun/energy/taser_gun
+			slot_poc1 = /obj/item/device/pda2/hos
+			slot_foot = /obj/item/clothing/shoes/swat
+			slot_head = /obj/item/clothing/head/helmet/HoS
+			slot_ears = /obj/item/device/radio/headset/command/hos
+			slot_eyes = /obj/item/clothing/glasses/sunglasses/sechud
+			items_in_backpack = list(/obj/item/storage/box/security_starter_kit) // Don't make them spawn with a full backpack again, please.
+
 		..()
 		src.access = get_access("Head of Security")
 		return
@@ -369,7 +366,7 @@
 			return
 		M.traitHolder.addTrait("training_medical")
 
-#ifdef MAP_OVERRIDE_MANTA
+
 /datum/job/command/comm_officer
 	name = "Communications Officer"
 	limit = 1
@@ -393,7 +390,6 @@
 		..()
 		src.access = get_access("Communications Officer")
 		return
-#endif
 
 // Security Jobs
 
@@ -404,11 +400,8 @@
 
 /datum/job/security/security_officer
 	name = "Security Officer"
-#ifdef MAP_OVERRIDE_MANTA
-	limit = 4
-#else
 	limit = 5
-#endif
+
 	wages = 200
 	allow_traitors = 0
 	allow_spy_theft = 0
@@ -436,6 +429,8 @@
 			return
 		M.traitHolder.addTrait("training_security")
 
+	manta
+		limit = 4
 	derelict
 		//name = "NT-SO Officer"
 		name = null
@@ -614,13 +609,6 @@
 	slot_ears = /obj/item/device/radio/headset/engineer
 	slot_rhan = /obj/item/tank/jetpack
 	slot_eyes = /obj/item/clothing/glasses/construction
-#ifdef UNDERWATER_MAP
-	slot_suit = /obj/item/clothing/suit/space/diving/engineering
-	slot_head = /obj/item/clothing/head/helmet/space/engineer/diving
-#else
-	slot_suit = /obj/item/clothing/suit/space/engineer
-	slot_head = /obj/item/clothing/head/helmet/space/engineer
-#endif
 	slot_mask = /obj/item/clothing/mask/breath
 
 	slot_poc1 = /obj/item/material_shaper
@@ -629,7 +617,15 @@
 	items_in_backpack = list(/obj/item/rcd/construction/safe, /obj/item/rcd_ammo/big, /obj/item/rcd_ammo/big, /obj/item/caution, /obj/item/caution)
 
 	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			slot_suit = /obj/item/clothing/suit/space/diving/engineering
+			slot_head = /obj/item/clothing/head/helmet/space/engineer/diving
+		else
+			slot_suit = /obj/item/clothing/suit/space/engineer
+			slot_head = /obj/item/clothing/head/helmet/space/engineer
+
 		..()
+
 		src.access = get_access("Construction Worker")
 		return
 
@@ -696,11 +692,7 @@
 
 /datum/job/engineering/engineer
 	name = "Engineer"
-#ifdef MAP_OVERRIDE_MANTA
-	limit = 4
-#else
 	limit = 5
-#endif
 	wages = 200
 	slot_back = /obj/item/storage/backpack/withO2
 	slot_belt = /obj/item/device/pda2/engine
@@ -715,6 +707,9 @@
 		..()
 		src.access = get_access("Engineer")
 		return
+
+	manta
+		limit = 4
 
 	derelict
 		name = null//"Salvage Engineer"
@@ -1545,19 +1540,11 @@
 /datum/job/special/random/radioshowhost
 	name = "Radio Show Host"
 	wages = 100
-#ifdef MAP_OVERRIDE_MANTA
-	limit = 0
-	special_spawn_location = 0
-#elif defined(MAP_OVERRIDE_OSHAN)
-	limit = 1
-	special_spawn_location = 0
-#else
 	limit = 1
 	special_spawn_location = 1
 	spawn_x = 276
 	spawn_y = 257
 	spawn_z = 3
-#endif
 	slot_ears = /obj/item/device/radio/headset/command/radio_show_host
 	slot_eyes = /obj/item/clothing/glasses/regular
 	slot_jump = /obj/item/clothing/under/shirt_pants
@@ -1574,6 +1561,18 @@
 		..()
 		src.access = get_access("Radio Show Host")
 		return
+	manta
+		limit = 0
+		special_spawn_location = 0
+		spawn_x = 0
+		spawn_y = 0
+		spawn_z = 0
+	oshan
+		limit = 1
+		special_spawn_location = 0
+		spawn_x = 0
+		spawn_y = 0
+		spawn_z = 0
 
 /datum/job/special/random/psychologist
 	name = "Psychologist"
@@ -2007,6 +2006,10 @@
 	linkcolor = "#C70039"
 	name = "Syndicate Special Operative"
 	limit = 0
+	special_spawn_location = 1
+	spawn_x = 145
+	spawn_y = 284
+	spawn_z = 4
 	allow_traitors = 0
 	allow_spy_theft = 0
 	cant_spawn_as_rev = 1
@@ -2033,14 +2036,7 @@
 		..()
 		src.access = syndicate_spec_ops_access()
 
-#ifdef MAP_OVERRIDE_OSHAN
-	special_spawn_location = 0
-#else
-	special_spawn_location = 1
-	spawn_x = 145
-	spawn_y = 284
-	spawn_z = 4
-#endif
+
 
 	special_setup(var/mob/living/carbon/human/M)
 		..()
@@ -2048,6 +2044,11 @@
 			return
 		M.show_text("<b>The assault has begun! Head over to the station and kill any and all Nanotrasen personnel you encounter!</b>", "red")
 
+	oshan
+		special_spawn_location = 0
+		spawn_x = 0
+		spawn_y = 0
+		spawn_z = 0
 
 /datum/job/special/ntso_specialist
 	linkcolor = "#3348ff"

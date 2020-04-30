@@ -1923,15 +1923,15 @@ var/list/mechanics_telepads = new/list()
 
 	proc/selitemplus(var/datum/mechanicsMessage/input)
 		if(!input) return
-		
+
 		if(signals.Find(input.signal))
 			current_index = signals.Find(input.signal)
 		else
 			return // Don't send out a signal if not found
-		
+
 		if(announce)
 			componentSay("Current Selection : [signals[current_index]]")
-		
+
 		input.signal = signals[current_index]
 		SPAWN_DBG(0)
 			mechanics.fireOutgoing(input)
@@ -2288,12 +2288,12 @@ var/list/mechanics_telepads = new/list()
 		for(var/obj/item/mechanics/telecomp/T in mechanics_telepads)
 			if(T == src || T.level == 2 || !isturf(T.loc)  || isrestrictedz(T.z)|| T.send_only) continue
 
-#ifdef UNDERWATER_MAP
-			if (!(T.z == 5 && src.z == 1) && !(T.z == 1 && src.z == 5)) //underwater : allow TP to/from trench
-				if (T.z != src.z) continue
-#else
-			if (T.z != src.z) continue
-#endif
+			if(map_settings.flags & UNDERWATER_MAP)
+				if (!(ismininglevel(T.z) && isstationlevel(z)) && !(isstationlevel(T.z) && ismininglevel(z))) //underwater : allow TP to/from trench
+					if (T.z != src.z) continue
+			else
+				if (T.z != z) continue
+
 
 			if(T.teleID == src.teleID)
 				destinations.Add(T)

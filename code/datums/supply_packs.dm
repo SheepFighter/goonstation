@@ -2,7 +2,8 @@
 /proc/build_supply_pack_cache()
 	qm_supply_cache.Cut()
 	for(var/S in childrentypesof(/datum/supply_packs))
-		qm_supply_cache += new S()
+		if(!(S in map_settings.supply_packs_blacklist))
+			qm_supply_cache += new S()
 
 /datum/supply_order
 	var/datum/supply_packs/object = null
@@ -1112,7 +1113,6 @@
 	containername = "Telecrystal Resupply Pack"
 
 
-#ifdef MAP_OVERRIDE_MANTA
 /datum/supply_packs/antisingularity
 	name = "Anti-Singularity  Pack"
 	desc = "Everything that the crew needs to take down a rogue singularity."
@@ -1121,7 +1121,7 @@
 	cost = 10000
 	containertype = /obj/storage/crate/classcrate/qm
 	containername = "Anti-Singularity Supply Pack"
-#endif
+
 
 /* ================================================= */
 /* -------------------- Complex -------------------- */

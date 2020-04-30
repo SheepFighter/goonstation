@@ -25,15 +25,15 @@ var/datum/event_controller/random_events
 	New()
 		for (var/X in childrentypesof(/datum/random_event/major))
 			var/datum/random_event/RE = new X
-			events += RE
+			if(RE)	events += RE
 
 		for (var/X in childrentypesof(/datum/random_event/minor))
 			var/datum/random_event/RE = new X
-			minor_events += RE
+			if(RE)	minor_events += RE
 
 		for (var/X in childrentypesof(/datum/random_event/special))
 			var/datum/random_event/RE = new X
-			special_events += RE
+			if(RE)	special_events += RE
 
 	proc/event_cycle()
 		event_cycle_count++

@@ -104,7 +104,7 @@ obj/machinery/atmospherics/pipe
 		northwest
 			dir = NORTHWEST
 
-		New()
+		Initiate()
 			..()
 			switch(dir)
 				if(SOUTH)
@@ -384,6 +384,8 @@ obj/machinery/atmospherics/pipe
 			return list(node1, node2)
 
 		update_icon()
+			if(current_state <= GAME_STATE_MAP_LOADING)
+				return
 			if(node1&&node2)
 				icon_state = "intact"//[invisibility ? "-f" : "" ]"
 				alpha = invisibility ? 128 : 255
@@ -525,6 +527,9 @@ obj/machinery/atmospherics/pipe
 			dir = WEST
 
 		update_icon()
+			if(current_state <= GAME_STATE_MAP_LOADING)
+				return
+
 			if(istype(node1, /obj/machinery/atmospherics/pipe/simple/heat_exchanging))
 				dir = get_dir(src, node1)
 
@@ -568,6 +573,9 @@ obj/machinery/atmospherics/pipe
 			dir = NORTHWEST
 
 		update_icon()
+			if(current_state <= GAME_STATE_MAP_LOADING)
+				return
+
 			if(node1&&node2)
 				icon_state = "intact"
 
@@ -596,7 +604,7 @@ obj/machinery/atmospherics/pipe
 		west
 			dir = WEST
 
-		New()
+		Initiate()
 			initialize_directions = dir
 			..()
 
@@ -617,7 +625,7 @@ obj/machinery/atmospherics/pipe
 			west
 				dir = WEST
 
-			New()
+			Initiate()
 				air_temporary = unpool(/datum/gas_mixture)
 				air_temporary.volume = volume
 				air_temporary.temperature = T20C
@@ -639,7 +647,7 @@ obj/machinery/atmospherics/pipe
 			west
 				dir = WEST
 
-			New()
+			Initiate()
 				air_temporary = unpool(/datum/gas_mixture)
 				air_temporary.volume = volume
 				air_temporary.temperature = T20C
@@ -661,7 +669,7 @@ obj/machinery/atmospherics/pipe
 			west
 				dir = WEST
 
-			New()
+			Initiate()
 				air_temporary = unpool(/datum/gas_mixture)
 				air_temporary.volume = volume
 				air_temporary.temperature = T0C
@@ -688,7 +696,7 @@ obj/machinery/atmospherics/pipe
 			west
 				dir = WEST
 
-			New()
+			Initiate()
 				air_temporary = unpool(/datum/gas_mixture)
 				air_temporary.volume = volume
 				air_temporary.temperature = T20C
@@ -710,7 +718,7 @@ obj/machinery/atmospherics/pipe
 			west
 				dir = WEST
 
-			New()
+			Initiate()
 				air_temporary = unpool(/datum/gas_mixture)
 				air_temporary.volume = volume
 				air_temporary.temperature = T20C
@@ -732,7 +740,7 @@ obj/machinery/atmospherics/pipe
 			west
 				dir = WEST
 
-			New()
+			Initiate()
 				air_temporary = unpool(/datum/gas_mixture)
 				air_temporary.volume = volume
 				air_temporary.temperature = T20C
@@ -759,7 +767,7 @@ obj/machinery/atmospherics/pipe
 			west
 				dir = WEST
 
-			New()
+			Initiate()
 				air_temporary = unpool(/datum/gas_mixture)
 				air_temporary.volume = volume
 				air_temporary.temperature = T20C
@@ -786,7 +794,7 @@ obj/machinery/atmospherics/pipe
 			west
 				dir = WEST
 
-			New()
+			Initiate()
 				air_temporary = unpool(/datum/gas_mixture)
 				air_temporary.volume = volume
 				air_temporary.temperature = T20C
@@ -806,6 +814,9 @@ obj/machinery/atmospherics/pipe
 			return list(node1)
 
 		update_icon()
+			if(current_state <= GAME_STATE_MAP_LOADING)
+				return
+
 			if(node1)
 				icon_state = "intact"
 
@@ -856,7 +867,7 @@ obj/machinery/atmospherics/pipe
 		west
 			dir = WEST
 
-		New()
+		Initiate()
 			initialize_directions = dir
 			..()
 
@@ -875,6 +886,9 @@ obj/machinery/atmospherics/pipe
 			return list(node1)
 
 		update_icon()
+			if(current_state <= GAME_STATE_MAP_LOADING)
+				return
+
 			if(node1)
 				icon_state = "intact"
 
@@ -906,6 +920,9 @@ obj/machinery/atmospherics/pipe
 			return null
 
 		hide(var/i) //to make the little pipe section invisible, the icon changes.
+			if(current_state <= GAME_STATE_MAP_LOADING)
+				return
+
 			if(node1)
 				icon_state = "[i == 1 && istype(loc, /turf/simulated) ? "h" : "" ]intact"
 				dir = get_dir(src, node1)
@@ -946,7 +963,7 @@ obj/machinery/atmospherics/pipe
 			west
 				dir = WEST
 
-		New()
+		Initiate()
 			switch(dir)
 				if(NORTH)
 					initialize_directions = EAST|SOUTH|WEST
@@ -1016,6 +1033,9 @@ obj/machinery/atmospherics/pipe
 			..()
 
 		update_icon()
+			if(current_state <= GAME_STATE_MAP_LOADING)
+				return
+
 			if(node1&&node2&&node3)
 				icon_state = "manifold"//[invisibility ? "-f" : ""]"
 				alpha = invisibility ? 128 : 255

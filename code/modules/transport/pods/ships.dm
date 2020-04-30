@@ -190,11 +190,11 @@
 	icon_state = "syndi_mini_spawn"
 	New()
 		..()
-#ifdef UNDERWATER_MAP
-		new/obj/machinery/vehicle/tank/minisub/syndisub(src.loc)
-#else
-		new/obj/machinery/vehicle/miniputt/syndiputt(src.loc)
-#endif
+		if(map_settings.flags & UNDERWATER_MAP)
+			new/obj/machinery/vehicle/tank/minisub/syndisub(src.loc)
+		else
+			new/obj/machinery/vehicle/miniputt/syndiputt(src.loc)
+
 		qdel(src)
 
 ////////nano putt

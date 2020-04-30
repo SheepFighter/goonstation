@@ -11,6 +11,9 @@
 	var/update_cycle
 //
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(node)
 			icon_state = "intact"
 		else

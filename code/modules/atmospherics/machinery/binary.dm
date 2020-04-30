@@ -11,7 +11,7 @@ obj/machinery/atmospherics/binary
 	var/datum/pipe_network/network1
 	var/datum/pipe_network/network2
 
-	New()
+	Initiate()
 		..()
 		switch(dir)
 			if(NORTH)
@@ -57,7 +57,7 @@ obj/machinery/atmospherics/binary
 			network1.air_disposing_hook(air1,air2)
 		if (network2)
 			network2.air_disposing_hook(air1,air2)
-		
+
 		if(node1)
 			node1.disconnect(src)
 			if (network1)
@@ -65,19 +65,19 @@ obj/machinery/atmospherics/binary
 		if(node2)
 			node2.disconnect(src)
 			if (network2)
-				network2.dispose()				
+				network2.dispose()
 
 		node1 = null
 		node2 = null
 		network1 = null
 		network2 = null
-		
+
 		if(air1)
 			pool(air1)
-		
+
 		if(air2)
 			pool(air2)
-		
+
 		air1 = null
 		air2 = null
 

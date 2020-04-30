@@ -105,13 +105,13 @@ var/list/all_toilets = null
 		playsound(get_turf(src), "sound/effects/toilet_flush.ogg", 50, 1)
 
 
-#ifdef UNDERWATER_MAP
-		if (isturf(src.loc))
-			var/turf/target = locate(src.x,src.y,5)
-			for (var/thing in contents)
-				var/atom/movable/A = thing
-				A.set_loc(target)
-#endif
+		if(map_settings.flags & UNDERWATER_MAP)
+			if (isturf(src.loc))
+				var/turf/target = locate(src.x,src.y,5)
+				for (var/thing in contents)
+					var/atom/movable/A = thing
+					A.set_loc(target)
+
 		src.clogged = 0
 		src.contents.len = 0
 

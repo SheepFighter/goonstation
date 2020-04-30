@@ -12,20 +12,21 @@
 		if(active == 1)
 			return //This is to prevent admins from fucking up the shuttle arrival/departures by spamming this event.
 		event = 1
-		active = 1 
+		active = 1
 		map_turf = map_settings.shuttle_map_turf
-#ifdef UNDERWATER_MAP // bodge fix for oshan
-		var/shuttle = pick("left","right");
-#else
-		var/shuttle = pick("left","right","left","right","diner"); // just making the diner docking a little less common. 
-#endif
+		var/shuttle
+		if(map_settings.flags & UNDERWATER_MAP) // bodge fix for oshan
+			shuttle = pick("left","right");
+		else
+			shuttle = pick("left","right","left","right","diner"); // just making the diner docking a little less common.
+
 		var/docked_where = shuttle == "diner" ? "space diner" : "station";
 		command_alert("A merchant shuttle has docked with the [docked_where].", "Commerce and Customs Alert")
 		var/area/start_location = null
 		var/area/end_location = null
 		if(shuttle == "diner")
-			start_location = locate(/area/shuttle/merchant_shuttle/diner_centcom)
-			end_location = locate(/area/shuttle/merchant_shuttle/diner_station)
+			start_location = locate_area(/area/shuttle/merchant_shuttle/diner_centcom)
+			end_location = locate_area(/area/shuttle/merchant_shuttle/diner_station)
 		else
 			if(shuttle == "left")
 				start_location = locate(map_settings ? map_settings.merchant_left_centcom : /area/shuttle/merchant_shuttle/left_centcom)
@@ -73,7 +74,7 @@
 		sleep(300)
 
 		// hey you, get out of my shuttle! I ain't taking you back to centcom!
-		var/area/teleport_to_location = locate(/area/station/crew_quarters/bar)
+		var/area/teleport_to_location = locate_area(/area/station/crew_quarters/bar)
 		for(var/turf/T in dstturfs)
 			for(var/mob/AM in T)
 				if(isobserver(AM))
@@ -90,10 +91,9 @@
 
 		end_location.move_contents_to(start_location, map_turf)
 
-		#ifdef UNDERWATER_MAP
-		start_location.color = OCEAN_COLOR
-		#endif
-		
+		if(map_settings.flags & UNDERWATER_MAP)
+			start_location.color = OCEAN_COLOR
+
 		active = 0
 
 /proc/get_hiding_jerk(var/atom/movable/container)

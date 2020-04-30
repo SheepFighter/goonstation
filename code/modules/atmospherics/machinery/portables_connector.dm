@@ -21,7 +21,7 @@
 	west
 		dir = WEST
 
-	New()
+	Initiate()
 		initialize_directions = dir
 		..()
 
@@ -30,6 +30,9 @@
 			network = null
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(node)
 			icon_state = "[level == 1 && istype(loc, /turf/simulated) ? "h" : "" ]intact"
 			dir = get_dir(src, node)
@@ -39,6 +42,9 @@
 		return
 
 	hide(var/i) //to make the little pipe section invisible, the icon changes.
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(node)
 			icon_state = "[i == 1 && istype(loc, /turf/simulated) ? "h" : "" ]intact"
 			dir = get_dir(src, node)

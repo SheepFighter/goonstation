@@ -3,27 +3,30 @@
 	icon_state = "shuttle3"
 	requires_power = 0
 
-	#ifdef UNDERWATER_MAP
-	color = OCEAN_COLOR
-	#endif
+	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			color = OCEAN_COLOR
+		..()
 
 /area/supply/delivery_point //the area supplies are fired at
 	name = "supply target point"
 	icon_state = "shuttle3"
 	requires_power = 0
 
-	#ifdef UNDERWATER_MAP
-	color = OCEAN_COLOR
-	#endif
+	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			color = OCEAN_COLOR
+		..()
 
 /area/supply/sell_point //the area where supplies move from the station z level
 	name = "supply sell region"
 	icon_state = "shuttle3"
 	requires_power = 0
 
-	#ifdef UNDERWATER_MAP
-	color = OCEAN_COLOR
-	#endif
+	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			color = OCEAN_COLOR
+		..()
 
 	Entered(var/atom/movable/AM)
 		..()

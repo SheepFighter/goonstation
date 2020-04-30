@@ -29,7 +29,7 @@ var/global/list/all_GPSs = list()
 			T = get_turf(T)
 		if (!T)
 			return
-		if (T.z == 1)
+		if (isstationlevel(T.z))
 			. = "Landmark: [capitalize(station_or_ship())]"
 /*			if (ismap("DESTINY"))
 				. =  "Landmark: NSS Destiny"
@@ -38,10 +38,10 @@ var/global/list/all_GPSs = list()
 			else
 				. =  "Landmark: Station"
 */
-		else if (T.z == 2)
+		else if (isrestrictedz(T.z))
 			. =  "Landmark: Restricted"
-		else if (T.z == 3)
-			. =  "Landmark: Debris Field"
+		else if (!ismininglevel(T.z))
+			. =  "Landmark: [map_level_names[T.z]]"
 		return
 
 	proc/show_HTML(var/mob/user)

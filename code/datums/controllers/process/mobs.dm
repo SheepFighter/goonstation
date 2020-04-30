@@ -21,7 +21,7 @@ datum/controller/process/mobs
 		var/c
 
 		for(var/mob/living/M in src.mobs)
-			if( M.z == 4 && !Z4_ACTIVE ) continue
+			if(issparelevel(M.z) && !Z4_ACTIVE ) continue
 			M.Life(src)
 			if (!(c++ % 5))
 				scheck()

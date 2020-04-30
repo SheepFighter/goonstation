@@ -1077,7 +1077,7 @@ var/list/fun_images = list()
 	if (confirm3 == "Yes")
 		//Max out all power (to avoid lights dying mid mapping)
 		for(var/obj/machinery/power/apc/C in machine_registry[MACHINES_POWER])
-			if(C.cell && C.z == 1)
+			if(C.cell && isstationlevel(C.z))
 				C.cell.charge = C.cell.maxcharge
 		for(var/obj/machinery/power/smes/S in machine_registry[MACHINES_POWER])
 			if(S.z != 1)
@@ -1117,7 +1117,7 @@ var/list/fun_images = list()
 	//Map eeeeverything
 	if (allZ || safeAllZ)
 		for (var/curZ = 1; curZ <= world.maxz; curZ++)
-			if (safeAllZ && (curZ == 2 || curZ == 4))
+			if (safeAllZ && (isadminlevel(curZ)|| issparelevel(curZ)))
 				continue //Skips centcom
 			for (var/y = start_y; y <= world.maxy; y += viewport_height)
 				for (var/x = start_x; x <= world.maxx; x += viewport_width)
@@ -1509,17 +1509,18 @@ var/list/fun_images = list()
 
 	admin_only
 
+/*
 	var/bustedMapSwitcher = isMapSwitcherBusted()
 	if (bustedMapSwitcher)
-		return alert(bustedMapSwitcher)
+		return alert(bustedMapSwitcher)*/
 
 	if (mapSwitcher.nextMapIsVotedFor)
 		var/ignorePlayerVote = alert("The next map was voted for by the players, are you sure you want to override it? This could be very rude!", "Ignore Players?", "Yes", "No")
 		if (ignorePlayerVote == "No")
 			return
 
-	if (mapSwitcher.locked)
-		return alert("The server is currently switching to another map. You will need to wait.")
+/*	if (mapSwitcher.locked)
+		return alert("The server is currently switching to another map. You will need to wait.")*/
 
 	var/info = "Select a map"
 	info += "\nCurrently on: [mapSwitcher.current]"
@@ -1554,9 +1555,9 @@ var/list/fun_images = list()
 
 	admin_only
 
-	var/bustedMapSwitcher = isMapSwitcherBusted()
+/*	var/bustedMapSwitcher = isMapSwitcherBusted()
 	if (bustedMapSwitcher)
-		return alert(bustedMapSwitcher)
+		return alert(bustedMapSwitcher)*/
 
 	if (!mapSwitcher.votingAllowed)
 		return alert("Map votes are currently toggled off.")
@@ -1585,10 +1586,10 @@ var/list/fun_images = list()
 
 	admin_only
 
-	var/bustedMapSwitcher = isMapSwitcherBusted()
+/*	var/bustedMapSwitcher = isMapSwitcherBusted()
 	if (bustedMapSwitcher)
 		return alert(bustedMapSwitcher)
-
+*/
 	if (!mapSwitcher.playersVoting)
 		return alert("There isn't a vote currently underway.")
 
@@ -1610,9 +1611,9 @@ var/list/fun_images = list()
 
 	admin_only
 
-	var/bustedMapSwitcher = isMapSwitcherBusted()
+/*	var/bustedMapSwitcher = isMapSwitcherBusted()
 	if (bustedMapSwitcher)
-		return alert(bustedMapSwitcher)
+		return alert(bustedMapSwitcher)*/
 
 	if (!mapSwitcher.playersVoting)
 		return alert("There isn't a vote currently underway.")

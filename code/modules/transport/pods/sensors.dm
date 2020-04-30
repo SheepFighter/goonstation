@@ -297,9 +297,9 @@
 				continue
 			if ((ship.z == M.z) && get_dist(ship.loc, M) <= src.seekrange)
 				if(!isdead(M))
-#ifdef UNDERWATER_MAP
-					if (istype(M,/mob/living/critter/aquatic/fish)) continue
-#endif
+					if(map_settings.flags & UNDERWATER_MAP)
+						if (istype(M,/mob/living/critter/aquatic/fish)) continue
+
 					lifeforms++
 					//Add direction to mob if close. Who cares about doing it for non-drone critters and npc's...
 					if (get_dist(ship.loc, M) <= src.seekrange/2)

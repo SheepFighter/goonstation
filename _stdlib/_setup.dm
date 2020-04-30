@@ -141,13 +141,6 @@
 #define AST_RNGWALKCNT 7     //Amount of asteroid tiles to dig out during random walk.
 #define AST_RNGWALKINST 5    //How many random walks should we do per asteroid.
 
-#ifdef UNDERWATER_MAP
-#define AST_NUMPREFABS 18     //How many prefabs to place. It'll try it's hardest to place this many at the very least. You're basically guaranteed this amount of prefabs.
-#define AST_NUMPREFABSEXTRA 6//Up to how many extra prefabs to place randomly. You might or might not get these extra ones.
-#else
-#define AST_NUMPREFABS 5     //How many prefabs to place. It'll try it's hardest to place this many at the very least. You're basically guaranteed this amount of prefabs.
-#define AST_NUMPREFABSEXTRA 3//Up to how many extra prefabs to place randomly. You might or might not get these extra ones.
-#endif
 
 #define AST_MAPSEEDBORDER 10 //Min distance from map edge for seeds.
 #define AST_MAPBORDER 3      //Absolute map border around generated content
@@ -643,11 +636,12 @@
 */
 
 // gameticker
-#define GAME_STATE_WORLD_INIT	1
-#define GAME_STATE_PREGAME		2
-#define GAME_STATE_SETTING_UP	3
-#define GAME_STATE_PLAYING		4
-#define GAME_STATE_FINISHED		5
+#define GAME_STATE_MAP_LOADING	1
+#define GAME_STATE_WORLD_INIT	2
+#define GAME_STATE_PREGAME		3
+#define GAME_STATE_SETTING_UP	4
+#define GAME_STATE_PLAYING		5
+#define GAME_STATE_FINISHED		6
 
 //States for airlock_control
 #define ACCESS_STATE_INTERNAL	-1

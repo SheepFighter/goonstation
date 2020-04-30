@@ -730,12 +730,13 @@ datum
 			bladder_value = -0.2
 			taste = "bland"
 			target_organs = list("left_kidney", "right_kidney")
-#ifdef UNDERWATER_MAP
-			block_slippy = 1
-			description = "A little strange. Not like any water you've seen. But definitely OSHA approved."
-#else
-			description = "A ubiquitous chemical substance that is composed of hydrogen and oxygen."
-#endif
+			New()
+				if(map_settings.flags & UNDERWATER_MAP)
+					block_slippy = 1
+					description = "A little strange. Not like any water you've seen. But definitely OSHA approved."
+				else
+					description = "A ubiquitous chemical substance that is composed of hydrogen and oxygen."
+				..()
 
 			on_mob_life(var/mob/living/carbon/human/H, var/mult = 1)
 				..()

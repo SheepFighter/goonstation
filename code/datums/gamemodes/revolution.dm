@@ -42,7 +42,7 @@
 		rev_number = 3
 	else
 		rev_number = revs_possible.len
-	
+
 	token_players = antag_token_list()
 	for(var/datum/mind/tplayer in token_players)
 		if (!token_players.len)
@@ -434,7 +434,7 @@
 			var/turf/T = get_turf_loc(rev_mind.current)
 			if(isdead(rev_mind.current))
 				text += " (Dead)"
-			else if(T.z == 2)
+			else if(isadminlevel(T.z))
 				text += " (Imprisoned!)"
 			else if(T.z != 1)
 				text += " (Abandoned the cause!)"
@@ -451,7 +451,7 @@
 		if(rev_nh_mind.current)
 			text += "[rev_nh_mind.current.real_name]"
 			var/turf/T = get_turf_loc(rev_nh_mind.current)
-			if(T.z == 2)
+			if(isadminlevel(T.z))
 				text += " (Imprisoned!)"
 			else if(isdead(rev_nh_mind.current))
 				text += " (Dead)"

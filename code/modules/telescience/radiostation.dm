@@ -220,13 +220,13 @@
 			if(transmit_connection != null)
 				transmit_connection.post_signal(src, pdaSignal)
 			//////
-#ifdef UNDERWATER_MAP
-				sleep(5000) // mbc : underwater map has the radio on-station instead of in space. so it gets played a lot more often + is breaking my immersion
-#else
-				sleep(3000)
-#endif
+				if(map_settings.flags & UNDERWATER_MAP)
+					sleep(5000) // mbc : underwater map has the radio on-station instead of in space. so it gets played a lot more often + is breaking my immersion
+				else
+					sleep(3000)
+
 			is_playing = 0
-	else 
+	else
 		..()
 
 /obj/submachine/record_player/attack_hand(mob/user as mob)
@@ -488,7 +488,7 @@
 	..()
 	icon_state = "sleeve_[rand(4,36)]"
 
-/obj/item/storage/box/record/radio/one 
+/obj/item/storage/box/record/radio/one
 	spawn_contents = list(/obj/item/record/january,
 	/obj/item/record/february,
 	/obj/item/record/march,
@@ -496,7 +496,7 @@
 	/obj/item/record/may,
 	/obj/item/record/june)
 
-/obj/item/storage/box/record/radio/two 
+/obj/item/storage/box/record/radio/two
 	spawn_contents = list(/obj/item/record/july,
 	/obj/item/record/august,
 	/obj/item/record/september,
@@ -504,7 +504,7 @@
 	/obj/item/record/november,
 	/obj/item/record/december)
 
-/obj/item/storage/box/record/radio/host 
+/obj/item/storage/box/record/radio/host
 	desc = "A sleeve of exclusive radio station songs."
 
 /obj/item/storage/box/record/radio/host/New()

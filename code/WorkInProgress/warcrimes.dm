@@ -530,9 +530,9 @@ var/bombini_saved = 0
 	else
 		dat += "<a href='byond://?src=\ref[src];dine=1'>Set Target: Diner</a><BR>"
 		dat += "<a href='byond://?src=\ref[src];owle=1'>Set Target: Owlery</a><BR>"
-#ifndef UNDERWATER_MAP
+	if(~map_settings.flags & UNDERWATER_MAP)
 		dat += "<a href='byond://?src=\ref[src];mine=1'>Set Target: Old Mining Station</a><BR>"
-#endif
+
 		if(johnbill_shuttle_fartnasium_active)
 			dat += "<a href='byond://?src=\ref[src];fart=1'>Set Target: Juicer Schweet's</a><BR>"
 		dat += "<BR>"
@@ -630,21 +630,21 @@ var/bombini_saved = 0
 
 	switch(johnbus_destination)
 		if(0)
-			end_location = locate(/area/shuttle/john/diner)
+			end_location = locate_area(/area/shuttle/john/diner)
 		if(1)
-			end_location = locate(/area/shuttle/john/owlery)
+			end_location = locate_area(/area/shuttle/john/owlery)
 		if(2)
-			end_location = locate(/area/shuttle/john/mining)
+			end_location = locate_area(/area/shuttle/john/mining)
 		if(3)
-			end_location = locate(/area/shuttle/john/grillnasium)
+			end_location = locate_area(/area/shuttle/john/grillnasium)
 
 	switch(johnbus_location)
 		if(0)
-			start_location = locate(/area/shuttle/john/diner)
+			start_location = locate_area(/area/shuttle/john/diner)
 			start_location.move_contents_to(end_location)
 
 		if(1)
-			start_location = locate(/area/shuttle/john/owlery)
+			start_location = locate_area(/area/shuttle/john/owlery)
 
 			if(!bombini_saved)
 				for(var/obj/npc/trader/bee/b in start_location)
@@ -655,11 +655,11 @@ var/bombini_saved = 0
 			start_location.move_contents_to(end_location)
 
 		if(2)
-			start_location = locate(/area/shuttle/john/mining)
+			start_location = locate_area(/area/shuttle/john/mining)
 			start_location.move_contents_to(end_location)
 
 		if(3)
-			start_location = locate(/area/shuttle/john/grillnasium)
+			start_location = locate_area(/area/shuttle/john/grillnasium)
 			start_location.move_contents_to(end_location)
 
 	johnbus_location = johnbus_destination

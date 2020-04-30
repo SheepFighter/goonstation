@@ -165,10 +165,9 @@ datum/shuttle_controller
 						start_location.move_contents_to(end_location, centcom_turf)
 						settimeleft(SHUTTLELEAVETIME)
 
-						#ifdef UNDERWATER_MAP
-						end_location.force_fullbright = 1
-						end_location.update_fullbright()
-						#endif
+						if(map_settings.flags & UNDERWATER_MAP)
+							end_location.force_fullbright = 1
+							end_location.update_fullbright()
 
 						if (src.airbridges.len)
 							for (var/obj/machinery/computer/airbr/S in src.airbridges)
@@ -192,17 +191,17 @@ datum/shuttle_controller
 						announcement_done = 1
 
 					else if (announcement_done < 2 && timeleft < 30)
-						var/area/sound_location = locate(/area/shuttle_sound_spawn)
+						var/area/sound_location = locate_area(/area/shuttle_sound_spawn)
 						playsound(sound_location, 'sound/effects/ship_charge.ogg', 100)
 						announcement_done = 2
 
 					else if (announcement_done < 3 && timeleft < 4)
-						var/area/sound_location = locate(/area/shuttle_sound_spawn)
+						var/area/sound_location = locate_area(/area/shuttle_sound_spawn)
 						playsound(sound_location, 'sound/effects/ship_engage.ogg', 100)
 						announcement_done = 3
 
 					else if (announcement_done < 4 && timeleft < 1)
-						var/area/sound_location = locate(/area/shuttle_sound_spawn)
+						var/area/sound_location = locate_area(/area/shuttle_sound_spawn)
 						playsound(sound_location, 'sound/effects/explosion_new4.ogg', 75)
 						playsound(sound_location, 'sound/effects/flameswoosh.ogg', 75)
 						announcement_done = 4
@@ -270,14 +269,13 @@ datum/shuttle_controller
 							if (istype(O, map_turf))
 								new transit_turf(O)
 
-						var/area/shuttle_particle_spawn/particle_spawn = locate(/area/shuttle_particle_spawn) in world
+						var/area/shuttle_particle_spawn/particle_spawn = locate_area(/area/shuttle_particle_spawn)
 						if (particle_spawn)
 							particle_spawn.start_particles()
 
-						#ifdef UNDERWATER_MAP
-						end_location.force_fullbright = 1
-						end_location.update_fullbright()
-						#endif
+						if(map_settings.flags & UNDERWATER_MAP)
+							end_location.force_fullbright = 1
+							end_location.update_fullbright()
 
 						SPAWN_DBG(0)
 							var/shuttle_dir = map_settings ? map_settings.escape_dir : EAST // default to cog2 direction because EH
@@ -324,10 +322,10 @@ datum/shuttle_controller
 						logTheThing("station", null, null, "The emergency shuttle has arrived at Centcom.")
 						online = 0
 
-						#ifdef UNDERWATER_MAP
-						end_location.force_fullbright = 1
-						end_location.update_fullbright()
-						#endif
+						if(map_settings.flags & UNDERWATER_MAP)
+							end_location.force_fullbright = 1
+							end_location.update_fullbright()
+
 
 						location = SHUTTLE_LOC_RETURNED
 						return 1
@@ -352,10 +350,10 @@ datum/shuttle_controller
 						logTheThing("station", null, null, "The emergency shuttle has arrived at Centcom.")
 						online = 0
 
-						#ifdef UNDERWATER_MAP
-						end_location.force_fullbright = 1
-						end_location.update_fullbright()
-						#endif
+						if(map_settings.flags & UNDERWATER_MAP)
+							end_location.force_fullbright = 1
+							end_location.update_fullbright()
+
 
 						return 1
 

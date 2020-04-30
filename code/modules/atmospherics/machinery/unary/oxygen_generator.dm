@@ -14,6 +14,9 @@ obj/machinery/atmospherics/unary/oxygen_generator
 	var/oxygen_content = 10
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(node)
 			icon_state = "intact_[on?("on"):("off")]"
 		else
@@ -23,7 +26,7 @@ obj/machinery/atmospherics/unary/oxygen_generator
 
 		return
 
-	New()
+	Initiate()
 		..()
 
 		air_contents.volume = 50

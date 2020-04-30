@@ -117,7 +117,7 @@ obj/machinery/atmospherics/valve
 		else
 			icon_state = "valve[open]"
 
-	New()
+	Initiate()
 		switch(dir)
 			if(NORTH || SOUTH)
 				initialize_directions = NORTH|SOUTH
@@ -374,7 +374,7 @@ obj/machinery/atmospherics/manifold_valve
 		else
 			icon_state = "manifold_valve[divert]"
 
-	New()
+	Initiate()
 		switch(dir)
 			if(SOUTH)
 				initialize_directions = EAST|WEST|NORTH

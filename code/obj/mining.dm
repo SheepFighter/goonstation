@@ -913,11 +913,8 @@
 	plane = PLANE_FLOOR
 	var/stone_color = "#CCCCCC"
 
-#ifdef UNDERWATER_MAP
-	var/hardness = 1
-#else
 	var/hardness = 0
-#endif
+
 
 	var/weakened = 0
 	var/amount = 2
@@ -933,12 +930,14 @@
 	var/mining_max_health = 120
 	var/mining_toughness = 1 //Incoming damage divided by this unless tool has power enough to overcome.
 
-#ifdef UNDERWATER_MAP
-	fullbright = 0
-	luminosity = 1
-#else
 	fullbright = 1
-#endif
+
+	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			hardness = 1
+			fullbright = 0
+			luminosity = 1
+		..()
 
 	trench
 		name = "cavern wall"
@@ -1296,15 +1295,15 @@
 
 		for (var/turf/simulated/floor/plating/airless/asteroid/A in range(src,1))
 			A.update_icon()
-#ifdef UNDERWATER_MAP
-		if (current_state == GAME_STATE_PLAYING)
-			hotspot_controller.disturb_turf(src)
+		if(map_settings.flags & UNDERWATER_MAP)
+			if (current_state == GAME_STATE_PLAYING)
+				hotspot_controller.disturb_turf(src)
 
-		//mbc : fix bug where lighting persists after rock destroyd
-		RL_Cleanup() //Cleans up/mostly removes the lighting.
-		RL_Init()
-		if (RL_Started) RL_UPDATE_LIGHT(src) //Then applies the proper lighting.
-#endif
+			//mbc : fix bug where lighting persists after rock destroyd
+			RL_Cleanup() //Cleans up/mostly removes the lighting.
+			RL_Init()
+			if (RL_Started) RL_UPDATE_LIGHT(src) //Then applies the proper lighting.
+
 
 		return src
 
@@ -1349,13 +1348,9 @@
 	var/list/space_overlays = list()
 	turf_flags = MOB_SLIP | MOB_STEP | IS_TYPE_SIMULATED | FLUID_MOVE
 
-#ifdef UNDERWATER_MAP
-	fullbright = 0
-	luminosity = 3
-#else
 	luminosity = 1
 	fullbright = 1
-#endif
+
 
 	dark
 		fullbright = 0
@@ -1373,6 +1368,9 @@
 			return
 
 	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			fullbright = 0
+			luminosity = 3
 		..()
 		src.sprite_variation = rand(1,3)
 		icon_state = "astfloor" + "[sprite_variation]"
@@ -1410,9 +1408,9 @@
 				for (var/turf/space/A in orange(src,1))
 					src.apply_edge_overlay(get_dir(src, A))
 
-				#ifdef UNDERWATER_MAP //FUCK THIS SHIT. NO FULLBRIGHT ON THE MINING LEVEL, I DONT CARE.
-				if (z == AST_ZLEVEL) return
-				#endif
+				if(map_settings.flags & UNDERWATER_MAP) //FUCK THIS SHIT. NO FULLBRIGHT ON THE MINING LEVEL, I DONT CARE.
+					if (ismininglevel(z)) return
+
 				if (fullbright)
 					src.overlays += /image/fullbright //Fixes perma-darkness
 

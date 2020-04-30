@@ -471,7 +471,7 @@ var/list/electiles = list()
 	var/list/L = list()
 	for(var/turf/T in world)
 		if(T.type == /turf/space) continue
-		if(T.z == 1)
+		if(isstationlevel(T.z))
 			L.Add(T)
 
 	var/turf/TLast = pick(L)
@@ -487,7 +487,7 @@ var/list/electiles = list()
 	var/list/L = list()
 	for(var/turf/T in world)
 		if(T.type == /turf/space) continue
-		if(T.z == 1)
+		if(isstationlevel(T.z))
 			L.Add(T)
 
 	while(L.len >= 1)
@@ -499,7 +499,7 @@ var/list/electiles = list()
 
 /proc/fixthisshitplease()
 	for(var/turf/T in world)
-		if(T.z == 1)
+		if(isstationlevel(T.z))
 			T.vis_contents.Cut()
 
 /obj/fancyportal
@@ -658,7 +658,7 @@ var/list/electiles = list()
 			if(count <= 5)
 				continue
 
-			if(A && A.z == 1) //Basically, if the area has a turf on z1 ... Doesn't work as described in byond documentation. So we have to do it the slow way ...
+			if(A && isstationlevel(A.z)) //Basically, if the area has a turf on z1 ... Doesn't work as described in byond documentation. So we have to do it the slow way ...
 				areas.Add(A)
 
 	while(areas.len >= 2)
@@ -2815,7 +2815,7 @@ var/list/electiles = list()
 	var/list/eligible = new/list()
 
 	for(var/mob/living/carbon/human/H in mobs)
-		if(H.z == 1 && !isdead(H) && H.client)
+		if(isstationlevel(H.z) && !isdead(H) && H.client)
 			eligible.Add(H)
 
 	var/mob/living/carbon/human/picked1

@@ -141,7 +141,7 @@
 			medal_name = "Slow Burn"
 			check_completion()
 				for(var/obj/machinery/power/furnace/F in machine_registry[MACHINES_POWER])
-					if(F.z == 1 && F.active == 1)
+					if(isstationlevel(F.z) && F.active == 1)
 						return 1
 				return 0
 
@@ -247,7 +247,7 @@
 			medal_name = "Bury the Dead"
 			check_completion()
 				for(var/mob/living/carbon/human/H in mobs)
-					if(H.z == 1 && isdead(H))
+					if(isstationlevel(H.z) && isdead(H))
 						return 0
 				return 1
 
@@ -357,7 +357,7 @@
 			medal_name = "Where we're going, we won't need eyes to see"
 			check_completion()
 				for(var/obj/dfissure_to/F in world)
-					if(F.z == 1) return 1
+					if(isstationlevel(F.z)) return 1
 				return 0
 		onfire
 			explanation_text = "Escape on the shuttle alive while on fire with silver sulfadiazine in your bloodstream."
@@ -389,7 +389,7 @@
 			medal_name = "Where we're going, we won't need eyes to see"
 			check_completion()
 				for(var/obj/dfissure_to/F in world)
-					if(F.z == 1) return 1
+					if(isstationlevel(F.z)) return 1
 				return 0
 		onfire
 			explanation_text = "Escape on the shuttle alive while on fire with silver sulfadiazine in your bloodstream."
@@ -461,7 +461,7 @@
 			check_completion()
 				var/medbots = 0
 				for (var/obj/machinery/bot/medbot/M in machine_registry[MACHINES_BOTS])
-					if (M.z == 1)
+					if (isstationlevel(M.z))
 						medbots++
 				if (medbots > 4) return 1
 				else return 0
@@ -471,7 +471,7 @@
 			check_completion()
 				var/buttbots = 0
 				for(var/obj/machinery/bot/buttbot/B in machine_registry[MACHINES_BOTS])
-					if(B.z == 1)
+					if(isstationlevel(B.z))
 						buttbots ++
 				if(buttbots > 4) return 1
 				else return 0
@@ -536,7 +536,7 @@
 			check_completion()
 				var/medbots = 0
 				for (var/obj/machinery/bot/medbot/M in machine_registry[MACHINES_BOTS])
-					if (M.z == 1)
+					if (isstationlevel(M.z))
 						medbots++
 				if (medbots > 4) return 1
 				else return 0
@@ -546,7 +546,7 @@
 			check_completion()
 				var/buttbots = 0
 				for(var/obj/machinery/bot/buttbot/B in machine_registry[MACHINES_BOTS])
-					if(B.z == 1)
+					if(isstationlevel(B.z))
 						buttbots ++
 				if(buttbots > 4) return 1
 				else return 0

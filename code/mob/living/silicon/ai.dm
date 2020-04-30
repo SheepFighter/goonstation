@@ -1651,7 +1651,7 @@ var/list/ai_emotions = list("Happy" = "ai_happy",\
 
 	if(alert("Are you sure?",,"Yes","No") == "Yes")
 		for(var/obj/machinery/door/airlock/D in doors)
-			if (D.z == 1 && D.canAIControl() && D.secondsElectrified != 0 )
+			if (isstationlevel(D.z) && D.canAIControl() && D.secondsElectrified != 0 )
 				D.secondsElectrified = 0
 				count++
 
@@ -1673,7 +1673,7 @@ var/list/ai_emotions = list("Happy" = "ai_happy",\
 
 	if(alert("Are you sure?",,"Yes","No") == "Yes")
 		for(var/obj/machinery/door/airlock/D in doors)
-			if (D.z == 1 && D.canAIControl() && D.locked && D.arePowerSystemsOn())
+			if (isstationlevel(D.z) && D.canAIControl() && D.locked && D.arePowerSystemsOn())
 				D.locked = 0
 				D.update_icon()
 				count++

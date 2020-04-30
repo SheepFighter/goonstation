@@ -18,6 +18,9 @@
 	level = 1
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(node)
 			if(on)
 				icon_state = "[level == 1 && istype(loc, /turf/simulated) ? "h" : "" ]on"
@@ -127,6 +130,8 @@
 		update_icon()
 
 	hide(var/i) //to make the little pipe section invisible, the icon changes.
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
 		if(node)
 			if(on)
 				icon_state = "[i == 1 && istype(loc, /turf/simulated) ? "h" : "" ]on"

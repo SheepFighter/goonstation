@@ -252,14 +252,14 @@
 
 /obj/machinery/computer/mining_shuttle/proc/call_shuttle()
 	if(miningshuttle_location == 0)
-		var/area/start_location = locate(/area/shuttle/mining/space)
-		var/area/end_location = locate(/area/shuttle/mining/station)
+		var/area/start_location = locate_area(/area/shuttle/mining/space)
+		var/area/end_location = locate_area(/area/shuttle/mining/station)
 		start_location.move_contents_to(end_location)
 		miningshuttle_location = 1
 	else
 		if(miningshuttle_location == 1)
-			var/area/start_location = locate(/area/shuttle/mining/station)
-			var/area/end_location = locate(/area/shuttle/mining/space)
+			var/area/start_location = locate_area(/area/shuttle/mining/station)
+			var/area/end_location = locate_area(/area/shuttle/mining/space)
 			start_location.move_contents_to(end_location)
 			miningshuttle_location = 0
 
@@ -324,17 +324,17 @@
 	//drsingh took outpost out for cogmap prison shuttle
 	switch(brigshuttle_location)
 		if(0)
-			var/area/start_location = locate(/area/shuttle/brig/prison)
-			var/area/end_location = locate(/area/shuttle/brig/station)
+			var/area/start_location = locate_area(/area/shuttle/brig/prison)
+			var/area/end_location = locate_area(/area/shuttle/brig/station)
 			start_location.move_contents_to(end_location)
 			brigshuttle_location = 1
 		if(1)
-			var/area/start_location = locate(/area/shuttle/brig/station)
+			var/area/start_location = locate_area(/area/shuttle/brig/station)
 			var/area/end_location = null
 			//if(researchshuttle_lockdown)
-			end_location = locate(/area/shuttle/brig/prison)
+			end_location = locate_area(/area/shuttle/brig/prison)
 			//else
-				//end_location = locate(/area/shuttle/brig/outpost)
+				//end_location = locate_area(/area/shuttle/brig/outpost)
 
 			start_location.move_contents_to(end_location)
 			//if(researchshuttle_lockdown)
@@ -343,8 +343,8 @@
 				//brigshuttle_location = 2
 		/*
 		if(2)
-			var/area/start_location = locate(/area/shuttle/brig/outpost)
-			var/area/end_location = locate(/area/shuttle/brig/prison)
+			var/area/start_location = locate_area(/area/shuttle/brig/outpost)
+			var/area/end_location = locate_area(/area/shuttle/brig/prison)
 			start_location.move_contents_to(end_location)
 			brigshuttle_location = 0
 		*/
@@ -425,14 +425,14 @@
 		return
 
 	if(researchshuttle_location == 0)
-		var/area/start_location = locate(/area/shuttle/research/outpost)
-		var/area/end_location = locate(/area/shuttle/research/station)
+		var/area/start_location = locate_area(/area/shuttle/research/outpost)
+		var/area/end_location = locate_area(/area/shuttle/research/station)
 		start_location.move_contents_to(end_location)
 		researchshuttle_location = 1
 	else
 		if(researchshuttle_location == 1)
-			var/area/start_location = locate(/area/shuttle/research/station)
-			var/area/end_location = locate(/area/shuttle/research/outpost)
+			var/area/start_location = locate_area(/area/shuttle/research/station)
+			var/area/end_location = locate_area(/area/shuttle/research/outpost)
 			start_location.move_contents_to(end_location)
 			researchshuttle_location = 0
 
@@ -489,13 +489,13 @@
 /obj/machinery/computer/icebase_elevator/proc/call_shuttle()
 
 	if(location == 0) // at bottom
-		var/area/start_location = locate(/area/shuttle/icebase_elevator/lower)
-		var/area/end_location = locate(/area/shuttle/icebase_elevator/upper)
+		var/area/start_location = locate_area(/area/shuttle/icebase_elevator/lower)
+		var/area/end_location = locate_area(/area/shuttle/icebase_elevator/upper)
 		start_location.move_contents_to(end_location, /turf/simulated/floor/plating)
 		location = 1
 	else // at top
-		var/area/start_location = locate(/area/shuttle/icebase_elevator/upper)
-		var/area/end_location = locate(/area/shuttle/icebase_elevator/lower)
+		var/area/start_location = locate_area(/area/shuttle/icebase_elevator/upper)
+		var/area/end_location = locate_area(/area/shuttle/icebase_elevator/lower)
 		for(var/mob/M in end_location) // oh dear, stay behind the yellow line kids
 			SPAWN_DBG(1 DECI SECOND) M.gib()
 		start_location.move_contents_to(end_location, /turf/simulated/floor/arctic_elevator_shaft)
@@ -556,13 +556,13 @@
 /obj/machinery/computer/biodome_elevator/proc/call_shuttle()
 
 	if(location == 0) // at bottom
-		var/area/start_location = locate(/area/shuttle/biodome_elevator/lower)
-		var/area/end_location = locate(/area/shuttle/biodome_elevator/upper)
+		var/area/start_location = locate_area(/area/shuttle/biodome_elevator/lower)
+		var/area/end_location = locate_area(/area/shuttle/biodome_elevator/upper)
 		start_location.move_contents_to(end_location, /turf/simulated/floor/plating)
 		location = 1
 	else // at top
-		var/area/start_location = locate(/area/shuttle/biodome_elevator/upper)
-		var/area/end_location = locate(/area/shuttle/biodome_elevator/lower)
+		var/area/start_location = locate_area(/area/shuttle/biodome_elevator/upper)
+		var/area/end_location = locate_area(/area/shuttle/biodome_elevator/lower)
 		for(var/mob/M in end_location) // oh dear, stay behind the yellow line kids
 			SPAWN_DBG(1 DECI SECOND) M.gib()
 			bioele_accident()

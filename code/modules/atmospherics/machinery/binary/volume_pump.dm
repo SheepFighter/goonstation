@@ -29,6 +29,9 @@ obj/machinery/atmospherics/binary/volume_pump
 	var/datum/pump_ui/volume_pump_ui/ui
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(node1&&node2)
 			icon_state = "intact_[on?("on"):("off")]"
 		else

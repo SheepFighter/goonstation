@@ -386,7 +386,7 @@
 				var/list/obj/storage/SL = list()
 				for(var/obj/storage/S in lockers_and_crates)
 					// Only closed, unsecured lockers/crates on Z1 that are not inside the listening post
-					if(S.z == 1 && !S.open && !istype(S, /obj/storage/secure) && !istype(S, /obj/storage/crate/loot) && !istype(get_area(S), /area/listeningpost))
+					if(isstationlevel(S.z) && !S.open && !istype(S, /obj/storage/secure) && !istype(S, /obj/storage/crate/loot) && !istype(get_area(S), /area/listeningpost))
 						var/turf/simulated/T = S.loc
 						//Simple checks done, now do some environment checks to make sure it's survivable
 						if(istype(T) && T.air && T.air.oxygen >= (MOLES_O2STANDARD - 1) && T.air.temperature >= T0C)

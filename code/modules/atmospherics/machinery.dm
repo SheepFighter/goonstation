@@ -19,6 +19,10 @@ obj/machinery/atmospherics
 		build_network()
 		..()
 
+	New()
+		..()
+		if(current_state > GAME_STATE_MAP_LOADING)	Initiate()
+		else	initiation_queue += src
 	// override default subscribes to be in a different process loop. that's why they don't call parent ( ..() )
 	SubscribeToProcess()
 		atmos_machines.Add(src)

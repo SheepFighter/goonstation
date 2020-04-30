@@ -206,15 +206,9 @@
 		setProperty("movespeed", -2)
 
 /obj/item/clothing/shoes/industrial
-#ifdef UNDERWATER_MAP
-	name = "mechanised diving boots"
-	icon_state = "divindboots"
-	desc = "Industrial-grade boots fitted with mechanised balancers and stabilisers to increase running speed under a heavy workload."
-#else
 	icon_state = "indboots"
 	name = "mechanised boots"
 	desc = "Industrial-grade boots fitted with mechanised balancers and stabilisers to increase running speed under a heavy workload."
-#endif
 	permeability_coefficient = 0.05
 	mats = 12
 	burn_possible = 0
@@ -222,7 +216,12 @@
 	laces = LACES_NONE
 	kick_bonus = 2
 	speedy = 1
-
+/obj/item/clothing/shoes/industrial/New()
+	if(map_settings.flags & UNDERWATER_MAP)
+		name = "mechanised diving boots"
+		icon_state = "divindboots"
+		desc = "Industrial-grade boots fitted with mechanised balancers and stabilisers to increase running speed under a heavy workload."
+	..()
 /obj/item/clothing/shoes/white
 	name = "white shoes"
 	desc = "Protects you against biohazards that would enter your feet."

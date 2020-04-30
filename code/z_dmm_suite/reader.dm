@@ -1,5 +1,5 @@
-
-
+var/global/list/area_instances = list()
+var/global/list/initiation_queue = list()
 //-- Reader for loading DMM files at runtime -----------------------------------
 /datum/loadedProperties
 	var/info = ""
@@ -137,8 +137,10 @@ dmm_suite
 				instantiates them.*/
 			// Store quoted portions of text in text_strings, and replace them with an index to that list.
 			var /list/originalStrings = list()
+			var/list/originalLists = list()
 			var /regex/noStrings = regex(@{"(["])(?:(?=(\\?))\2(.|\n))*?\1"})
 			var stringIndex = 1
+			var/listIndex = 1
 			var found
 			do
 				found = noStrings.Find(models, noStrings.next)
@@ -149,6 +151,26 @@ dmm_suite
 					models = noStrings.Replace(models, indexText, found)
 					originalStrings[indexText] = (match)
 			while(found)
+
+			var/findlist = findtextEx(models, "list(")
+			if(findlist)	findlist += 5
+			var/findlistparenthesis = 0
+			var/findnextlist = 0
+			while(findlist)
+				findlistparenthesis = findtextEx(models, ")", findlist)
+				findnextlist = findtextEx(models, "list(", findlist)
+				while(findnextlist && findnextlist < findlistparenthesis)
+					findnextlist = findtextEx(models, "list(", findlistparenthesis + 1)
+					findlistparenthesis = findtextEx(models, ")", findlistparenthesis + 1)
+				var/indexText = "#[listIndex++]"
+				var/match = copytext(models, findlist, findlistparenthesis )
+				models = copytext(models, 1, findlist) + indexText + copytext(models, findlistparenthesis)
+
+				originalLists["list([indexText])"] = match
+				findlistparenthesis -= length(match)
+				findlist = findtextEx(models, "list(", findlistparenthesis + 1)
+				if(findlist)	findlist += 5
+
 			// Identify each object's data, instantiate it, & reconstitues its fields.
 			var /list/turfStackTypes = list()
 			var /list/turfStackAttributes = list()
@@ -166,20 +188,20 @@ dmm_suite
 						var attributeValue = copytext(paddedAttribute, equalPos+2)
 						attributes[attributeKey] = attributeValue
 				if(!ispath(atomPath, /turf))
-					loadModel(atomPath, attributes, originalStrings, xcrd, ycrd, zcrd)
+					loadModel(atomPath, attributes, originalStrings, originalLists, xcrd, ycrd, zcrd)
 				else
 					turfStackTypes.Insert(1, atomPath)
 					turfStackAttributes.Insert(1, null)
 					turfStackAttributes[1] = attributes
 			// Layer all turf appearances into final turf
 			if(!turfStackTypes.len) return
-			var /turf/topTurf = loadModel(turfStackTypes[1], turfStackAttributes[1], originalStrings, xcrd, ycrd, zcrd)
+			var /turf/topTurf = loadModel(turfStackTypes[1], turfStackAttributes[1], originalStrings, originalLists, xcrd, ycrd, zcrd)
 			for(var/turfIndex = 2 to turfStackTypes.len)
 				var /mutable_appearance/underlay = new(turfStackTypes[turfIndex])
-				loadModel(underlay, turfStackAttributes[turfIndex], originalStrings, xcrd, ycrd, zcrd)
+				loadModel(underlay, turfStackAttributes[turfIndex], originalStrings, originalLists, xcrd, ycrd, zcrd)
 				topTurf.underlays.Add(underlay)
 
-		loadModel(atomPath, list/attributes, list/strings, xcrd, ycrd, zcrd)
+		loadModel(atomPath, list/attributes, list/strings, list/_lists, xcrd, ycrd, zcrd)
 			// Cancel if atomPath is a placeholder (DMM_IGNORE flags used to write file)
 			if(ispath(atomPath, /turf/dmm_suite/clear_turf) || ispath(atomPath, /area/dmm_suite/clear_area))
 				return
@@ -188,7 +210,7 @@ dmm_suite
 			var /list/attributesMirror = list()
 			var /turf/location = locate(xcrd, ycrd, zcrd)
 			for(var/attributeName in attributes)
-				attributesMirror[attributeName] = loadAttribute(attributes[attributeName], strings)
+				attributesMirror[attributeName] = loadAttribute(attributes[attributeName], strings, _lists)
 			var /dmm_suite/preloader/preloader = new(location, attributesMirror)
 			// Begin Instanciation
 			// Handle Areas (not created every time)
@@ -196,8 +218,39 @@ dmm_suite
 			if(ispath(atomPath, /area))
 				//instance = locate(atomPath)
 				//instance.contents.Add(locate(xcrd, ycrd, zcrd))
-				new atomPath(locate(xcrd, ycrd, zcrd))
-				location.dmm_preloader = null
+				if(!attributesMirror.len)
+					new atomPath(locate(xcrd, ycrd, zcrd))
+					location.dmm_preloader = null
+				else
+					var/InstanceMatch = FALSE
+					var/list/L = area_instances[atomPath]
+					var/list/L2
+					var/area/area_inst
+					if(L)
+						for(var/a = 2 to L.len step 2)
+							L2 = L[a]
+							if(L2.len == attributesMirror.len)
+								InstanceMatch = TRUE
+								for(var/attr in L2)
+									if(!attributesMirror[attr] || attributesMirror[attr] != L2[attr])
+										InstanceMatch = FALSE
+										break
+							if(InstanceMatch)
+								area_inst = L[a - 1]
+								area_inst.contents += location
+								break
+					else
+						area_instances[atomPath] = list()
+						L = area_instances[atomPath]
+					if(!InstanceMatch)
+						instance = new atomPath()
+						preloader.load(instance)
+						instance.contents += location
+						location.dmm_preloader = null
+						L += instance
+						L[++L.len] = attributesMirror.Copy()
+
+
 			// Handle Underlay Turfs
 			else if(istype(atomPath, /mutable_appearance))
 				instance = atomPath // Skip to preloader manual loading.
@@ -209,13 +262,14 @@ dmm_suite
 					instance = location.ReplaceWith(atomPath, keep_old_material = 0, handle_air = 0, handle_dir = 0)
 				else
 					instance = new atomPath(location)
+
 			// Handle cases where Atom/New was redifined without calling Super()
 			if(preloader && instance) // Atom could delete itself in New()
 				preloader.load(instance)
 			//
 			return instance
 
-		loadAttribute(value, list/strings)
+		loadAttribute(value, list/strings, list/_lists)
 			//Check for string
 			if(copytext(value, 1, 2) == "\"")
 				return strings[value]
@@ -226,6 +280,65 @@ dmm_suite
 			//Check for file
 			else if(copytext(value,1,2) == "'")
 				return file(copytext(value,2,length(value)))
+			else if(copytext(value, 1, 6) == "list(")
+				var/list/listoflists = list()
+				var/list/currentlist = list()
+				for(var/content in text2list(_lists[value], ","))
+					if(copytext(content,1,2) == " ")	content = copytext(content, 2)
+					var/islist = findtextEx(content, "list(")
+					while(islist)
+						var/key
+						var/isassoc = findtextEx(content, " = list(")
+						if(isassoc && isassoc < islist)
+							key = copytext(content, 1, isassoc)
+							content = copytext(content, islist + 5)
+							var/list/L = list()
+							currentlist[key] = L
+							listoflists[++listoflists.len] = currentlist
+							currentlist = L
+							islist = findtextEx(content, "list(")
+
+						else
+							content = copytext(content, islist + 5)
+							var/list/L = list()
+							currentlist[++currentlist.len] = L
+							listoflists[++listoflists.len] = currentlist
+							currentlist = L
+							islist = findtextEx(content, "list(")
+
+
+					var/parentheses = 0
+					var/isparen = findtext(content, ")")
+					while(isparen)
+						parentheses++
+						isparen = findtext(content, ")", isparen + 1)
+					if(isparen)	content = copytext(content, 1, findtext(content, ")"))
+
+					var/key
+					var/isassoc = findtext(content, " = ")
+					if(isassoc)
+						key = copytext(content, 1, isassoc)
+						content = copytext(content, isassoc + 3)
+						if(copytext(key, 1, 2) == "\"")
+							key = strings[key]
+					num = text2num(content)
+
+					if(copytext(content, 1, 2) == "\"")
+						if(key)
+							currentlist[key] = strings[content]
+						else	currentlist += strings[content]
+					else if(isnum(num))
+						if(key)	currentlist[key] = num
+						else	currentlist += num
+					if(parentheses)
+						for(var/a = 1 to parentheses)
+							if(listoflists.len)
+								currentlist = listoflists[listoflists.len--]
+
+				return currentlist
+
+
+			return
 			// Check for lists
 				// To Do
 
@@ -235,6 +348,8 @@ dmm_suite
 turf
 	var
 		dmm_suite/preloader/dmm_preloader
+/atom/proc/Initiate()	//This acts as a map-loading-friendly substitute for overloading /New()
+	return
 
 atom/New(turf/newLoc)
     if(isturf(newLoc))

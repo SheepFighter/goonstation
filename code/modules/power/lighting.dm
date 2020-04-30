@@ -104,7 +104,7 @@
 
 	New()
 		..()
-		if (src.loc.z == 1)
+		if (isstationlevel(loc.z))
 			stationLights += src
 
 		var/area/A = get_area(src)

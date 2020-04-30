@@ -177,7 +177,12 @@
 	var/image/pipeimg = null
 
 	// new pipe, set the icon_state as on map
+
 	New()
+		..()
+		if(current_state <= GAME_STATE_MAP_LOADING)	initiation_queue += src
+		else	Initiate()
+	Initiate()
 		..()
 		base_icon_state = icon_state
 		pipeimg = image(src.icon, src.loc, src.icon_state, 3, dir)
@@ -529,7 +534,7 @@
 		desc = "An underfloor mineral pipe."
 		color = PIPEC_MINERAL
 
-	New()
+	Initiate()
 		..()
 		if(icon_state == "pipe-s")
 			dpdir = dir | turn(dir, 180)
@@ -594,7 +599,7 @@
 		west
 			dir = WEST
 
-	New()
+	Initiate()
 		..()
 		if(icon_state == "pipe-j1")
 			dpdir = dir | turn(dir, -90) | turn(dir,180)
@@ -678,7 +683,7 @@
 		west
 			dir = WEST
 
-	New()
+	Initiate()
 		..()
 		if(icon_state == "pipe-sj1")
 			switch_dir = turn(dir, -90)
@@ -830,7 +835,7 @@
 	vertical
 		dir = NORTH
 
-	New()
+	Initiate()
 		..()
 
 		dpdir = dir | turn(dir, 180)
@@ -1055,7 +1060,7 @@
 		src.reagents.add_reagent("space_fungus",3)
 		src.reagents.add_reagent("synthflesh",10)
 		START_TRACKING
-	
+
 	disposing()
 		. = ..()
 		STOP_TRACKING
@@ -1200,7 +1205,7 @@
 	west
 		dir = WEST
 
-	New()
+	Initiate()
 		..()
 
 		mechanics = new(src)
@@ -1335,7 +1340,7 @@
 	west
 		dir = WEST
 
-	New()
+	Initiate()
 		..()
 
 		dpdir = dir | turn(dir, 270) | turn(dir, 90)
@@ -1403,7 +1408,7 @@
 	west
 		dir = WEST
 
-	New()
+	Initiate()
 		..()
 
 		dpdir = dir | turn(dir, 270) | turn(dir, 90)
@@ -1476,7 +1481,7 @@
 	vertical
 		dir = NORTH
 
-	New()
+	Initiate()
 		..()
 
 		mechanics = new(src)
@@ -1642,7 +1647,7 @@
 		desc = "An underfloor mineral pipe."
 		color = PIPEC_MINERAL
 
-	New()
+	Initiate()
 		..()
 		dpdir = dir
 		SPAWN_DBG(1 DECI SECOND)
@@ -1707,7 +1712,7 @@
 					// i.e. will be treated as an empty turf
 	desc = "A broken piece of disposal pipe."
 
-	New()
+	Initiate()
 		..()
 		update()
 		return

@@ -12,7 +12,7 @@ area/tutorial_zone
 	New()
 		..()
 		AddBeginnerTutorialSteps(src)
-		tutorial_area = locate(/area/beginner_tutorial) in world
+		tutorial_area = locate_area(/area/beginner_tutorial) in world
 		var/obj/landmark/tutorial_start/L = null
 		for (var/obj/landmark/tutorial_start/temp in tutorial_area)
 			L = temp

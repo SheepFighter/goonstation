@@ -587,19 +587,17 @@
 
 /obj/item/clothing/head/helmet/space/industrial
 	mats = 7
-#ifdef UNDERWATER_MAP
-	icon_state = "diving_suit-industrial"
-	item_state = "diving_suit-industrial"
-	name = "industrial diving helmet"
-	desc = "Goes with Industrial Diving Suit. Now with a fresh mint-scented visor!"
-
-#else
 	icon_state = "indus"
 	item_state = "indus"
 	name = "industrial space helmet"
 	desc = "Goes with Industrial Space Armor. Now with zesty citrus-scented visor!"
-#endif
-
+	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			icon_state = "diving_suit-industrial"
+			item_state = "diving_suit-industrial"
+			name = "industrial diving helmet"
+			desc = "Goes with Industrial Diving Suit. Now with a fresh mint-scented visor!"
+		..()
 	setupProperties()
 		..()
 		setProperty("radprot", 50)

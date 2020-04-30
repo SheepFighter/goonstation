@@ -925,9 +925,9 @@ var/global/IP_alerts = 1
 
 	admin_only
 
-	var/bustedMapSwitcher = isMapSwitcherBusted()
+/*	var/bustedMapSwitcher = isMapSwitcherBusted()
 	if (bustedMapSwitcher)
-		return alert(bustedMapSwitcher)
+		return alert(bustedMapSwitcher)*/
 
 	mapSwitcher.votingAllowed = !mapSwitcher.votingAllowed
 

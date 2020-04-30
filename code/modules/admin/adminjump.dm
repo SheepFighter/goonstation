@@ -1,4 +1,4 @@
-/client/proc/Jump(var/area/A in world)
+/client/proc/Jump(var/A in area_names)
 	set desc = "Area to jump to"
 	set category = "Special Verbs"
 	set name = "Jump"
@@ -7,7 +7,7 @@
 	if(config.allow_admin_jump)
 		if(flourish)
 			shrink_teleport(src.mob)
-		var/list/turfs = get_area_turfs(A, 1)
+		var/list/turfs = get_area_turfs(areas_by_name[A], 1)
 		if (turfs && turfs.len)
 			usr.set_loc(pick(turfs))
 		else

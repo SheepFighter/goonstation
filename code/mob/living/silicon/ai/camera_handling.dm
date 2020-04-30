@@ -291,7 +291,7 @@
 		//Target is inside a dummy
 		//Target is not at a turf
 		//Target is not on station level
-		return (target.loc.z == 1) \
+		return (isstationlevel(target.loc.z)) \
 				&& ((issilicon(target) && istype(target.loc, /turf) ) \
 				|| (iscritter(target) && istype(target.loc, /turf) ) \
 				|| !((ishuman(target) \

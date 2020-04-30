@@ -6,7 +6,7 @@
 	event_effect()
 		..()
 		for(var/obj/machinery/power/apc/C in machine_registry[MACHINES_POWER])
-			if(C.cell && C.z == 1)
+			if(C.cell && isstationlevel(C.z))
 				C.cell.charge = 0
 		for(var/obj/machinery/power/smes/S in machine_registry[MACHINES_POWER])
 			if(istype(get_area(S), /area/station/turret_protected) || S.z != 1)
@@ -25,7 +25,7 @@
 	event_effect()
 		..()
 		for(var/obj/machinery/power/apc/C in machine_registry[MACHINES_POWER])
-			if(C.cell && C.z == 1)
+			if(C.cell && isstationlevel(C.z))
 				C.cell.charge = C.cell.maxcharge
 		for(var/obj/machinery/power/smes/S in machine_registry[MACHINES_POWER])
 			if(S.z != 1)

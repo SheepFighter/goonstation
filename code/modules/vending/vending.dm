@@ -1104,7 +1104,7 @@
 		return
 
 	attackby(obj/item/weapon as obj, mob/user as mob) //pretty much just player zoldorf stuffs :)
-		if((istype(weapon, /obj/item/zolscroll)) && istype(user,/mob/living/carbon/human) && (src.z == 1))
+		if((istype(weapon, /obj/item/zolscroll)) && istype(user,/mob/living/carbon/human) && (isstationlevel(z)))
 			var/obj/item/zolscroll/scroll = weapon
 			var/mob/living/carbon/human/h = user
 			if(h.unkillable)

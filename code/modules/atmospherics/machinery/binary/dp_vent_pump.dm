@@ -13,7 +13,7 @@
 	high_volume
 		name = "Large Dual Port Air Vent"
 
-		New()
+		Initiate()
 			..()
 
 			air1.volume = 1000
@@ -32,6 +32,9 @@
 	//4: Do not pass output_pressure_max
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(on)
 			if(pump_direction)
 				icon_state = "[level == 1 && istype(loc, /turf/simulated) ? "h" : "" ]out"
@@ -44,6 +47,9 @@
 		return
 
 	hide(var/i) //to make the little pipe section invisible, the icon changes.
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(on)
 			if(pump_direction)
 				icon_state = "[i == 1 && istype(loc, /turf/simulated) ? "h" : "" ]out"

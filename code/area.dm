@@ -14,6 +14,16 @@
 
 #define SIMS_DETAILED_SCOREKEEPING
 
+var/global/list/areas_by_type = list()
+var/global/list/areas_by_name = list()
+var/global/list/area_names = list()
+var/global/list/areas_in_map = list()
+/proc/locate_area(var/area/A)
+	for(var/area/B in areas_in_map)
+		if(istype(B, A))	return B
+
+	return null
+
 //
 /area
 	var/active = 0 //True if a dude is here (DOES NOT APPLY TO THE "SPACE" AREA)
@@ -26,11 +36,7 @@
 	var/virtual = 0
 	var/gencolor
 	level = null
-	#ifdef UNDERWATER_MAP
-	name = "Ocean"
-	#else
-	name = "Space"
-	#endif
+	name = "Default"
 	icon = 'icons/turf/areas.dmi'
 	icon_state = "unknown"
 	layer = EFFECTS_LAYER_BASE
@@ -126,7 +132,7 @@
 				#undef AMBIENCE_ENTER_PROB
 
 		if ((isliving(A) || iswraith(A)) || locate(/mob) in A)
-			if (!Z4_ACTIVE && A.z == 4) Z4_ACTIVE = 1//bloop
+			if (!Z4_ACTIVE && issparelevel(A.z)) Z4_ACTIVE = 1//bloop
 			//world.log << "[src] entered by [A]"
 			//Just...deal with this
 			var/list/enteringMobs = get_all_mobs_in(A)
@@ -326,9 +332,7 @@
 			if ("AI Satellite Core") sound_fx_1 = pick('sound/ambience/station/Station_SpookyAtmosphere1.ogg','sound/ambience/station/Station_SpookyAtmosphere2.ogg')
 			if ("The Blind Pig") sound_fx_1 = pick('sound/ambience/spooky/TheBlindPig.ogg','sound/ambience/spooky/TheBlindPig2.ogg')
 			if ("M. Fortuna's House of Fortune") sound_fx_1 = 'sound/ambience/spooky/MFortuna.ogg'
-			#ifdef SUBMARINE_MAP
-			else sound_fx_1 = pick(ambience_submarine)
-			#endif
+			else if(map_settings.flags & SUBMARINE_MAP) sound_fx_1 = pick(ambience_submarine)
 			else sound_fx_1 = pick(ambience_general)
 
 	proc/add_light(var/obj/machinery/light/L)
@@ -467,14 +471,8 @@
 #ifdef HALLOWEEN
 	alpha = 128
 	icon = 'icons/effects/dark.dmi'
-#elif defined(UNDERWATER_MAP)
-	requires_power = 0
-	force_fullbright = 0
-	luminosity = 0
 #else
 	requires_power = 0
-	luminosity = 1
-	force_fullbright = 1
 #endif
 	sound_environment = 2
 	expandable = 0
@@ -485,7 +483,16 @@
 	teleport_blocked = 2
 	//blocked = 1
 	//blocked_waypoint = /obj/landmark/block_waypoint/shuttle
-
+/area/shuttle/New()
+	#ifndef HALLOWEEN
+	if(map_settings.flags & UNDERWATER_MAP)
+		luminosity = 0
+		force_fullbright = 0
+	else
+		luminosity = 1
+		force_fullbright = 1
+	#endif
+	..()
 /area/shuttle/arrival/pre_game
 	icon_state = "shuttle2"
 
@@ -936,10 +943,11 @@
 /area/iss
 	name = "Derelict Space Station"
 	icon_state = "derelict"
-#ifdef SUBMARINE_MAP
-	force_fullbright = 1
-#endif
 
+	New()
+		if(map_settings.flags & SUBMARINE_MAP)
+			force_fullbright = 1
+		..()
 
 /area/abandonedship
 	name = "Abandoned ship"
@@ -1181,19 +1189,14 @@
 	do_not_irradiate = 0
 	sound_fx_1 = 'sound/ambience/station/Station_VocalNoise1.ogg'
 	var/initial_structure_value = 0
-#ifdef MOVING_SUB_MAP
-	filler_turf = "/turf/space/fluid/manta"
-
-	New()
-		..()
-		initial_structure_value = calculate_structure_value()
-#else
 	filler_turf = null
 
+
 	New()
+		if(map_settings.flags & MOVING_SUB_MAP)
+			filler_turf = "/turf/space/fluid/manta"
 		..()
 		initial_structure_value = calculate_structure_value()
-#endif
 
 /area/station/atmos
 	name = "Atmospherics"
@@ -1448,10 +1451,12 @@ area/station/hallway/starboardupperhallway
 	name = "Bridge"
 	icon_state = "bridge"
 	sound_environment = 4
-#ifdef SUBMARINE_MAP
-	sound_group = "bridge"
-	sound_loop = 'sound/ambience/station/underwater/sub_bridge_ambi1.ogg'
-#endif
+
+	New()
+		if(map_settings.flags & SUBMARINE_MAP)
+			sound_group = "bridge"
+			sound_loop = 'sound/ambience/station/underwater/sub_bridge_ambi1.ogg'
+		..()
 
 area/station/seaturtlebridge
 	name = "Sea Turtle Bridge"
@@ -3088,14 +3093,21 @@ area/station/security/visitation
 /* ================================================== */
 
 /area/New()
+	if(type == /area)
+		if(map_settings.flags & UNDERWATER_MAP)
+			name = "Ocean"
+		else
+			name = "Space"
+	if(!areas_by_type[type])	areas_by_type[type] = src
+
+
 	src.icon = 'icons/effects/alert.dmi'
 	src.layer = EFFECTS_LAYER_BASE
 //Halloween is all about darkspace
 	if(name == "Space" || src.name == "Ocean")			// override defaults for space
 		requires_power = 0
-		#ifdef UNDERWATER_MAP
-		src.ambient_light = OCEAN_LIGHT
-		#endif
+		if(map_settings.flags & UNDERWATER_MAP)
+			src.ambient_light = OCEAN_LIGHT
 #ifdef HALLOWEEN
 		alpha = 128
 		icon = 'icons/effects/dark.dmi'

@@ -734,13 +734,8 @@ var/global/noir = 0
 					if(master_mode == "battle_royale")
 						lobby_titlecard.icon_state += "_battle_royale"
 					else
-						lobby_titlecard.icon_state = "title_main"
-					#ifdef MAP_OVERRIDE_OSHAN
-						lobby_titlecard.icon_state = "title_oshan"
-					#endif
-					#ifdef MAP_OVERRIDE_MANTA
-						lobby_titlecard.icon_state = "title_manta"
-					#endif
+						lobby_titlecard.icon_state = map_settings.titlecard_icon_state
+
 					if (alert("Declare mode change to all players?","Mode Change","Yes","No") == "Yes")
 						boutput(world, "<span style=\"color:blue\"><b>The mode is now: [requestedMode]</b></span>")
 				else
@@ -3547,7 +3542,7 @@ var/global/noir = 0
 	dat += "<div class='optionGroup' style='border-color:#AEC6CF'><b class='title' style='background:#AEC6CF'>Game Info</b>"
 
 	//Map name
-	dat += "Current map: <A href='?src=\ref[src];action=switch_map'>[getMapNameFromID(map_setting)]</A>"
+	dat += "Current map: <A href='?src=\ref[src];action=switch_map'>[map_settings.name]</A>"
 	if (mapSwitcher.next)
 		dat += " (Next map: [mapSwitcher.next])"
 

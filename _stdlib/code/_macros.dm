@@ -73,13 +73,25 @@ var/list/global_spawn_dbg = list()
 
 #define ishellbanned(x) x?.client?.hellbanned
 
+#define isrestrictedz(z) (map_level_flags[z] & LEVEL_RESTRICTED)
+
+#define isghostrestrictedz(z) (map_level_flags[z] & GHOST_RESTRICTED || map_level_flags[z] & LEVEL_RESTRICTED)
+
+#define isstationlevel(z) (z ? map_level_flags[z] & STATION_LEVEL : 0)
+
+#define isadminlevel(z) (z ? map_level_flags[z] & ADMIN_LEVEL : 0)
+
+#define issparelevel(z) (z ? map_level_flags[z] & SPARE_LEVEL : 0)
+
+#define ismininglevel(z) (z ? map_level_flags[z] & MINING_LEVEL : 0)
+/*
 #ifdef UNDERWATER_MAP
 #define isrestrictedz(z) ((z) == 2 || (z) == 3  || (z) == 4)
 #define isghostrestrictedz(z) (isrestrictedz(z) || (z) == 5)
 #else
 #define isrestrictedz(z) ((z) == 2 || (z) == 4)
 #define isghostrestrictedz(z) (isrestrictedz(z))
-#endif
+#endif*/
 
 #define isitem(x) istype(x, /obj/item)
 
@@ -179,3 +191,7 @@ var/list/global_spawn_dbg = list()
 //some reliquary stuff - azungar
 
 #define isreliquary(x) (istype(x, /mob/living/critter/reliquary) || istype(x, /mob/living/critter/reliquarymonstrosity) || istype(x, /mob/living/carbon/human) && x:mutantrace && istype(x:mutantrace, /datum/mutantrace/reliquary_soldier))
+
+#define get_area_by_type(atype)	areas_by_type[atype]
+
+//#define locate_area(atype)	(locate(atype in areas_in_map))

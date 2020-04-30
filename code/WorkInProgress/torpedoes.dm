@@ -121,9 +121,10 @@
 	var/inUse = 0
 
 	New()
+		..()
 		movement_controller = new(src)
 		targeter = new(src.loc, src)
-		return ..()
+		return
 
 	get_movement_controller()
 		return movement_controller

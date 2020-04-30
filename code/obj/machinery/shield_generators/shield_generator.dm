@@ -169,7 +169,8 @@
 		return
 
 	proc/create_shield()
-		var/area/shield_loc = locate(/area/station/shield_zone)
+		var/area/shield_loc = locate_area(/area/station/shield_zone)
+
 		for (var/turf/T in shield_loc)
 			if (!(locate(/obj/forcefield/meteorshield) in T))
 				var/obj/forcefield/meteorshield/MS = new /obj/forcefield/meteorshield(T)

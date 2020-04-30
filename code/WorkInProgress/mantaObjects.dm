@@ -165,7 +165,7 @@ var/obj/manta_speed_lever/mantaLever = null
 	if(doShake)
 		for(var/client/C in clients)
 			var/mob/M = C.mob
-			if(M && M.z == 1) shake_camera(M, 5, 15, 0.2)
+			if(M && isstationlevel(M.z)) shake_camera(M, 5, 15, 0.2)
 
 	for(var/A in mantaTiles)
 		var/turf/space/fluid/manta/T = A
@@ -690,7 +690,7 @@ var/obj/manta_speed_lever/mantaLever = null
 	New()
 		. = ..()
 		START_TRACKING
-	
+
 	disposing()
 		. = ..()
 		STOP_TRACKING
@@ -1290,10 +1290,15 @@ var/obj/manta_speed_lever/mantaLever = null
 			command_alert("The Magnetic tether has been successfully repaired. Magnetic attachment points are online once again.", "Magnetic Tether Repaired")
 			return
 
-#ifdef MOVING_SUB_MAP //Defined in the map-specific .dm configuration file.
+//Manta-specific events
 /datum/random_event/special/mantacommsdown
 	name = "Communications Malfunction"
 
+	New()
+		if(map_settings.flags & MOVING_SUB_MAP)
+			..()
+		else
+			del src
 	event_effect(var/source)
 		..()
 		if (random_events.announce_events)
@@ -1313,6 +1318,12 @@ var/obj/manta_speed_lever/mantaLever = null
 /datum/random_event/major/electricmalfunction
 	name = "Electrical Malfunction"
 
+	New()
+		if(map_settings.flags & MOVING_SUB_MAP)
+			..()
+		else
+			del src
+
 	event_effect()
 		..()
 		var/obj/machinery/junctionbox/J = mantaJunctionbox[rand(3,mantaJunctionbox.len)]
@@ -1323,6 +1334,12 @@ var/obj/manta_speed_lever/mantaLever = null
 
 /datum/random_event/special/namepending
 	name = "Name Pending"
+
+	New()
+		if(map_settings.flags & MOVING_SUB_MAP)
+			..()
+		else
+			del src
 
 	event_effect()
 		..()
@@ -1342,7 +1359,7 @@ var/obj/manta_speed_lever/mantaLever = null
 			sleep(10)
 
 		new /obj/effect/boommarker(bigboommark)
-#endif
+
 
 
 //******************************************** MANTA COMPATIBLE AREAS HERE ********************************************

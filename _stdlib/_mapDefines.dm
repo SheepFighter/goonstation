@@ -1,55 +1,20 @@
-#if defined(MAP_OVERRIDE_CONSTRUCTION)
+//Map Flags
+#define UNDERWATER_MAP	1
+#define MOVING_SUB_MAP	2
+#define SUBMARINE_MAP	4
 
+//Level Flags
+#define LEVEL_RESTRICTED	1
+#define GHOST_RESTRICTED	2
+#define	STATION_LEVEL		4
+#define MINING_LEVEL		8
+#define	ADMIN_LEVEL			16
+#define	SPARE_LEVEL			32
 
-#elif defined(MAP_OVERRIDE_DESTINY)
-
-
-#elif defined(MAP_OVERRIDE_CLARION)
-
-
-#elif defined(MAP_OVERRIDE_COGMAP)
-
-
-#elif defined(MAP_OVERRIDE_COGMAP2)
-
-
-#elif defined(MAP_OVERRIDE_DONUT2)
-
-
-#elif defined(MAP_OVERRIDE_LINEMAP)
-
-
-#elif defined(MAP_OVERRIDE_MUSHROOM)
-
-
-#elif defined(MAP_OVERRIDE_TRUNKMAP)
-
-
-#elif defined(MAP_OVERRIDE_CHIRON)
-
-
-#elif defined(MAP_OVERRIDE_SAMEDI)
-
-
-#elif defined(MAP_OVERRIDE_OSHAN)
-
-#define UNDERWATER_MAP 1
-
-#elif defined(MAP_OVERRIDE_HORIZON)
-
-
-#elif defined(MAP_OVERRIDE_ATLAS)
-
-
-#elif defined(MAP_OVERRIDE_MANTA)
-
-#define UNDERWATER_MAP 1
-#define MOVING_SUB_MAP 1
-#define SUBMARINE_MAP 1
-
-//Entry below is the "default" map
+//PlayerPickable
+#define MAP_PICKABLE_ALWAYS	1
+#ifdef ASS_JAM
+#define MAP_PICKABLE_ASSDAY	1
 #else
-
-//#define UNDERWATER_MAP 1
-
+#define MAP_PICKABLE_ASSDAY	0
 #endif

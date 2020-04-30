@@ -33,14 +33,19 @@
 					LAGCHECK(LAG_LOW)
 		//pestlandmark.visible_message("A group of [type] emerges from their hidey-hole")
 
-#ifdef MOVING_SUB_MAP //Defined in the map-specific .dm configuration file.
+
 /datum/random_event/minor/electricmalfunction
 	name = "Electrical Malfunction"
 
+	New()
+		if(map_settings.flags & MOVING_SUB_MAP)
+			..()
+		else
+			del src
 	event_effect()
 		..()
 		var/obj/machinery/junctionbox/J = mantaJunctionbox[rand(1,mantaJunctionbox.len)]
 		if (J.broken == 1)
 			return
 		J.Breakdown()
-#endif
+

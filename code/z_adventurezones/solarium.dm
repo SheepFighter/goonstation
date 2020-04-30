@@ -178,7 +178,7 @@ proc/voidify_world()
 					space.icon_state = "acid_floor"
 					space.icon = 'icons/misc/meatland.dmi'
 					space.name = "stomach acid"
-					if (space.z == 1)
+					if (isstationlevel(space.z))
 						new /obj/stomachacid(space)
 			else
 				if(space.icon_state != "darkvoid")

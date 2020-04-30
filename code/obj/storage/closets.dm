@@ -8,7 +8,7 @@
 	New()
 		. = ..()
 		START_TRACKING
-	
+
 	disposing()
 		. = ..()
 		STOP_TRACKING
@@ -124,11 +124,6 @@
 	spawn_contents = list(
 	/obj/item/clothing/mask/breath,
 	/obj/item/clothing/under/misc/syndicate,
-#if defined(MAP_OVERRIDE_MANTA)
-	/obj/item/tank/jetpack/syndicate,
-#else
-	/obj/item/tank/jetpack,
-#endif
 	/obj/item/clothing/under/misc/syndicate,
 #ifdef XMAS
 	/obj/item/clothing/head/helmet/space/santahat,
@@ -140,6 +135,13 @@
 	/obj/item/crowbar,
 	/obj/item/cell/supercell/charged,
 	/obj/item/device/multitool)
+
+	New()
+		if(istype(map_settings, /datum/map_settings/manta))
+			spawn_contents += /obj/item/tank/jetpack/syndicate
+		else
+			spawn_contents += /obj/item/tank/jetpack
+		..()
 
 /obj/storage/closet/syndicate/nuclear
 	desc = "Nuclear preperations closet."

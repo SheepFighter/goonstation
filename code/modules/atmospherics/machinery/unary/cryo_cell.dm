@@ -31,7 +31,7 @@
 	west
 		dir = WEST
 
-	New()
+	Initiate()
 		..()
 		light = new /datum/light/point
 		light.attach(src)

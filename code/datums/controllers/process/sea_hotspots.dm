@@ -1,4 +1,3 @@
-#ifdef MAP_OVERRIDE_OSHAN
 datum/controller/process/sea_hotspot_update
 	var/tmp/datum/hotspot_controller/controller
 
@@ -14,4 +13,4 @@ datum/controller/process/sea_hotspot_update
 			else
 				controller = 0
 				global.hotspot_controller.clear()
-#endif
+

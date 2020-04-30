@@ -44,7 +44,7 @@
 		west
 			dir = WEST
 
-	New()
+	Initiate()
 		..()
 		pipe_direction = src.dir
 		initialize_directions = pipe_direction
@@ -63,6 +63,9 @@
 
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(src.node)
 			if(src.on)
 				icon_state = "freezer_1"

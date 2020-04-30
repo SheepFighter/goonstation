@@ -1963,15 +1963,15 @@
 	/datum/manufacture/ore_accumulator,
 	/datum/manufacture/rods2,
 	/datum/manufacture/metal,
-#ifdef UNDERWATER_MAP
-	/datum/manufacture/jetpackmkII,
-#endif
 	/datum/manufacture/mining_magnet)
 
 	hidden = list(/datum/manufacture/RCD,
 	/datum/manufacture/RCDammo,
 	/datum/manufacture/RCDammolarge)
-
+	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			available += /datum/manufacture/jetpackmkII
+		..()
 /obj/machinery/manufacturer/hangar
 	name = "Ship Component Fabricator"
 	desc = "A manufacturing unit calibrated to produce parts for ships."

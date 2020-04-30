@@ -517,12 +517,12 @@
 			LAGCHECK(LAG_LOW)
 			big_choice = pick(BS)
 			obj_existing = locate(big_choice)
-			if (obj_existing && obj_existing.z == 1)
+			if (obj_existing && isstationlevel(obj_existing.z))
 				break
 			else
 				obj_existing = 0
 
-		if (obj_existing && obj_existing.z == 1)
+		if (obj_existing && isstationlevel(obj_existing.z))
 			var/datum/bounty_item/B = new /datum/bounty_item(src)
 			B.path = obj_existing.type
 			B.item = obj_existing
@@ -563,13 +563,13 @@
 			choice = pick(S)
 			item_existing = locate(choice)
 			var/turf/T = get_turf(item_existing)
-			if (item_existing && T.z == 1)
+			if (item_existing && isstationlevel(T.z))
 				break
 			else
 				item_existing = 0
 
 		var/turf/T = get_turf(item_existing)
-		if (item_existing && T.z == 1)
+		if (item_existing && isstationlevel(T.z))
 			var/datum/bounty_item/B = new /datum/bounty_item(src)
 			B.path = item_existing.type
 			B.item = item_existing

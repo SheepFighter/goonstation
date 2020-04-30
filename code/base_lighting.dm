@@ -42,10 +42,7 @@
 	New()
 		..()
 		var/area/A = loc
-
-		#ifdef UNDERWATER_MAP //FUCK THIS SHIT. NO FULLBRIGHT ON THE MINING LEVEL, I DONT CARE.
-		if (z == AST_ZLEVEL) return
-		#endif
+		if (map_settings.flags & UNDERWATER_MAP && ismininglevel(z)) return
 
 		if (!A.force_fullbright && fullbright) // if the area's fullbright we'll use a single overlay on the area instead
 			overlays += /image/fullbright

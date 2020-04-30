@@ -46,6 +46,9 @@
 		update_icon()
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(status & (BROKEN|NOPOWER))
 			icon_state = "circ[side]-p"
 		else if(last_pressure_delta > 0)

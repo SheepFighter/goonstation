@@ -1133,10 +1133,10 @@
 	switch(severity)
 		if(1.0)
 			src.ReplaceWithSpace()
-#ifdef UNDERWATER_MAP
+//#ifdef UNDERWATER_MAP
 			//if (prob(10))
 			//	src.ex_act(severity+1)
-#endif
+//#endif
 
 		if(2.0)
 			switch(pick(1,2;75,3))

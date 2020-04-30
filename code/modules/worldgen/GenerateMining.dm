@@ -17,41 +17,39 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		place()
 
 	proc/place()
-		#ifdef UNDERWATER_MAP
-		return new/turf/space/fluid/trench(src)
-		#else
-		return new/turf/space(src)
-		#endif
+		if(map_settings.flags & UNDERWATER_MAP)
+			return new/turf/space/fluid/trench(src)
+		else
+			return new/turf/space(src)
 
 	floor //Replaced with map appropriate floor tile for mining level (asteroid floor on all maps currently)
 		name = "variable floor"
 		icon_state = "floor"
 		place()
-			#ifdef UNDERWATER_MAP
-			return new/turf/space/fluid/trench(src)
-			#else
-			return new/turf/simulated/floor/plating/airless/asteroid/noborders(src)
-			#endif
+			if(map_settings.flags & UNDERWATER_MAP)
+				return new/turf/space/fluid/trench(src)
+			else
+				return new/turf/simulated/floor/plating/airless/asteroid/noborders(src)
+
 
 	wall //Replaced with map appropriate wall tile for mining level (asteroid wall on all maps currently)
 		name = "variable wall"
 		icon_state = "wall"
 		place()
-			#ifdef UNDERWATER_MAP
-			return new/turf/simulated/wall/asteroid/trench(src)
-			#else
-			return new/turf/simulated/wall/asteroid(src)
-			#endif
+			if(map_settings.flags & UNDERWATER_MAP)
+				return new/turf/simulated/wall/asteroid/trench(src)
+			else
+				return new/turf/simulated/wall/asteroid(src)
 
 	clear //Replaced with map appropriate clear tile for mining level (asteroid floor on oshan, space on other maps)
 		name = "variable clear"
 		icon_state = "clear"
 		place()
-			#ifdef UNDERWATER_MAP
-			return new/turf/space/fluid/trench(src)
-			#else
-			return new/turf/space(src)
-			#endif
+			if(map_settings.flags & UNDERWATER_MAP)
+				return new/turf/space/fluid/trench(src)
+			else
+				return new/turf/space(src)
+
 
 /area/noGenerate
 	name = ""
@@ -115,7 +113,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 	return (count >= minSolid + ((generation==4||generation==3) ? endFill : 0 ) || (count2<=(generation==4?1:2) && fillLarge && (generation==3 || generation==4)) ) //Remove ((generation==4||generation==3)?-1:0) for larger corridors
 
 /datum/mapGenerator/seaCaverns //Cellular automata based generator. Produces cavern-like maps. Empty space is filled with asteroid floor.
-	generate(var/list/miningZ)
+	generate(var/zlevel, var/list/miningZ = null)
 		var/map[world.maxx][world.maxy]
 		for(var/x=1,x<=world.maxx,x++)
 			for(var/y=1,y<=world.maxy,y++)
@@ -131,7 +129,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 
 		for(var/x=1,x<=world.maxx,x++)
 			for(var/y=1,y<=world.maxy,y++)
-				var/turf/T = locate(x,y,AST_ZLEVEL)
+				var/turf/T = locate(x,y,zlevel)
 				if(map[x][y] && !ISDISTEDGE(T, 3) && T.loc && ((T.loc.type == /area) || istype(T.loc , /area/allowGenerate)) )
 					var/turf/simulated/wall/asteroid/N = new/turf/simulated/wall/asteroid(T)
 					N.quality = rand(-101,101)
@@ -183,21 +181,26 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 			Turfspawn_Asteroid_SeedEvents(generated)
 
 		var/list/border = list()
-		border |= (block(locate(1,1,AST_ZLEVEL), locate(AST_MAPBORDER,world.maxy,AST_ZLEVEL))) //Left
-		border |= (block(locate(1,1,AST_ZLEVEL), locate(world.maxx,AST_MAPBORDER,AST_ZLEVEL))) //Bottom
-		border |= (block(locate(world.maxx-(AST_MAPBORDER-1),1,AST_ZLEVEL), locate(world.maxx,world.maxy,AST_ZLEVEL))) //Right
-		border |= (block(locate(1,world.maxy-(AST_MAPBORDER-1),AST_ZLEVEL), locate(world.maxx,world.maxy,AST_ZLEVEL))) //Top
+		border |= (block(locate(1,1,zlevel), locate(AST_MAPBORDER,world.maxy,zlevel))) //Left
+		border |= (block(locate(1,1,zlevel), locate(world.maxx,AST_MAPBORDER,zlevel))) //Bottom
+		border |= (block(locate(world.maxx-(AST_MAPBORDER-1),1,zlevel), locate(world.maxx,world.maxy,zlevel))) //Right
+		border |= (block(locate(1,world.maxy-(AST_MAPBORDER-1),zlevel), locate(world.maxx,world.maxy,zlevel))) //Top
 
 		for(var/turf/T in border)
 			new/turf/unsimulated/wall/trench(T)
 			new/area/cordon/dark(T)
 			LAGCHECK(LAG_REALTIME)
 
-		return miningZ
+		return
 
 /datum/mapGenerator/asteroidsDistance //Generates a bunch of asteroids based on distance to seed/center. Super simple.
-	generate(var/list/miningZ)
+	generate(var/zlevel, var/list/miningZ = null)
 		var/numAsteroidSeed = AST_SEEDS + rand(1, 5)
+		if(!miningZ)
+			miningZ = list()
+			for(var/tx = 1, tx <= world.maxx, tx++)
+				for(var/ty = 1, ty <= world.maxy, ty++)
+					miningZ += locate(tx, ty, zlevel)
 		for(var/i=0, i<numAsteroidSeed, i++)
 			var/turf/X = pick(miningZ)
 			var/quality = rand(-101,101)
@@ -266,20 +269,15 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 							if(!istype(T, /turf/simulated/wall/asteroid)) continue
 							var/turf/simulated/wall/asteroid/ast = T
 							ast.destroy_asteroid(0)
-		return miningZ
+		return
 
-/proc/makeMiningLevel()
-	var/list/miningZ = list()
+/*/proc/makeMiningLevel()
 	var/startTime = world.timeofday
 	if(world.maxz < AST_ZLEVEL)
 		boutput(world, "<span style=\"color:red\">Skipping Mining Generation!</span>")
 		return
 	else
 		boutput(world, "<span style=\"color:red\">Generating Mining Level ...</span>")
-
-	for(var/turf/T)
-		if(T.z == AST_ZLEVEL)
-			miningZ.Add(T)
 
 	var/extra = rand(0,AST_NUMPREFABSEXTRA)
 	for(var/n=0, n<AST_NUMPREFABS+extra, n++)
@@ -310,19 +308,19 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 	else
 		D = new/datum/mapGenerator/asteroidsDistance()
 
-	miningZ = D.generate(miningZ)
+	D.generate()
 
 	boutput(world, "<span style=\"color:red\">Generated Mining Level in [((world.timeofday - startTime)/10)] seconds!")
 
 	if (map_currently_underwater)
-		hotspot_controller.generate_map()
+		hotspot_controller.generate_map()*/
 
-/proc/pickPrefab()
+/proc/pickPrefab(var/list/prefabs)
 	var/list/eligible = list()
 	var/list/required = list()
 
-	for(var/datum/generatorPrefab/M in miningModifiers)
-		if(M.underwater != map_currently_underwater) continue
+	for(var/datum/generatorPrefab/M in prefabs)
+//		if(M.underwater != map_currently_underwater) continue
 		if(M.type in miningModifiersUsed)
 			if(M.required) continue
 			if(M.maxNum != -1)
@@ -361,8 +359,9 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 	var/prefabPath = ""
 	var/prefabSizeX = 5
 	var/prefabSizeY = 5
-	var/underwater = 0 //prefab will only be used if this matches map_currently_underwater. I.e. if this is 1 and map_currently_underwater is 1 then the prefab may be used.
+//	var/underwater = 0 //prefab will only be used if this matches map_currently_underwater. I.e. if this is 1 and map_currently_underwater is 1 then the prefab may be used.
 	var/required = 0   //If 1 we will try to always place thing thing no matter what. Required prefabs will only ever be placed once.
+	var/list/tags = list()
 
 	proc/applyTo(var/turf/target)
 		var/adjustX = target.x
@@ -391,12 +390,14 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 			return 1
 		else return 0
 
+
 	clown
 		maxNum = 1
 		probability = 25
 		prefabPath = "assets/maps/prefabs/prefab_clown.dmm"
 		prefabSizeX = 5
 		prefabSizeY = 5
+		tags = list("ASTEROID")
 
 	vault
 		maxNum = 1
@@ -404,6 +405,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_vault.dmm"
 		prefabSizeX = 7
 		prefabSizeY = 7
+		tags = list("ASTEROID")
 
 	shuttle
 		maxNum = 1
@@ -411,6 +413,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_shuttle.dmm"
 		prefabSizeX = 19
 		prefabSizeY = 13
+		tags = list("ASTEROID")
 
 	cannibal
 		maxNum = 1
@@ -418,6 +421,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_cannibal.dmm"
 		prefabSizeX = 10
 		prefabSizeY = 10
+		tags = list("ASTEROID")
 
 	sleepership
 		maxNum = 1
@@ -425,6 +429,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_sleepership.dmm"
 		prefabSizeX = 15
 		prefabSizeY = 19
+		tags = list("ASTEROID")
 
 	rockworms
 		maxNum = 10
@@ -432,6 +437,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_rockworms.dmm"
 		prefabSizeX = 5
 		prefabSizeY = 5
+		tags = list("ASTEROID")
 
 	beacon // warp beacon for easy z5 teleporting.
 		required = 1
@@ -440,6 +446,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_beacon.dmm"
 		prefabSizeX = 5
 		prefabSizeY = 5
+		tags = list("ASTEROID")
 
 	outpost // rest stop/outpost for miners to eat/rest/heal at.
 		required = 1
@@ -448,6 +455,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_outpost.dmm"
 		prefabSizeX = 20
 		prefabSizeY = 20
+		tags = list("ASTEROID")
 
 	ksol // The wreck of the old radio buoy, rip
 		maxNum = 1
@@ -455,6 +463,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_ksol.dmm"
 		prefabSizeX = 35
 		prefabSizeY = 27
+		tags = list("ASTEROID")
 
 	habitat // kube's habitat thing
 		maxNum = 1
@@ -462,6 +471,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_habitat.dmm"
 		prefabSizeX = 25
 		prefabSizeY = 20
+		tags = list("ASTEROID")
 
 	smuggler // kube's smuggler thing
 		maxNum = 1
@@ -469,6 +479,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_smuggler.dmm"
 		prefabSizeX = 19
 		prefabSizeY = 18
+		tags = list("ASTEROID")
 
 	tomb // small little tomb
 		maxNum = 1
@@ -476,6 +487,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_tomb.dmm"
 		prefabSizeX = 13
 		prefabSizeY = 10
+		tags = list("ASTEROID")
 
 	janitor // adhara's janitorial hideout
 		maxNum = 1
@@ -483,236 +495,260 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 		prefabPath = "assets/maps/prefabs/prefab_janitor.dmm"
 		prefabSizeX = 16
 		prefabSizeY = 15
-	
+		tags = list("ASTEROID")
+
 	pie_ship // Urs's ship originally built for the pie eating contest event
 		maxNum = 1
 		probability = 20
 		prefabPath = "assets/maps/prefabs/prefab_pie_ship.dmm"
 		prefabSizeX = 16
 		prefabSizeY = 21
+		tags = list("ASTEROID")
 
 	//UNDERWATER AREAS FOR OSHAN
 
 	pit
 		required = 1
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 100
 		prefabPath = "assets/maps/prefabs/prefab_water_oshanpit.dmm"
 		prefabSizeX = 8
 		prefabSizeY = 8
+		tags = list("TRENCH")
 
 	mantahole
 		required = 1
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 100
 		prefabPath = "assets/maps/prefabs/prefab_water_mantahole.dmm"
 		prefabSizeX = 10
 		prefabSizeY = 10
+		tags = list("TRENCH")
 
-#if defined(MAP_OVERRIDE_OSHAN)
 	elevator
 		required = 1
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 100
 		prefabPath = "assets/maps/prefabs/prefab_water_oshanelevator.dmm"
 		prefabSizeX = 11
 		prefabSizeY = 11
-#endif
+		tags = list()
+
 	robotfactory
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 20
 		prefabPath = "assets/maps/prefabs/prefab_water_robotfactory.dmm"
 		prefabSizeX = 20
 		prefabSizeY = 28
+		tags = list("TRENCH")
 
 	racetrack
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 10
 		prefabPath = "assets/maps/prefabs/prefab_water_racetrack.dmm"
 		prefabSizeX = 24
 		prefabSizeY = 25
+		tags = list("TRENCH")
 
 	zoo
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 20
 		prefabPath = "assets/maps/prefabs/prefab_water_zoo.dmm"
 		prefabSizeX = 20
 		prefabSizeY = 17
+		tags = list("TRENCH")
 
 	outpost
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 20
 		prefabPath = "assets/maps/prefabs/prefab_water_outpost.dmm"
 		prefabSizeX = 21
 		prefabSizeY = 21
+		tags = list("TRENCH")
 
 	sandyruins
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 20
 		prefabPath = "assets/maps/prefabs/prefab_water_sandyruins.dmm"
 		prefabSizeX = 11
 		prefabSizeY = 13
+		tags = list("TRENCH")
 
 	greenhouse
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 20
 		prefabPath = "assets/maps/prefabs/prefab_water_greenhouse.dmm"
 		prefabSizeX = 21
 		prefabSizeY = 15
+		tags = list("TRENCH")
 
 	genelab
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 30
 		prefabPath = "assets/maps/prefabs/prefab_water_genelab.dmm"
 		prefabSizeX = 12
 		prefabSizeY = 11
+		tags = list("TRENCH")
 
 	beetrader
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 30
 		prefabPath = "assets/maps/prefabs/prefab_water_beetrader.dmm"
 		prefabSizeX = 13
 		prefabSizeY = 18
+		tags = list("TRENCH")
 
 	stripmall
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 20
 		prefabPath = "assets/maps/prefabs/prefab_water_stripmall.dmm"
 		prefabSizeX = 20
 		prefabSizeY = 22
+		tags = list("TRENCH")
 
 	blindpig
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 30
 		prefabPath = "assets/maps/prefabs/prefab_water_blindpig.dmm"
 		prefabSizeX = 23
 		prefabSizeY = 20
+		tags = list("TRENCH")
 
 	strangeprison
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 10
 		prefabPath = "assets/maps/prefabs/prefab_water_strangeprison.dmm"
 		prefabSizeX = 35
 		prefabSizeY = 21
+		tags = list("TRENCH")
 
 	seamonkey
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 30
 		prefabPath = "assets/maps/prefabs/prefab_water_seamonkey.dmm"
 		prefabSizeX = 33
 		prefabSizeY = 25
+		tags = list("TRENCH")
 
 	ghost_house
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 30
 		prefabPath = "assets/maps/prefabs/prefab_water_ghosthouse.dmm"
 		prefabSizeX = 23
 		prefabSizeY = 34
+		tags = list("TRENCH")
 
 	drone_battle
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 20
 		prefabPath = "assets/maps/prefabs/prefab_water_drone_battle.dmm"
 		prefabSizeX = 24
 		prefabSizeY = 21
+		tags = list("TRENCH")
 
 	ydrone
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 10
 		prefabPath = "assets/maps/prefabs/prefab_water_ydrone.dmm"
 		prefabSizeX = 15
 		prefabSizeY = 15
+		tags = list("TRENCH")
 
 	honk
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 25
 		prefabPath = "assets/maps/prefabs/prefab_water_honk.dmm"
 		prefabSizeX = 24
 		prefabSizeY = 22
+		tags = list("TRENCH")
 
 	disposal
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 35
 		prefabPath = "assets/maps/prefabs/prefab_water_disposal.dmm"
 		prefabSizeX = 16
 		prefabSizeY = 13
+		tags = list("TRENCH")
 
 	sketchy
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 35
 		prefabPath = "assets/maps/prefabs/prefab_water_sketchy.dmm"
 		prefabSizeX = 21
 		prefabSizeY = 15
+		tags = list("TRENCH")
 
-#if defined(MAP_OVERRIDE_OSHAN)
-	sea_miner
-		underwater = 1
+	sea_miner_oshan
+//		underwater = 1
 		maxNum = 1
 		probability = 35
 		prefabPath = "assets/maps/prefabs/prefab_water_miner.dmm"
 		prefabSizeX = 21
 		prefabSizeY = 15
-#endif
+		tags = list()
 
-#if defined(MAP_OVERRIDE_MANTA)
-	sea_miner
-		underwater = 1
+	sea_miner_manta
+//		underwater = 1
 		maxNum = 1
 		required = 1
 		prefabPath = "assets/maps/prefabs/prefab_water_miner_manta.dmm"
 		prefabSizeX = 21
 		prefabSizeY = 15
-#endif
+		tags = list()
 
 	cache_small_loot
-		underwater = 1
+//		underwater = 1
 		maxNum = -1
 		probability = 1
 		prefabPath = "assets/maps/prefabs/prefab_water_cache_smallloot.dmm"
 		prefabSizeX = 4
 		prefabSizeY = 4
+		tags = list("TRENCH")
 
 	cache_small_oxygen
-		underwater = 1
+//		underwater = 1
 		maxNum = -1
 		probability = 1
 		prefabPath = "assets/maps/prefabs/prefab_water_cache_smalloxygen.dmm"
 		prefabSizeX = 4
 		prefabSizeY = 4
+		tags = list("TRENCH")
 
 	cache_small_skull
-		underwater = 1
+//		underwater = 1
 		maxNum = -1
 		probability = 1
 		prefabPath = "assets/maps/prefabs/prefab_water_cache_smallskull.dmm"
 		prefabSizeX = 3
 		prefabSizeY = 3
+		tags = list("TRENCH")
 
 	sea_crashed
-		underwater = 1
+//		underwater = 1
 		maxNum = 1
 		probability = 25
 		prefabPath = "assets/maps/prefabs/prefab_water_crashed.dmm"
 		prefabSizeX = 24
 		prefabSizeY = 32
+		tags = list("TRENCH")

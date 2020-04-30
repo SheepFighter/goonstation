@@ -31,7 +31,7 @@
 		var/list/closets = list()
 
 		for(var/obj/storage/closet/S)
-			if(S.loc.z == 1)
+			if(isstationlevel(S.loc.z))
 				closets += S
 
 

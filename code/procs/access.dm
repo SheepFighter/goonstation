@@ -539,6 +539,7 @@ proc/get_airlock_types()
 // i do not feel like unfuckling a three-dimensional switch statement -- zamujasa
 proc/fetchAirlock(access,variant)
 	var/chroma = colorAirlock(access)
+	if(!chroma)	chroma = "default"
 	switch(variant)
 		if("Glass")
 			if(chroma == "com")

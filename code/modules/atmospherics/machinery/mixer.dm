@@ -32,6 +32,9 @@ obj/machinery/atmospherics/mixer
 	var/datum/radio_frequency/radio_connection
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(node_in1&&node_in2&&node_out)
 			icon_state = "intact_[on?("on"):("off")]"
 		else
@@ -54,7 +57,7 @@ obj/machinery/atmospherics/mixer
 		if (network_out == reference)
 			network_out = null
 
-	New()
+	Initiate()
 		..()
 		switch(dir)
 			if(NORTH)

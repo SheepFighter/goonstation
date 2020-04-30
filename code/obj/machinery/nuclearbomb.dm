@@ -317,14 +317,14 @@
 			explosion(src, src.loc, 20, 30, 40, 50)
 			qdel(src)
 			return
-#ifdef MAP_OVERRIDE_MANTA
-		world.showCinematic("manta_nukies")
-#else
-		var/datum/hud/cinematic/cinematic = new
-		for (var/client/C in clients)
-			cinematic.add_client(C)
-		cinematic.play("nuke")
-#endif
+		if(map_settings.nuke_cinematic)
+			world.showCinematic(map_settings.nuke_cinematic)
+		else
+			var/datum/hud/cinematic/cinematic = new
+			for (var/client/C in clients)
+				cinematic.add_client(C)
+			cinematic.play("nuke")
+
 		sleep(55)
 
 		enter_allowed = 0

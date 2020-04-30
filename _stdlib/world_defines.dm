@@ -1,0 +1,3 @@
+#define WORLD_LOADING	1
+#define WORLD_SETUP		2
+#define WORLD_ACTIVE	3

@@ -11,25 +11,25 @@
 		sleep(rand(50,100))
 		signal_loss += signal_loss_current
 
-#ifndef UNDERWATER_MAP
-		for (var/turf/space/S in world)
-			LAGCHECK(LAG_LOW)
-			if (S.z == 1)
-				S.color = src.space_color
-			else
-				break
-#endif
+		if(~map_settings.flags & UNDERWATER_MAP)
+			for (var/turf/space/S in world)
+				LAGCHECK(LAG_LOW)
+				if (isstationlevel(S.z))
+					S.color = src.space_color
+				else
+					break
+
 		sleep(rand(1200,1800))
 		signal_loss -= signal_loss_current
 
-#ifndef UNDERWATER_MAP
-		for (var/turf/space/S in world)
-			LAGCHECK(LAG_LOW)
-			if (S.z == 1)
-				S.color = null
-			else
-				break
-#endif
+		if(~map_settings.flags & UNDERWATER_MAP)
+			for (var/turf/space/S in world)
+				LAGCHECK(LAG_LOW)
+				if (isstationlevel(S.z))
+					S.color = null
+				else
+					break
+
 
 		if (random_events.announce_events)
 			command_alert("The solar flare has safely passed [station_name(1)]. Communications should be restored to normal.", "All Clear")

@@ -544,7 +544,7 @@
 			return
 		return src.say_dead(message)
 
-	if(src.z == 2 && istype(get_area(src),/area/afterlife)) //check zlevel before doing istype
+	if(isadminlevel(z) && istype(get_area(src),/area/afterlife)) //check zlevel before doing istype
 		if (dd_hasprefix(message, ":d"))
 			message = trim(copytext(message, 3, MAX_MESSAGE_LEN))
 			return src.say_dead(message)
@@ -931,7 +931,7 @@
 	for (var/client/C)
 		var/mob/M = C.mob
 
-		if (!M || M.z == 2 && istype(M, /mob/new_player))
+		if (!M || isadminlevel(M.z) && istype(M, /mob/new_player))
 			continue
 
 		//Hello welcome to the world's most awful if

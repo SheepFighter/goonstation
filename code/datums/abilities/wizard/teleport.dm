@@ -41,7 +41,7 @@
 			return 0
 
 	var/A
-	var/area/wizard_station/wiz_shuttle = locate(/area/wizard_station)
+	var/area/wizard_station/wiz_shuttle = locate_area(/area/wizard_station)
 	var/area/thearea = null
 
 	// Doing it this way to avoid modifying the cached areas

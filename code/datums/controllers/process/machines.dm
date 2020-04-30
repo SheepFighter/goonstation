@@ -22,7 +22,7 @@ datum/controller/process/machines
 		src.atmos_machines = global.atmos_machines
 		for(var/X in atmos_machines)
 			var/obj/machinery/machine = X
-			if( !machine || machine.z == 4 && !Z4_ACTIVE ) continue
+			if( !machine || issparelevel(machine.z) && !Z4_ACTIVE ) continue
 #ifdef MACHINE_PROCESSING_DEBUG
 			var/t = world.time
 #endif
@@ -69,7 +69,7 @@ datum/controller/process/machines
 			for(var/X in machlist[(src.ticker % (1<<(i-1)))+1])
 				if(!X) continue
 				var/obj/machinery/machine = X
-				if( machine.z == 4 && !Z4_ACTIVE ) continue
+				if(issparelevel(machine.z) && !Z4_ACTIVE ) continue
 		#ifdef MACHINE_PROCESSING_DEBUG
 				var/t = world.time
 		#endif

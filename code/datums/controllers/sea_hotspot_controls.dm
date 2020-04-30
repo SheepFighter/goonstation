@@ -11,8 +11,7 @@
 
 	var/sound_env_test = 0
 
-	New()
-		..()
+	proc/create_hotspots(var/zlevel)
 		var/datum/sea_hotspot/new_hotspot = 0
 		for (var/i = 1, i <= groups_to_create, i++)
 			new_hotspot = new
@@ -21,7 +20,7 @@
 
 			var/maxsearch = 6
 			while ( maxsearch > 0 && (!T || (T.loc && istype(T.loc,/area/station))) ) //block from spawning under station
-				T = locate(rand(1,world.maxx),rand(1,world.maxy), 1)
+				T = locate(rand(1,world.maxx),rand(1,world.maxy), zlevel)
 				maxsearch--
 
 			new_hotspot.move_center_to(T)
@@ -33,7 +32,7 @@
   		//A.icon = map
 
 
-	proc/generate_map()
+	proc/generate_map(var/zlevel)
 		if (!map)
 			Z_LOG_DEBUG("Hotspot Map", "Generating map ...")
 			var/list/map_colors = list(
@@ -45,7 +44,7 @@
 			var/turf_color = null
 			for (var/x = 1, x <= world.maxx, x++)
 				for (var/y = 1, y <= world.maxy, y++)
-					var/turf/T = locate(x,y,5)
+					var/turf/T = locate(x,y,zlevel)
 
 					if (T.name == "asteroid" || T.name == "cavern wall" || T.type == /turf/simulated/floor/plating/airless/asteroid)
 						turf_color = "solid"
@@ -328,7 +327,7 @@
 	proc/do_phenomena(var/recursion = 0, var/recursion_heat = 0)
 		var/turf/C = src.center.turf()
 		if (!C) return
-		var/turf/phenomena_point = locate(C.x + rand(-radius,radius) * 0.5,C.y + rand(-radius,radius) * 0.5, 1)
+		var/turf/phenomena_point = locate(C.x + rand(-radius,radius) * 0.5,C.y + rand(-radius,radius) * 0.5, 3)
 		var/heat = recursion_heat ? recursion_heat : hotspot_controller.probe_turf(phenomena_point)
 		var/phenomena_flags = 0
 
@@ -515,7 +514,7 @@
 		if (heat >= 4500) heat_level++
 		if (heat >= 5600) heat_level++
 
-		if (src.z == 5) heat_level = 0 //nope! you can't cheat this bad.
+		if (ismininglevel(z)) heat_level = 0 //nope! you can't cheat this bad.
 
 		icon_state = "dowsing_deployed_[heat_level]"
 

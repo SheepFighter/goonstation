@@ -1,3 +1,15 @@
+#define MAP_LEVELS_SPACE(_STATION)	levels = list(\
+												/datum/map_level/station/_STATION, \
+												/datum/map_level/debris_field, \
+												/datum/map_level/asteroid_field\
+												)
+
+#define MAP_LEVELS_OCEAN(_STATION)	levels = list(\
+												/datum/map_level/station/underwater/_STATION, \
+												/datum/map_level/polaris, \
+												/datum/map_level/trench\
+												)
+
 
 #define MAP_SPAWN_SHUTTLE 1
 #define MAP_SPAWN_CRYO 2
@@ -10,7 +22,8 @@ var/global/datum/map_settings/map_settings = null
 
 //id corresponds to the name of the /obj/landmark/map
 //playerPickable defines whether the map can be chosen by players when voting on a new map. Setting to ASS_JAM should allow it on the 13th only, and not on RP.
-var/global/list/mapNames = list(
+var/global/list/mapNames = list()
+/*var/global/list/mapNames = list(
 	"Clarion" = 		list("id" = "CLARION", 		"settings" = "destiny/clarion", "playerPickable" = 1),
 	"Cogmap 1" = 		list("id" = "COGMAP", 		"settings" = "cogmap", 			"playerPickable" = 1),
 	//"Construction" = list("id" = "CONSTRUCTION", "settings" = "construction"),
@@ -18,7 +31,7 @@ var/global/list/mapNames = list(
 	"Cogmap 2" = 		list("id" = "COGMAP2", 		"settings" = "cogmap2", 		"playerPickable" = 1, 	"MinPlayersAllowed" = 40),
 	"Destiny" = 		list("id" = "DESTINY", 		"settings" = "destiny", 		"playerPickable" = 1),
 	"Donut 2" = 		list("id" = "DONUT2", 		"settings" = "donut2",			"playerPickable" = ASS_JAM),
-	"Horizon" = 		list("id" = "HORIZON", 		"settings" = "horizon", 		"playerPickable" = 1), 
+	"Horizon" = 		list("id" = "HORIZON", 		"settings" = "horizon", 		"playerPickable" = 1),
 	"Linemap" = 		list("id" = "LINEMAP", 		"settings" = "linemap",			"playerPickable" = ASS_JAM),
 	"Mushroom" =		list("id" = "MUSHROOM", 	"settings" = "mushroom",		"playerPickable" = ASS_JAM),
 	"Trunkmap" = 		list("id" = "TRUNKMAP", 	"settings" = "trunkmap",		"playerPickable" = ASS_JAM),
@@ -26,14 +39,14 @@ var/global/list/mapNames = list(
 	"Samedi" = 			list("id" = "SAMEDI", 		"settings" = "samedi", 			"playerPickable" = ASS_JAM),
 	"Atlas" = 			list("id" = "ATLAS", 		"settings" = "atlas", 			"playerPickable" = 1,	"MaxPlayersAllowed" = 30),
 	"Manta" = 			list("id" = "MANTA", 		"settings" = "manta", 			"playerPickable" = 1),
-)
+)*/
 
 /obj/landmark/map
 	name = "map_setting"
 	icon_state = "x3"
 	invisibility = 101
 
-	New()
+/*	New()
 		if (src.name != "map_setting")
 			map_setting = src.name
 
@@ -51,18 +64,61 @@ var/global/list/mapNames = list(
 				map_settings = new /datum/map_settings
 				CRASH("A mapName entry for '[src.name]' wasn't found!")
 
-		qdel(src)
+		qdel(src)*/
 
-//Setting maps to be underwater is handled in the map config file, aka [mapname].dm
 
 /datum/map_settings
 	var/name = "MAP"
+	var/player_pickable = MAP_PICKABLE_ALWAYS
+	var/list/levels = list()
+	var/list/preloaded_levels = list(
+										/datum/map_level/centcomm,
+										/datum/map_level/spare
+									)
+	var/flags = 0
+	var/min_players_allowed = 0
+	var/max_players_allowed = 0
 	var/display_name = MAP_NAME_RANDOM
 	var/style = "station"
 	var/default_gamemode = "secret"
 	var/goonhub_map = "http://goonhub.com/maps/cogmap"
 	var/arrivals_type = MAP_SPAWN_SHUTTLE
 	var/dir_fore = null
+
+	var/list/jobs_exclude = list(
+								/datum/job/command/comm_officer,
+								/datum/job/security/security_officer/manta,
+								/datum/job/engineering/engineer/manta,
+								/datum/job/special/random/radioshowhost/oshan,
+								/datum/job/special/random/radioshowhost/manta,
+								/datum/job/special/syndicate_specialist/oshan
+								)
+
+	var/list/supply_packs_blacklist = list(/datum/supply_packs/antisingularity)
+
+	var/list/process_blacklist = list(/datum/controller/process/sea_hotspot_update)
+
+	var/list/theft_objective_items = list(
+											"Head of Security\'s beret" = /obj/item/clothing/head/helmet/HoS,
+											"prisoner\'s beret" = /obj/item/clothing/head/beret/prisoner,
+											"DetGadget hat" = /obj/item/clothing/head/det_hat/gadget,
+											"authentication disk" = /obj/item/disk/data/floppy/read_only/authentication,
+											"\'freeform\' AI module" = /obj/item/aiModule/freeform,
+											"gene power module" = /obj/item/cloneModule/genepowermodule,
+											"mainframe memory board" = /obj/item/disk/data/memcard/main2,
+											"yellow cake" = /obj/item/reagent_containers/food/snacks/yellow_cake_uranium_cake,
+											"aurora MKII utility belt" = /obj/item/storage/belt/utility/ceshielded,
+											"much coveted Gooncode" = /obj/item/toy/gooncode
+											)
+
+
+	var/list/prefabs = list()
+	var/titlecard_icon = 'icons/misc/widescreen.dmi'
+	var/titlecard_icon_state = "title_main"
+	var/titlecard_name = "Space Station 13"
+	var/titlecard_desc = "The title card for it, at least."
+
+	var/nuke_cinematic //Used only for Manta, presently.
 
 	var/walls = /turf/simulated/wall
 	var/rwalls = /turf/simulated/wall/r_wall
@@ -81,7 +137,16 @@ var/global/list/mapNames = list(
 
 	var/ext_airlocks = /obj/machinery/door/airlock/external
 	var/airlock_style = "gannets"
-
+/*	var/list/airlocks = list(
+									"com" = "/obj/machinery/door/airlock/glass/command",
+									"eng" = "/obj/machinery/door/airlock/glass/engineering",
+									"sec" = "/obj/machinery/door/airlock/glass",
+									"med" = "/obj/machinery/door/airlock/glass/medical",
+									"sci" = "/obj/machinery/door/airlock/glass",
+									"maint" = "/obj/machinery/door/airlock/glass",
+									"default" = "/obj/machinery/door/airlock"
+									)
+*/
 	var/escape_centcom = /area/shuttle/escape/centcom
 	var/escape_transit = /area/shuttle/escape/transit
 	var/escape_station = /area/shuttle/escape/station
@@ -105,8 +170,23 @@ var/global/list/mapNames = list(
 		"the robotics lab" = list(/area/station/medical/robotics))
 //		"the public pool" = list(/area/station/crew_quarters/pool))
 
+/datum/map_settings/New()
+	if(flags & UNDERWATER_MAP)	map_currently_underwater = 1
+	var/list/map_details = list()
+	map_details["id"] = name
+	map_details["settings"] = src
+	map_details["playerPickable"] = player_pickable
+	if(min_players_allowed)	map_details["MinPlayersAllowed"] = min_players_allowed
+	if(max_players_allowed)	map_details["MaxPlayersAllowed"] = max_players_allowed
+	mapNames[display_name] = map_details
+
+	..()
+
 /datum/map_settings/donut2
 	name = "DONUT2"
+	display_name = "Donut 2"
+	player_pickable = MAP_PICKABLE_ASSDAY
+	MAP_LEVELS_SPACE(donut2)
 	goonhub_map = "http://goonhub.com/maps/donut2"
 	escape_centcom = /area/shuttle/escape/centcom/donut2
 	escape_transit = /area/shuttle/escape/transit/donut2
@@ -120,6 +200,9 @@ var/global/list/mapNames = list(
 
 /datum/map_settings/cogmap_old
 	name = "COGMAP_OLD"
+	display_name = "Cogmap 1 (Old)"
+	player_pickable = 0
+	MAP_LEVELS_SPACE(cogmap_old)
 	escape_centcom = /area/shuttle/escape/centcom/cogmap
 	escape_transit = /area/shuttle/escape/transit/cogmap
 	escape_station = /area/shuttle/escape/station/cogmap
@@ -131,6 +214,8 @@ var/global/list/mapNames = list(
 
 /datum/map_settings/cogmap
 	name = "COGMAP"
+	display_name = "Cogmap 1"
+	MAP_LEVELS_SPACE(cogmap)
 	goonhub_map = "http://goonhub.com/maps/cogmap"
 	walls = /turf/simulated/wall/auto/supernorn
 	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
@@ -161,6 +246,9 @@ var/global/list/mapNames = list(
 
 /datum/map_settings/cogmap2
 	name = "COGMAP2"
+	display_name = "Cogmap 2"
+	MAP_LEVELS_SPACE(cogmap2)
+//	min_players_allowed = 40
 	goonhub_map = "http://goonhub.com/maps/cogmap2"
 	walls = /turf/simulated/wall/auto/supernorn
 	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
@@ -204,6 +292,7 @@ var/global/list/mapNames = list(
 /datum/map_settings/destiny
 	name = "DESTINY"
 	display_name = "NSS Destiny"
+	MAP_LEVELS_SPACE(destiny)
 	style = "ship"
 	default_gamemode = "extended"
 	goonhub_map = "http://goonhub.com/maps/destiny"
@@ -239,6 +328,7 @@ var/global/list/mapNames = list(
 /datum/map_settings/destiny/clarion
 	name = "CLARION"
 	display_name = "NSS Clarion"
+	MAP_LEVELS_SPACE(clarion)
 	goonhub_map = "http://goonhub.com/maps/clarion"
 
 	valid_nuke_targets = list("the main security room" = list(/area/station/security/main),
@@ -255,6 +345,7 @@ var/global/list/mapNames = list(
 /datum/map_settings/horizon
 	name = "HORIZON"
 	display_name = "NSS Horizon"
+	MAP_LEVELS_SPACE(horizon)
 	style = "ship"
 	goonhub_map = "http://goonhub.com/maps/horizon"
 	walls = /turf/simulated/wall/auto/supernorn
@@ -297,7 +388,44 @@ var/global/list/mapNames = list(
 /datum/map_settings/manta
 	name = "MANTA"
 	display_name = "NSS Manta"
+	MAP_LEVELS_OCEAN(manta)
+	flags = UNDERWATER_MAP | MOVING_SUB_MAP | SUBMARINE_MAP
+
+	jobs_exclude = list(
+								/datum/job/security/security_officer,
+								/datum/job/engineering/engineer,
+								/datum/job/special/random/radioshowhost/oshan,
+								/datum/job/special/random/radioshowhost,
+								/datum/job/special/syndicate_specialist/oshan
+								)
+	supply_packs_blacklist = list()
+
+	theft_objective_items = list(
+											"Head of Security\'s beret" = /obj/item/clothing/head/helmet/HoS,
+											"prisoner\'s beret" = /obj/item/clothing/head/beret/prisoner,
+											"DetGadget hat" = /obj/item/clothing/head/det_hat/gadget,
+											"authentication disk" = /obj/item/disk/data/floppy/read_only/authentication,
+											"\'freeform\' AI module" = /obj/item/aiModule/freeform,
+											"gene power module" = /obj/item/cloneModule/genepowermodule,
+											"mainframe memory board" = /obj/item/disk/data/memcard/main2,
+											"yellow cake" = /obj/item/reagent_containers/food/snacks/yellow_cake_uranium_cake,
+											"aurora MKII utility belt" = /obj/item/storage/belt/utility/ceshielded,
+											"much coveted Gooncode" = /obj/item/toy/gooncode,
+											"Head of Security\'s war medal" = /obj/item/hosmedal,
+											"Research Director\'s Diploma" = /obj/item/rddiploma,
+											"Medical Director\'s Medical License" = /obj/item/mdlicense,
+											"Head of Personnel\'s First Bill" = /obj/item/firstbill
+											)
+
+	prefabs = list("TRENCH" = list(/datum/generatorPrefab/sea_miner_manta))
+
 	goonhub_map = "http://goonhub.com/maps/manta"
+	titlecard_icon_state = "title_manta"
+	titlecard_name = "The NSS Manta"
+	titlecard_desc = "Some fancy comic about the NSS Manta and its travels on the planet Abzu."
+
+	nuke_cinematic = "manta_nukies"
+
 	walls = /turf/simulated/wall/auto/supernorn
 	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
 	auto_walls = 1
@@ -339,8 +467,10 @@ var/global/list/mapNames = list(
 
 /datum/map_settings/mushroom
 	name = "MUSHROOM"
+	display_name = "Mushroom"
+	player_pickable = MAP_PICKABLE_ASSDAY
 	goonhub_map = "http://goonhub.com/maps/mushroom"
-
+	MAP_LEVELS_SPACE(mushroom)
 	escape_centcom = /area/shuttle/escape/centcom/cogmap2
 	escape_transit = /area/shuttle/escape/transit/cogmap2
 	escape_station = /area/shuttle/escape/station/cogmap2
@@ -348,6 +478,9 @@ var/global/list/mapNames = list(
 
 /datum/map_settings/trunkmap
 	name = "TRUNKMAP"
+	display_name = "Trunkmap"
+	player_pickable = MAP_PICKABLE_ASSDAY
+	MAP_LEVELS_SPACE(trunkmap)
 	goonhub_map = "http://goonhub.com/maps/trunkmap"
 	escape_centcom = /area/shuttle/escape/centcom/destiny
 	escape_transit = /area/shuttle/escape/transit/destiny
@@ -361,7 +494,10 @@ var/global/list/mapNames = list(
 
 /datum/map_settings/linemap
 	name = "LINEMAP"
+	display_name = "Linemap"
+	player_pickable = MAP_PICKABLE_ASSDAY
 	arrivals_type = MAP_SPAWN_CRYO
+	MAP_LEVELS_SPACE(linemap)
 	goonhub_map = "http://goonhub.com/maps/linemap"
 
 	walls = /turf/simulated/wall/auto/gannets
@@ -381,6 +517,8 @@ var/global/list/mapNames = list(
 /datum/map_settings/atlas
 	name = "ATLAS"
 	display_name = "NCS Atlas"
+	MAP_LEVELS_SPACE(atlas)
+	max_players_allowed = 30
 	style = "ship"
 	goonhub_map = "http://goonhub.com/maps/atlas"
 	arrivals_type = MAP_SPAWN_CRYO
@@ -412,8 +550,10 @@ var/global/list/mapNames = list(
 
 /datum/map_settings/samedi
 	name = "SAMEDI"
+	display_name = "Samedi"
+	player_pickable = MAP_PICKABLE_ASSDAY
 	goonhub_map = "http://goonhub.com/maps/samedi"
-
+	MAP_LEVELS_SPACE(samedi)
 	walls = /turf/simulated/wall/auto/supernorn
 	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
 	auto_walls = 1
@@ -444,9 +584,28 @@ var/global/list/mapNames = list(
 
 /datum/map_settings/oshan
 	name = "OSHAN"
+	display_name = "Oshan Laboratory"
+	MAP_LEVELS_OCEAN(oshan)
+	flags = UNDERWATER_MAP
 	goonhub_map = "http://goonhub.com/maps/oshan"
 
 	arrivals_type = MAP_SPAWN_MISSILE
+
+	jobs_exclude = list(
+								/datum/job/command/comm_officer,
+								/datum/job/security/security_officer/manta,
+								/datum/job/engineering/engineer/manta,
+								/datum/job/special/random/radioshowhost/,
+								/datum/job/special/random/radioshowhost/manta
+								)
+
+	process_blacklist = list()
+
+	titlecard_icon_state = "title_oshan"
+	titlecard_name = "Oshan Laboratory"
+	titlecard_desc = "An underwater laboratory on the planet Abzu."
+
+	prefabs = list("TRENCH" = list(/datum/generatorPrefab/elevator, /datum/generatorPrefab/sea_miner_oshan))
 
 	walls = /turf/simulated/wall/auto/supernorn
 	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
@@ -502,9 +661,6 @@ var/global/list/mapNames = list(
 		filler_turf = "/turf/space/fluid/manta"
 
 /area/shuttle/escape/station
-	#ifdef UNDERWATER_MAP
-	ambient_light = OCEAN_LIGHT
-	#endif
 	icon_state = "shuttle_escape"
 	donut2
 		icon_state = "shuttle_escape-dnt2"
@@ -518,6 +674,11 @@ var/global/list/mapNames = list(
 		icon_state = "shuttle_escape-sealab"
 	manta
 		icon_state = "shuttle_escape-manta"
+
+/area/shuttle/escape/station/New()
+	if(map_settings.flags & UNDERWATER_MAP)
+		ambient_light = OCEAN_LIGHT
+	..()
 
 /area/shuttle/escape/transit
 	icon_state = "shuttle_escape"
@@ -554,9 +715,6 @@ var/global/list/mapNames = list(
 	sealab
 		icon_state = "shuttle_merch_l-sealab"
 /area/shuttle/merchant_shuttle/left_station
-	#ifdef UNDERWATER_MAP
-	ambient_light = OCEAN_LIGHT
-	#endif
 	icon_state = "shuttle_merch_l"
 	donut2
 		icon_state = "shuttle_merch_l-dnt2"
@@ -568,6 +726,13 @@ var/global/list/mapNames = list(
 		icon_state = "shuttle_merch_l-dest"
 	sealab
 		icon_state = "shuttle_merch_l-sealab"
+
+/area/shuttle/merchant_shuttle/left_station/New()
+	if(map_settings.flags & UNDERWATER_MAP)
+		ambient_light = OCEAN_LIGHT
+	..()
+
+
 /area/shuttle/merchant_shuttle/right_centcom
 	icon_state = "shuttle_merch_r"
 	donut2
@@ -581,9 +746,6 @@ var/global/list/mapNames = list(
 	sealab
 		icon_state = "shuttle_merch_r-sealab"
 /area/shuttle/merchant_shuttle/right_station
-	#ifdef UNDERWATER_MAP
-	ambient_light = OCEAN_LIGHT
-	#endif
 	icon_state = "shuttle_merch_r"
 	donut2
 		icon_state = "shuttle_merch_r-dnt2"
@@ -595,6 +757,11 @@ var/global/list/mapNames = list(
 		icon_state = "shuttle_merch_r-dest"
 	sealab
 		icon_state = "shuttle_merch_r-sealab"
+
+/area/shuttle/merchant_shuttle/right_station/New()
+	if(map_settings.flags & UNDERWATER_MAP)
+		ambient_light = OCEAN_LIGHT
+	..()
 
 /proc/dir2nautical(var/req_dir, var/fore_dir = NORTH, var/side = 0)
 	if (!isnum(req_dir) || !isnum(fore_dir))

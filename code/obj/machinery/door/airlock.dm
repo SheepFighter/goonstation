@@ -107,11 +107,15 @@ Airlock index -> wire color are { 9, 4, 6, 7, 5, 8, 1, 2, 3 }.
 
 	New()
 		..()
-		if(!isrestrictedz(src.z))
+		if(current_state > GAME_STATE_MAP_LOADING)	Initiate()
+		else	initiation_queue += src
+	Initiate()
+		..()
+		if(z && !isrestrictedz(src.z))
 			var/area/station/A = get_area(src)
 			src.name = A.name
 		START_TRACKING
-	
+
 	disposing()
 		. = ..()
 		STOP_TRACKING

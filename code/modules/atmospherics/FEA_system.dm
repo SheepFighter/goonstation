@@ -165,11 +165,11 @@ datum
 
 				get_space_sample()
 					if (!sample || !sample.turf_flags & CAN_BE_SPACE_SAMPLE)
-#ifdef UNDERWATER_MAP
-						sample = locate(/turf/space/fluid)
-#else
-						sample = locate(/turf/space)
-#endif
+						if(map_settings.flags & UNDERWATER_MAP)
+							sample = locate(/turf/space/fluid)
+						else
+							sample = locate(/turf/space)
+
 
 
 

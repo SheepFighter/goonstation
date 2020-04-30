@@ -135,70 +135,10 @@ proc/create_fluff(var/datum/mind/target)
 /datum/objective/regular/steal
 	var/obj/item/steal_target
 	var/target_name
-#ifdef MAP_OVERRIDE_MANTA
 	set_up()
-		var/list/items = list("Head of Security\'s beret", "prisoner\'s beret", "DetGadget hat", "horse mask", "authentication disk",
-		"\'freeform\' AI module", "gene power module", "mainframe memory board", "yellow cake", "aurora MKII utility belt", "Head of Security\'s war medal", "Research Director\'s Diploma", "Medical Director\'s Medical License", "Head of Personnel\'s First Bill",
-		"much coveted Gooncode")
 
-		target_name = pick(items)
-		switch(target_name)
-			if("Head of Security\'s beret")
-				steal_target = /obj/item/clothing/head/helmet/HoS
-			if("prisoner\'s beret")
-				steal_target = /obj/item/clothing/head/beret/prisoner
-			if("DetGadget hat")
-				steal_target = /obj/item/clothing/head/det_hat/gadget
-			if("authentication disk")
-				steal_target = /obj/item/disk/data/floppy/read_only/authentication
-			if("\'freeform\' AI module")
-				steal_target = /obj/item/aiModule/freeform
-			if("gene power module")
-				steal_target = /obj/item/cloneModule/genepowermodule
-			if("mainframe memory board")
-				steal_target = /obj/item/disk/data/memcard/main2
-			if("yellow cake")
-				steal_target = /obj/item/reagent_containers/food/snacks/yellow_cake_uranium_cake
-			if("aurora MKII utility belt")
-				steal_target = /obj/item/storage/belt/utility/ceshielded
-			if("Head of Security\'s war medal")
-				steal_target = /obj/item/hosmedal
-			if("Research Director\'s Diploma")
-				steal_target = /obj/item/rddiploma
-			if("Medical Director\'s Medical License")
-				steal_target = /obj/item/mdlicense
-			if("Head of Personnel\'s First Bill")
-				steal_target = /obj/item/firstbill
-			if("much coveted Gooncode")
-				steal_target = /obj/item/toy/gooncode
-#else
-	set_up()
-		var/list/items = list("Head of Security\'s beret", "prisoner\'s beret", "DetGadget hat", "horse mask", "authentication disk",
-		"\'freeform\' AI module", "gene power module", "mainframe memory board", "yellow cake", "aurora MKII utility belt", "much coveted Gooncode")
-
-		target_name = pick(items)
-		switch(target_name)
-			if("Head of Security\'s beret")
-				steal_target = /obj/item/clothing/head/helmet/HoS
-			if("prisoner\'s beret")
-				steal_target = /obj/item/clothing/head/beret/prisoner
-			if("DetGadget hat")
-				steal_target = /obj/item/clothing/head/det_hat/gadget
-			if("authentication disk")
-				steal_target = /obj/item/disk/data/floppy/read_only/authentication
-			if("\'freeform\' AI module")
-				steal_target = /obj/item/aiModule/freeform
-			if("gene power module")
-				steal_target = /obj/item/cloneModule/genepowermodule
-			if("mainframe memory board")
-				steal_target = /obj/item/disk/data/memcard/main2
-			if("yellow cake")
-				steal_target = /obj/item/reagent_containers/food/snacks/yellow_cake_uranium_cake
-			if("aurora MKII utility belt")
-				steal_target = /obj/item/storage/belt/utility/ceshielded
-			if("much coveted Gooncode")
-				steal_target = /obj/item/toy/gooncode
-#endif
+		target_name = pick(map_settings.theft_objective_items)
+		steal_target = map_settings.theft_objective_items[target_name]
 
 		explanation_text = "Steal the [target_name]."
 		return steal_target
@@ -377,7 +317,7 @@ proc/create_fluff(var/datum/mind/target)
 	explanation_text = "Destroy the Captain's prized bonsai tree."
 
 	check_completion()
-		var/area/cap_quarters = locate(/area/station/crew_quarters/captain)
+		var/area/cap_quarters = locate_area(/area/station/crew_quarters/captain)
 		var/obj/shrub/captainshrub/our_tree
 
 		for (var/obj/shrub/captainshrub/T in cap_quarters)

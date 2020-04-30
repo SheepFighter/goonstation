@@ -214,7 +214,7 @@ var/global/client/ff_debugger = null
 		icon_state = "darkvoid"
 		name = "void"
 		desc = "Yep, this is fine."
-	if(buzztile == null && prob(1) && prob(1) && src.z == 1) //Dumb shit to trick nerds.
+	if(buzztile == null && prob(1) && prob(1) && isstationlevel(z)) //Dumb shit to trick nerds.
 		buzztile = src
 		icon_state = "wiggle"
 		src.desc = "There appears to be a spatial disturbance in this area of space."
@@ -388,7 +388,7 @@ var/global/client/ff_debugger = null
 
 	if (!(A.last_move))
 		return
-	
+
 	//if(!(src in A.locs))
 	//	return
 
@@ -843,16 +843,10 @@ var/global/client/ff_debugger = null
 
 	New()
 		..()
-	// ifdef doesn't have an elifdef (or if it does it isn't listed) so... these are functionally equivalent
-	#if defined(MAP_OVERRIDE_OSHAN)
-		icon_state = "title_oshan"
-		name = "Oshan Laboratory"
-		desc = "An underwater laboratory on the planet Abzu."
-	#elif defined(MAP_OVERRIDE_MANTA)
-		icon_state = "title_manta"
-		name = "The NSS Manta"
-		desc = "Some fancy comic about the NSS Manta and its travels on the planet Abzu."
-	#endif
+		icon = map_settings.titlecard_icon
+		icon_state = map_settings.titlecard_icon_state
+		name = map_settings.titlecard_name
+		desc = map_settings.titlecard_desc
 		lobby_titlecard = src
 
 	proc/educate()
@@ -962,10 +956,10 @@ var/global/client/ff_debugger = null
 	return
 
 /turf/proc/edge_step(var/atom/movable/A, var/newx, var/newy)
-	var/zlevel = 3 //((A.z=3)?5:3)//(3,4)
+	var/zlevel = 4 //((A.z=3)?5:3)//(3,4)
 
-	if(A.z == 3) zlevel = 5
-	else zlevel = 3
+	if(A.z == 4) zlevel = 5
+	else zlevel = 4
 
 	if (world.maxz < zlevel) // if there's less levels than the one we want to go to
 		zlevel = 1 // just boot people back to z1 so the server doesn't lag to fucking death trying to place people on maps that don't exist
@@ -978,7 +972,7 @@ var/global/client/ff_debugger = null
 		qdel(A)
 		return
 
-	if (A.z == 1 && zlevel != A.z)
+	if (isstationlevel(A.z) && zlevel != A.z)
 		if (!(isitem(A) && A:w_class <= 2))
 			for (var/obj/machinery/communications_dish/C in comm_dishes)
 				C.add_cargo_logs(A)

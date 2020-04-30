@@ -250,16 +250,16 @@ var/global/current_state = GAME_STATE_WORLD_INIT
 		//Tell the participation recorder that we're done FAFFING ABOUT
 		participationRecorder.releaseHold()
 
-	var/bustedMapSwitcher = isMapSwitcherBusted()
-	if (!bustedMapSwitcher)
-		SPAWN_DBG (mapSwitcher.autoVoteDelay)
-			//Trigger the automatic map vote
-			try
-				mapSwitcher.startMapVote(duration = mapSwitcher.autoVoteDuration)
-			catch (var/exception/e)
-				logTheThing("admin", usr ? usr : src, null, "the automated map switch vote couldn't run because: [e.name]")
-				logTheThing("diary", usr ? usr : src, null, "the automated map switch vote couldn't run because: [e.name]", "admin")
-				message_admins("[key_name(usr ? usr : src)] the automated map switch vote couldn't run because: [e.name]")
+/*	var/bustedMapSwitcher = isMapSwitcherBusted()
+	if (!bustedMapSwitcher)*/
+	SPAWN_DBG (mapSwitcher.autoVoteDelay)
+		//Trigger the automatic map vote
+		try
+			mapSwitcher.startMapVote(duration = mapSwitcher.autoVoteDuration)
+		catch (var/exception/e)
+			logTheThing("admin", usr ? usr : src, null, "the automated map switch vote couldn't run because: [e.name]")
+			logTheThing("diary", usr ? usr : src, null, "the automated map switch vote couldn't run because: [e.name]", "admin")
+			message_admins("[key_name(usr ? usr : src)] the automated map switch vote couldn't run because: [e.name]")
 
 	SPAWN_DBG (6000) // 10 minutes in
 		for(var/obj/machinery/power/generatorTemp/E in machine_registry[MACHINES_POWER])

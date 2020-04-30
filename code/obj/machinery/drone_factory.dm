@@ -16,7 +16,7 @@
 	New()
 		. = ..()
 		START_TRACKING
-	
+
 	disposing()
 		. = ..()
 		STOP_TRACKING
@@ -374,6 +374,8 @@ var/global/list/ghostdrone_candidates = list()
 	name = "Ghost Drone Factory"
 	icon_state = "cloner"
 	requires_power = 0
-	#ifdef UNDERWATER_MAP
-	color = OCEAN_COLOR
-	#endif
+
+	New()
+		if(map_settings.flags & UNDERWATER_MAP)
+			color = OCEAN_COLOR
+		..()

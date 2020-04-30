@@ -38,7 +38,7 @@
 				if (!A.irradiated)
 					A.irradiated = 1
 				for (var/turf/T in A)
-					if (rand(0,1000) < 5 && T.z == 1 && istype(T,/turf/simulated/floor))
+					if (rand(0,1000) < 5 && isstationlevel(T.z) && istype(T,/turf/simulated/floor))
 						Artifact_Spawn(T)
 					else
 						continue
@@ -50,14 +50,14 @@
 		for (var/mob/N in mobs)
 			N.flash(3 SECONDS)
 
-#ifndef UNDERWATER_MAP
-		for (var/turf/space/S in world)
-			LAGCHECK(LAG_LOW)
-			if (S.z == 1)
-				S.color = src.space_color
-			else
-				break
-#endif
+		if(~map_settings.flags & UNDERWATER_MAP)
+			for (var/turf/space/S in world)
+				LAGCHECK(LAG_LOW)
+				if (isstationlevel(S.z))
+					S.color = src.space_color
+				else
+					break
+
 
 		world << siren
 
@@ -91,14 +91,14 @@
 
 		command_alert("All radiation alerts onboard [station_name(1)] have been cleared. You may now leave the tunnels freely. Maintenance doors will regain their normal access requirements shortly.", "All Clear")
 
-#ifndef UNDERWATER_MAP
-		for (var/turf/space/S in world)
-			LAGCHECK(LAG_LOW)
-			if (S.z == 1)
-				S.color = null
-			else
-				break
-#endif
+		if(~map_settings.flags & UNDERWATER_MAP)
+			for (var/turf/space/S in world)
+				LAGCHECK(LAG_LOW)
+				if (isstationlevel(S.z))
+					S.color = null
+				else
+					break
+
 		for (var/mob/N in mobs)
 			N.flash(3 SECONDS)
 

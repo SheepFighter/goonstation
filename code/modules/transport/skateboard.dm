@@ -161,7 +161,7 @@
 		bumped_queue.Cut(1,2)
 
 	if(isturf(AM) || istype(AM, /mob/living/carbon/wall) || istype(AM, /obj/window) || istype(AM, /obj/grille))
-		if(sickness < 100 || z == 2 || z == 4)
+		if(sickness < 100 || isadminlevel(z) || issparelevel(z))
 			src.messageNearby("<span style=\"color:red\"><B>You crash into the [AM]!</B></span>", "<span style=\"color:red\"><B>[rider] crashes into the [AM] with the [src]!</B></span>")
 			playsound(src, pick(sb_fails), 55, 1)
 			adjustSickness(-sickness)

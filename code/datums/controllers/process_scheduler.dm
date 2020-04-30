@@ -72,7 +72,7 @@ var/global/datum/controller/processScheduler/processScheduler
 	var/process
 	// Add all the processes we can find, except for the ticker
 	for (process in childrentypesof(/datum/controller/process))
-		if (!(process in deferredSetupList))
+		if (!(process in deferredSetupList) && !(process in map_settings.process_blacklist))
 			addProcess(new process(src))
 
 	for (process in deferredSetupList)

@@ -169,8 +169,11 @@ var/global/datum/mapSwitchHandler/mapSwitcher
 		else
 			mapName = getMapNameFromID(mapID)
 
+		world.save_intra_round_value("next_map", mapName)
+
+
 		//tell jenkins, via goonhub, to compile with a new map
-		var/list/params = list(
+/*		var/list/params = list(
 			"cause" = "[trigger] within Byond",
 			"map" = mapID,
 			"votedFor" = trigger == "Player Vote"
@@ -193,6 +196,7 @@ var/global/datum/mapSwitchHandler/mapSwitcher
 		//when it's done, jenkins will tell us so via world/Topic()
 
 		//we switched away from a voted map, make a note of this
+*/
 		if (src.nextMapIsVotedFor)
 			src.nextMapIsVotedFor = 0
 			src.nextMapIsVotedForPrior = 1
@@ -211,7 +215,7 @@ var/global/datum/mapSwitchHandler/mapSwitcher
 		else
 			src.next = null
 
-		src.lock(mapID)
+//		src.lock(mapID)
 
 
 	//we're stuck waiting for a map compile so we can reboot. try again

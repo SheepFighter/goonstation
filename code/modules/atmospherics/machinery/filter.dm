@@ -48,7 +48,7 @@ Filter types:
 		radio_controller.remove_object(src,"[frequency]")
 		..()
 
-	New()
+	Initiate()
 		..()
 		switch(dir)
 			if(NORTH)
@@ -116,6 +116,9 @@ Filter types:
 		..()
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(node_out1&&node_out2&&node_in)
 			icon_state = "intact_[on?("on"):("off")]"
 		else

@@ -74,10 +74,9 @@
 			worldgenCandidates += src //Adding self to possible worldgen turfs
 
 		//globals defined in fluid_spawner
-		#ifdef UNDERWATER_MAP
-		#else
-		src.name = ocean_name
-		#endif
+		if(~map_settings.flags & UNDERWATER_MAP)
+			src.name = ocean_name
+
 
 		//let's replicate old behaivor
 		if (generateLight)
@@ -119,7 +118,7 @@
 
 //space/fluid/ReplaceWith() this is for future ctrl Fs
 	ReplaceWith(var/what, var/keep_old_material = 1, var/handle_air = 1, var/handle_dir = 1)
-		.= ..(what, keep_old_material, handle_air)
+		.= ..(what, keep_old_material, handle_air, handle_dir)
 
 		if (handle_air)
 			for (dir in cardinal)
@@ -134,7 +133,7 @@
 		if (istype(src.loc, /area/shuttle)) return
 
 		if (spawningFlags & SPAWN_DECOR)
-			if (src.z == 5)
+			if (ismininglevel(src.z))
 				if (prob(1))
 					new /obj/item/seashell(src)
 			else
@@ -143,27 +142,27 @@
 
 		if (spawningFlags & SPAWN_PLANTS)
 			if (prob(8))
-				var/obj/plant = pick( src.z == 5 ? childrentypesof(/obj/sea_plant) : (childrentypesof(/obj/sea_plant) - /obj/sea_plant/anemone/lit) )
+				var/obj/plant = pick(ismininglevel(z) ? childrentypesof(/obj/sea_plant) : (childrentypesof(/obj/sea_plant) - /obj/sea_plant/anemone/lit) )
 				var/obj/sea_plant/P = new plant(src)
 				//mbc : bleh init() happens BFORRE this, most likely
 				P.initialize()
 
 		if (spawningFlags & SPAWN_PLANTSMANTA)
 			if (prob(8))
-				var/obj/plant = pick( src.z == 5 ? childrentypesof(/obj/sea_plant_manta) : (childrentypesof(/obj/sea_plant_manta) - /obj/sea_plant_manta/anemone/lit) )
+				var/obj/plant = pick(ismininglevel(z) ? childrentypesof(/obj/sea_plant_manta) : (childrentypesof(/obj/sea_plant_manta) - /obj/sea_plant_manta/anemone/lit) )
 				var/obj/sea_plant_manta/P = new plant(src)
 				//mbc : bleh init() happens BFORRE this, most likely
 				P.initialize()
 
 		if(spawningFlags & SPAWN_FISH) //can spawn bad fishy
-			if (src.z == 5 && prob(1) && prob(7))
+			if (ismininglevel(src.z) && prob(1) && prob(7))
 				new /obj/critter/gunbot/drone/buzzdrone/fish(src)
-			else if (src.z == 5 && prob(1) && prob(4.5))
+			else if (ismininglevel(z) && prob(1) && prob(4.5))
 				new /obj/critter/gunbot/drone/gunshark(src)
 			else if (prob(1) && prob(20))
 				var/mob/fish = pick(childrentypesof(/mob/living/critter/aquatic/fish))
 				new fish(src)
-			else if (src.z == 5 && prob(1) && prob(9) && prob(90))
+			else if (ismininglevel(z) && prob(1) && prob(9) && prob(90))
 				var/obj/naval_mine/O = 0
 				if (prob(20))
 					if (prob(70))
@@ -455,13 +454,13 @@
 /obj/machinery/computer/sea_elevator/proc/call_shuttle()
 
 	if(location == 0) // at bottom
-		var/area/start_location = locate(/area/shuttle/sea_elevator/lower)
-		var/area/end_location = locate(/area/shuttle/sea_elevator/upper)
+		var/area/start_location = locate_area(/area/shuttle/sea_elevator/lower)
+		var/area/end_location = locate_area(/area/shuttle/sea_elevator/upper)
 		start_location.move_contents_to(end_location, /turf/simulated/floor/plating, ignore_fluid = 1)
 		location = 1
 	else // at top
-		var/area/start_location = locate(/area/shuttle/sea_elevator/upper)
-		var/area/end_location = locate(/area/shuttle/sea_elevator/lower)
+		var/area/start_location = locate_area(/area/shuttle/sea_elevator/upper)
+		var/area/end_location = locate_area(/area/shuttle/sea_elevator/lower)
 		for(var/mob/M in end_location) // oh dear, stay behind the yellow line kids
 			SPAWN_DBG(1 DECI SECOND)
 				random_brute_damage(M, 30)

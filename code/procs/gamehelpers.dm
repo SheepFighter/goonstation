@@ -81,7 +81,7 @@ var/list/stinkThingies = list("ass","taint","armpit","excretions","leftovers","R
 			return A
 	return 0
 
-/proc/get_area_by_type(var/type_path)
+/*/proc/get_area_by_type(var/type_path)
 	if (!ispath(type_path))
 		return null
 
@@ -90,7 +90,7 @@ var/list/stinkThingies = list("ass","taint","armpit","excretions","leftovers","R
 		if (A.type == type_path)
 			return A
 
-	return null
+	return null*/
 
 /proc/in_range(atom/source, atom/user)
 	if(bounds_dist(source, user) == 0 || get_dist(source, user) <= 1) // fucking byond

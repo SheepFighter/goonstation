@@ -23,7 +23,7 @@
 
 /proc/event_wormhole_buildturflist()
 	for(var/turf/T in world)
-		if(T.z == 1 && istype(T,/turf/simulated/floor))
+		if(isstationlevel(T.z) && istype(T,/turf/simulated/floor))
 			wormholeturfs += T
 
 		LAGCHECK(LAG_LOW)

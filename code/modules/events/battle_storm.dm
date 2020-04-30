@@ -50,13 +50,13 @@
 		for (var/mob/N in mobs)
 			N.flash(3 SECONDS)
 
-#ifndef UNDERWATER_MAP
-		for (var/turf/space/S in world)
-			if (S.z == 1)
-				S.color = src.space_color
-			else
-				break
-#endif
+		if(~map_settings.flags & UNDERWATER_MAP)
+			for (var/turf/space/S in world)
+				if (isstationlevel(S.z))
+					S.color = src.space_color
+				else
+					break
+
 		for(var/area/A in world)
 			var/B = 1
 			for(var/area/S in safe_areas)
@@ -100,13 +100,13 @@
 
 		blowout = 0
 		DEBUG_MESSAGE("Clearing icons I hope")
-#ifndef UNDERWATER_MAP
-		for (var/turf/space/S in world)
-			if (S.z == 1)
-				S.color = null
-			else
-				break
-#endif
+		if(~map_settings.flags & UNDERWATER_MAP)
+			for (var/turf/space/S in world)
+				if (isstationlevel(S.z))
+					S.color = null
+				else
+					break
+
 
 		for(var/area/A in world)
 			A.icon_state = ""

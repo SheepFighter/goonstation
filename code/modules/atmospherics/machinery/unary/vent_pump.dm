@@ -77,12 +77,15 @@
 			west
 				dir = WEST
 
-		New()
+		Initiate()
 			..()
 
 			air_contents.volume = 1000
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(on&&node)
 			if(pump_direction)
 				icon_state = "[level == 1 && istype(loc, /turf/simulated) ? "h" : "" ]out"
@@ -239,6 +242,9 @@
 
 
 	hide(var/i) //to make the little pipe section invisible, the icon changes.
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(on&&node)
 			if(pump_direction)
 				icon_state = "[i == 1 && istype(loc, /turf/simulated) ? "h" : "" ]out"

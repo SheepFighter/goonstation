@@ -35,6 +35,9 @@
 			radio_connection = radio_controller.add_object(src, "[frequency]")
 
 	update_icon()
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(on&&node)
 			if(scrubbing)
 				icon_state = "[level == 1 && istype(loc, /turf/simulated) ? "h" : "" ]on"
@@ -101,6 +104,9 @@
 		return 1
 
 	hide(var/i) //to make the little pipe section invisible, the icon changes.
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		if(on&&node)
 			if(scrubbing)
 				icon_state = "[i == 1 && istype(loc, /turf/simulated) ? "h" : "" ]on"
