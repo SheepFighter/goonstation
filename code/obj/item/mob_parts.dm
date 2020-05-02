@@ -206,8 +206,26 @@
 
 	//for humans
 	attach(var/mob/living/carbon/human/attachee,var/mob/attacher,var/both_legs = 0)
-		if(!both_legs) attachee.limbs.vars[src.slot] = src
+		if(!src.easy_attach)
+			if(!surgeryCheck(attachee, attacher))
+				return
+
+		if(!both_legs)
+			if(attacher.zone_sel.selecting != slot || !ishuman(attachee))
+				return
+
+			if(attachee.limbs.vars[src.slot])
+				boutput(attacher, "<span style=\"color:red\">[attachee.name] already has one of those!</span>")
+				return
+
+			attachee.limbs.vars[src.slot] = src
 		else
+			if (!(attacher.zone_sel.selecting in list("l_leg","r_leg")))
+				return
+			else if(attachee.limbs.vars["l_leg"] || attachee.limbs.vars["r_leg"])
+				boutput(attacher, "<span style=\"color:red\">[attachee.name] still has one leg!</span>")
+				return
+
 			attachee.limbs.l_leg = src
 			attachee.limbs.r_leg = src
 		src.holder = attachee
@@ -231,6 +249,7 @@
 				boutput(attacher, "<span style=\"color:red\">You attach a [src] to [attachee]'s stump[both_legs? "s" : ""]. It fuses instantly with the muscle and tendons!</span>")
 			else
 				boutput(attacher, "<span style=\"color:red\">You attach a [src] to your own stump[both_legs? "s" : ""]. It fuses instantly with the muscle and tendons!</span>")
+			src.remove_stage = 0
 		else
 			if(attachee != attacher)
 				boutput(attachee, "<span style=\"color:red\">[attacher] attaches a [src] to your stump[both_legs? "s" : ""]. It doesn't look very secure!</span>")
@@ -305,7 +324,7 @@
 		if (istype(direction, /list))
 			direction = pick(direction)
 		for (var/i = 0, i < rand(1,3), i++)
-			LAGCHECK(LAG_LOW)//sleep(3)
+			LAGCHECK(LAG_LOW)//sleep(0.3 SECONDS)
 			if (i > 0 && ispath(streak_splatter))
 				make_cleanable(streak_splatter,src.loc)
 			if (!step_to(src, get_step(src, direction), 0))

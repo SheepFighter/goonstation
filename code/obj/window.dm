@@ -340,9 +340,9 @@
 				src.visible_message("<span style=\"color:red\"><b>[usr]</b> knocks on [src].</span>")
 				playsound(src.loc, src.hitsound, 100, 1)
 				SPAWN_DBG(-1) //uhhh maybe let's not sleep() an attack_hand. fucky effects up the chain?
-					sleep(3)
+					sleep(0.3 SECONDS)
 					playsound(src.loc, src.hitsound, 100, 1)
-					sleep(3)
+					sleep(0.3 SECONDS)
 					playsound(src.loc, src.hitsound, 100, 1)
 				return
 
@@ -383,6 +383,22 @@
 				return 1
 
 		else if (ispryingtool(W) && state <= 1)
+			if(!anchored)
+				if (!(src.dir in cardinal))
+					return
+				update_nearby_tiles(need_rebuild=1) //Compel updates before
+				src.dir = turn(src.dir, -90)
+				/*var/action = input(usr,"Rotate it which way?","Window Rotation",null) in list("Clockwise ->","Anticlockwise <-","180 Degrees")
+				if (!action) return*/
+
+				/*switch(action)
+					if ("Clockwise ->") src.dir = turn(src.dir, -90)
+					if ("Anticlockwise <-") src.dir = turn(src.dir, 90)
+					if ("180 Degrees") src.dir = turn(src.dir, 180)*/
+				update_nearby_tiles(need_rebuild=1)
+				src.ini_dir = src.dir
+				src.set_layer_from_settings()
+				return
 			playsound(src.loc, "sound/items/Crowbar.ogg", 75, 1)
 			if (deconstruct_time)
 				user.show_text("You begin to [src.state ? "pry the window out of" : "pry the window into"] the frame...", "red")
@@ -396,7 +412,7 @@
 			playsound(src.loc, "sound/items/Ratchet.ogg", 100, 1)
 			var/turf/T = get_turf(user)
 			boutput(user, "<span style=\"color:blue\">Now disassembling the window</span>")
-			sleep(40) // this should be a progressbar but other contruction / deconstruction things don't have them
+			sleep(4 SECONDS) // this should be a progressbar but other contruction / deconstruction things don't have them
 			// so I'll just leave it as sleep and hope someone else replaces all of these with progressbars
 			if(get_turf(user) == T)
 				boutput(user, "<span style=\"color:blue\">You dissasembled the window!</span>")
@@ -491,34 +507,6 @@
 			source.selftilenotify() //for fluids
 
 		return 1
-
-	verb/rotate()
-		set name = "Rotate Window"
-		set src in oview(1)
-		set category = "Local"
-
-		if (!(src.dir in cardinal))
-			return
-		if (src.anchored)
-			boutput(usr, "It is fastened to the floor; therefore, you can't rotate it!")
-			return 0
-
-		update_nearby_tiles(need_rebuild=1) //Compel updates before
-
-		var/action = input(usr,"Rotate it which way?","Window Rotation",null) in list("Clockwise ->","Anticlockwise <-","180 Degrees")
-		if (!action) return
-
-		switch(action)
-			if ("Clockwise ->") src.dir = turn(src.dir, -90)
-			if ("Anticlockwise <-") src.dir = turn(src.dir, 90)
-			if ("180 Degrees") src.dir = turn(src.dir, 180)
-
-		update_nearby_tiles(need_rebuild=1)
-
-		src.ini_dir = src.dir
-
-		src.set_layer_from_settings()
-		return
 
 /obj/window/pyro
 	icon_state = "pyro"
@@ -659,7 +647,6 @@
 		explosion_resistance = 3
 	New()
 		..()
-		src.verbs -= /obj/window/verb/rotate
 
 		if (map_setting && ticker)
 			src.update_neighbors()
@@ -717,42 +704,27 @@
 
 /obj/window/auto/reinforced/indestructible
 	desc = "A window. A particularly robust one at that."
-	extreme
-		name = "extremely indestructible window"
-		desc = "An EXTREMELY indestructible window. An absurdly robust one at that."
-		var/initialPos
-		anchored = 2
-		New()
-			..()
-			initialPos = loc
-		disposing()
-			SPAWN_DBG(0)
-				loc = initialPos
-				qdeled = 0// L   U    L
-		set_loc()
-			loc = initialPos
-			return
-		Del()
-			if(!initialPos)
-				return ..()
-			loc = initialPos//LULLE
+
 	New()
 		..()
 		SPAWN_DBG(1 DECI SECOND)
 			ini_dir = 5//gurgle
 			dir = 5//grumble
+
 	smash(var/actuallysmash)
 		if(actuallysmash)
 			return ..()
-	attackby()
+
 	attack_hand()
 		src.visible_message("<span style=\"color:red\"><b>[usr]</b> knocks on [src].</span>")
 		playsound(src.loc, src.hitsound, 100, 1)
-		sleep(3)
+		sleep(0.3 SECONDS)
 		playsound(src.loc, src.hitsound, 100, 1)
-		sleep(3)
+		sleep(0.3 SECONDS)
 		playsound(src.loc, src.hitsound, 100, 1)
 		return
+
+	attackby()
 	hitby()
 	reagent_act()
 	bullet_act()
@@ -764,6 +736,29 @@
 	damage_piercing()
 	damage_slashing()
 	damage_blunt()
+
+/obj/window/auto/reinforced/indestructible/extreme
+	name = "extremely indestructible window"
+	desc = "An EXTREMELY indestructible window. An absurdly robust one at that."
+	var/initialPos
+	anchored = 2
+	New()
+		..()
+		initialPos = loc
+
+	disposing()
+		SPAWN_DBG(0)
+			loc = initialPos
+			qdeled = 0// L   U    L
+
+	set_loc()
+		loc = initialPos
+		return
+
+	Del()
+		if(!initialPos)
+			return ..()
+		loc = initialPos//LULLE
 
 /obj/window/auto/crystal
 	default_material = "plasmaglass"
@@ -918,10 +913,6 @@
 
 	New()
 		return
-
-	examine()
-		set src in oview()
-		boutput(usr, desc)
 
 	smash()
 		if(health <= 0)

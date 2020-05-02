@@ -319,6 +319,7 @@
 	var/uses = 4.0
 	flags = FPRINT | TABLEPASS
 	w_class = 2.0
+	inhand_image_icon = 'icons/mob/inhand/hand_books.dmi'
 	item_state = "paper"
 	color = "#FF0000"
 	throw_speed = 4
@@ -334,12 +335,12 @@
 
 	New()
 		src.color = random_color()
-	examine()
-		if ((ishuman(usr) && istype(usr:w_uniform, /obj/item/clothing/under/misc/lawyer/red/demonic)) || isobserver(usr))
-			..()
+
+	examine(mob/user)
+		if ((ishuman(user) && istype(user:w_uniform, /obj/item/clothing/under/misc/lawyer/red/demonic)) || isobserver(user))
+			return ..()
 		else
-			boutput(usr, "A strange piece of old crinkled paper, covered in mysterious gibberish legalese.")
-			return
+			return list("A strange piece of old crinkled paper, covered in mysterious gibberish legalese.")
 
 	get_desc(dist)
 		if (src.limiteduse == 0)
@@ -467,7 +468,7 @@ obj/item/contract/wrestle
 			return 0
 		SPAWN_DBG(1 DECI SECOND)
 			user.mind.special_role = "Faustian Wrestler"
-			sleep(1)
+			sleep(0.1 SECONDS)
 			user.make_wrestler(1)
 			user.traitHolder.addTrait("addict") //HEH
 			user.traitHolder.addTrait("clutz")

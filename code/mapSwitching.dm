@@ -532,6 +532,6 @@ var/global/datum/mapSwitchHandler/mapSwitcher
 			boutput(user, "Map vote successful???")*/
 
 	examine()
-		return
+		return list()
 
 var/global/mapVoteLinkStat = new /obj/mapVoteLink

@@ -92,7 +92,7 @@
 						H.unlock_medal("Try jiggling the handle",1)
 
 				break
-			sleep(1)		// was 1
+			sleep(0.1 SECONDS)		// was 1
 			if (!loc)
 				return
 			var/obj/disposalpipe/curr = loc
@@ -421,7 +421,7 @@
 				var/turf/uloc = user.loc
 				var/atom/wloc = W.loc
 				boutput(user, "You begin slicing [src].")
-				sleep(1)
+				sleep(0.1 SECONDS)
 				if (user.loc == uloc && wloc == W.loc)
 					welded(user)
 				else
@@ -888,7 +888,7 @@
 
 						if(!isdead(poorSoul))
 							poorSoul:emote("scream")
-						sleep(5)
+						sleep(0.5 SECONDS)
 						poorSoul.ghostize()
 
 					if (newIngredient.reagents)
@@ -947,7 +947,7 @@
 							newLoaf.loaf_factor += (newLoaf.loaf_factor / 10) + 50
 						if(!isdead(poorSoul))
 							poorSoul:emote("scream")
-						sleep(5)
+						sleep(0.5 SECONDS)
 						poorSoul.death()
 						if ((poorSoul.mind || poorSoul.client) && !istype(poorSoul, /mob/living/carbon/human/npc))
 							poorSoul.ghostize()
@@ -970,12 +970,12 @@
 
 			StopLoafing:
 
-			sleep(3)	//make a bunch of ongoing noise i guess?
+			sleep(0.3 SECONDS)	//make a bunch of ongoing noise i guess?
 			playsound(src.loc, pick("sound/machines/mixer.ogg","sound/machines/mixer.ogg","sound/machines/mixer.ogg","sound/machines/hiss.ogg","sound/machines/ding.ogg","sound/machines/buzz-sigh.ogg","sound/impact_sounds/Machinery_Break_1.ogg","sound/effects/pop.ogg","sound/machines/warning-buzzer.ogg","sound/impact_sounds/Glass_Shatter_1.ogg","sound/impact_sounds/Flesh_Break_2.ogg","sound/effects/spring.ogg","sound/machines/engine_grump1.ogg","sound/machines/engine_grump2.ogg","sound/machines/engine_grump3.ogg","sound/impact_sounds/Glass_Hit_1.ogg","sound/effects/bubbles.ogg","sound/effects/brrp.ogg"), 50, 1)
-			sleep(3)
+			sleep(0.3 SECONDS)
 
 			playsound(src.loc, "sound/machines/engine_grump1.ogg", 50, 1)
-			sleep(30)
+			sleep(3 SECONDS)
 			src.icon_state = "pipe-loaf0"
 			//src.visible_message("<b>[src] deactivates!</b>") // Processor + loop = SPAM
 
@@ -1362,7 +1362,7 @@
 			flick("unblockoutlet-open", src)
 			playsound(src, "sound/machines/warning-buzzer.ogg", 50, 0, 0)
 
-			sleep(20)	//wait until correct animation frame
+			sleep(2 SECONDS)	//wait until correct animation frame
 			playsound(src, "sound/machines/hiss.ogg", 50, 0, 0)
 
 
@@ -1434,7 +1434,7 @@
 			flick("unblockoutlet-open", src)
 			playsound(src, "sound/machines/warning-buzzer.ogg", 50, 0, 0)
 
-			sleep(20)	//wait until correct animation frame
+			sleep(2 SECONDS)	//wait until correct animation frame
 			playsound(src, "sound/machines/hiss.ogg", 50, 0, 0)
 
 			for (var/atom/movable/AM in things_to_dump)
@@ -1491,6 +1491,27 @@
 
 		update()
 
+	attackby(obj/item/W as obj, mob/user as mob)
+		if(..(W, user)) return
+		else if(ispulsingtool(W))
+			. = alert(usr, "What should trigger the sensor?","Disposal Sensor", "Creatures", "Anything", "A mail tag")
+			if (.)
+				if (get_dist(usr, src) > 1 || usr.stat)
+					return
+
+				switch (.)
+					if ("Creatures")
+						sense_mode = SENSE_LIVING
+
+					if ("Anything")
+						sense_mode = SENSE_OBJECT
+
+					if ("A mail tag")
+						. = copytext(ckeyEx(input(usr, "What should the tag be?", "What?")), 1, 33)
+						if (. && get_dist(usr, src) < 2 && !usr.stat)
+							sense_mode = SENSE_TAG
+							sense_tag_filter = .
+
 	MouseDrop(obj/O, null, var/src_location, var/control_orig, var/control_new, var/params)
 
 		if(!isliving(usr))
@@ -1503,44 +1524,12 @@
 		if(usr.stat)
 			return
 
-		if(!mechanics.allowChange(usr))
+		if(!(ishuman(usr) && usr.find_tool_in_hand(TOOL_PULSING)))
 			boutput(usr, "<span style=\"color:red\">[MECHFAILSTRING]</span>")
 			return
 
 		mechanics.dropConnect(O, null, src_location, control_orig, control_new, params)
 		return ..()
-
-	verb/set_sense_mode()
-		set src in view(1)
-		set name = "\[Set Mode\]"
-		set desc = "Sets the sensing mode of the pipe.."
-
-		if (!isliving(usr))
-			return
-		if (usr.stat)
-			return
-		if (!mechanics.allowChange(usr))
-			boutput(usr, "<span style=\"color:red\">[MECHFAILSTRING]</span>")
-			return
-
-		. = alert(usr, "What should trigger the sensor?","Disposal Sensor", "Creatures", "Anything", "A mail tag")
-		if (.)
-			if (get_dist(usr, src) > 1 || usr.stat)
-				return
-
-			switch (.)
-				if ("Creatures")
-					sense_mode = SENSE_LIVING
-
-				if ("Anything")
-					sense_mode = SENSE_OBJECT
-
-				if ("A mail tag")
-					. = copytext(ckeyEx(input(usr, "What should the tag be?", "What?")), 1, 33)
-					if (. && get_dist(usr, src) < 2 && !usr.stat)
-						sense_mode = SENSE_TAG
-						sense_tag_filter = .
-
 
 	transfer(var/obj/disposalholder/H)
 		if (sense_mode == SENSE_TAG)
@@ -1818,7 +1807,7 @@
 		flick("outlet-open", src)
 		playsound(src, "sound/machines/warning-buzzer.ogg", 50, 0, 0)
 
-		sleep(20)	//wait until correct animation frame
+		sleep(2 SECONDS)	//wait until correct animation frame
 		playsound(src, "sound/machines/hiss.ogg", 50, 0, 0)
 
 
@@ -1899,7 +1888,7 @@
 		flick("outlet-open", src)
 		playsound(src, "sound/machines/warning-buzzer.ogg", 50, 0, 0)
 
-		sleep(20)	//wait until correct animation frame
+		sleep(2 SECONDS)	//wait until correct animation frame
 		playsound(src, "sound/machines/hiss.ogg", 50, 0, 0)
 
 

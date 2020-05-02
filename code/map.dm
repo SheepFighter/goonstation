@@ -35,10 +35,13 @@ var/global/list/mapNames = list()
 	"Linemap" = 		list("id" = "LINEMAP", 		"settings" = "linemap",			"playerPickable" = ASS_JAM),
 	"Mushroom" =		list("id" = "MUSHROOM", 	"settings" = "mushroom",		"playerPickable" = ASS_JAM),
 	"Trunkmap" = 		list("id" = "TRUNKMAP", 	"settings" = "trunkmap",		"playerPickable" = ASS_JAM),
-	"Oshan Laboratory"= list("id" = "OSHAN", 		"settings" = "oshan", 			"playerPickable" = 1),
+	"Oshan Laboratory"= list("id" = "OSHAN", 	"settings" = "oshan", 			"playerPickable" = 1),
 	"Samedi" = 			list("id" = "SAMEDI", 		"settings" = "samedi", 			"playerPickable" = ASS_JAM),
-	"Atlas" = 			list("id" = "ATLAS", 		"settings" = "atlas", 			"playerPickable" = 1,	"MaxPlayersAllowed" = 30),
-	"Manta" = 			list("id" = "MANTA", 		"settings" = "manta", 			"playerPickable" = 1),
+	"Kondaru" = 		list("id" = "KONDARU", "settings" = "kondaru", 				"playerPickable" = 1),
+	"Bellerophon Fleet" = list("id" = "FLEET", "settings" = "fleet", "playerPickable" = ASS_JAM),
+	"Density" = 		list("id" = "DENSITY", 	"settings" = "density", 			"playerPickable" = ASS_JAM,				"MaxPlayersAllowed" = 30),
+	"Atlas" = 			list("id" = "ATLAS", 		"settings" = "atlas", 				"playerPickable" = 1,				"MaxPlayersAllowed" = 30),
+	"Manta" = 			list("id" = "MANTA", 		"settings" = "manta", 				"playerPickable" = 1),
 )*/
 
 /obj/landmark/map
@@ -81,7 +84,7 @@ var/global/list/mapNames = list()
 	var/display_name = MAP_NAME_RANDOM
 	var/style = "station"
 	var/default_gamemode = "secret"
-	var/goonhub_map = "http://goonhub.com/maps/cogmap"
+	var/goonhub_map = "https://goonhub.com/maps/cogmap"
 	var/arrivals_type = MAP_SPAWN_SHUTTLE
 	var/dir_fore = null
 
@@ -187,7 +190,7 @@ var/global/list/mapNames = list()
 	display_name = "Donut 2"
 	player_pickable = MAP_PICKABLE_ASSDAY
 	MAP_LEVELS_SPACE(donut2)
-	goonhub_map = "http://goonhub.com/maps/donut2"
+	goonhub_map = "https://goonhub.com/maps/donut2"
 	escape_centcom = /area/shuttle/escape/centcom/donut2
 	escape_transit = /area/shuttle/escape/transit/donut2
 	escape_station = /area/shuttle/escape/station/donut2
@@ -216,7 +219,7 @@ var/global/list/mapNames = list()
 	name = "COGMAP"
 	display_name = "Cogmap 1"
 	MAP_LEVELS_SPACE(cogmap)
-	goonhub_map = "http://goonhub.com/maps/cogmap"
+	goonhub_map = "https://goonhub.com/maps/cogmap"
 	walls = /turf/simulated/wall/auto/supernorn
 	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
 	auto_walls = 1
@@ -249,7 +252,7 @@ var/global/list/mapNames = list()
 	display_name = "Cogmap 2"
 	MAP_LEVELS_SPACE(cogmap2)
 //	min_players_allowed = 40
-	goonhub_map = "http://goonhub.com/maps/cogmap2"
+	goonhub_map = "https://goonhub.com/maps/cogmap2"
 	walls = /turf/simulated/wall/auto/supernorn
 	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
 	auto_walls = 1
@@ -295,7 +298,7 @@ var/global/list/mapNames = list()
 	MAP_LEVELS_SPACE(destiny)
 	style = "ship"
 	default_gamemode = "extended"
-	goonhub_map = "http://goonhub.com/maps/destiny"
+	goonhub_map = "https://goonhub.com/maps/destiny"
 	arrivals_type = MAP_SPAWN_CRYO
 	dir_fore = NORTH
 
@@ -329,7 +332,7 @@ var/global/list/mapNames = list()
 	name = "CLARION"
 	display_name = "NSS Clarion"
 	MAP_LEVELS_SPACE(clarion)
-	goonhub_map = "http://goonhub.com/maps/clarion"
+	goonhub_map = "https://goonhub.com/maps/clarion"
 
 	valid_nuke_targets = list("the main security room" = list(/area/station/security/main),
 		"the central research sector hub" = list(/area/station/science),
@@ -347,7 +350,7 @@ var/global/list/mapNames = list()
 	display_name = "NSS Horizon"
 	MAP_LEVELS_SPACE(horizon)
 	style = "ship"
-	goonhub_map = "http://goonhub.com/maps/horizon"
+	goonhub_map = "https://goonhub.com/maps/horizon"
 	walls = /turf/simulated/wall/auto/supernorn
 	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
 	auto_walls = 1
@@ -419,7 +422,7 @@ var/global/list/mapNames = list()
 
 	prefabs = list("TRENCH" = list(/datum/generatorPrefab/sea_miner_manta))
 
-	goonhub_map = "http://goonhub.com/maps/manta"
+	goonhub_map = "https://goonhub.com/maps/manta"
 	titlecard_icon_state = "title_manta"
 	titlecard_name = "The NSS Manta"
 	titlecard_desc = "Some fancy comic about the NSS Manta and its travels on the planet Abzu."
@@ -469,7 +472,7 @@ var/global/list/mapNames = list()
 	name = "MUSHROOM"
 	display_name = "Mushroom"
 	player_pickable = MAP_PICKABLE_ASSDAY
-	goonhub_map = "http://goonhub.com/maps/mushroom"
+	goonhub_map = "https://goonhub.com/maps/mushroom"
 	MAP_LEVELS_SPACE(mushroom)
 	escape_centcom = /area/shuttle/escape/centcom/cogmap2
 	escape_transit = /area/shuttle/escape/transit/cogmap2
@@ -481,7 +484,8 @@ var/global/list/mapNames = list()
 	display_name = "Trunkmap"
 	player_pickable = MAP_PICKABLE_ASSDAY
 	MAP_LEVELS_SPACE(trunkmap)
-	goonhub_map = "http://goonhub.com/maps/trunkmap"
+	goonhub_map = "https://goonhub.com/maps/trunkmap"
+
 	escape_centcom = /area/shuttle/escape/centcom/destiny
 	escape_transit = /area/shuttle/escape/transit/destiny
 	escape_station = /area/shuttle/escape/station/destiny
@@ -498,7 +502,7 @@ var/global/list/mapNames = list()
 	player_pickable = MAP_PICKABLE_ASSDAY
 	arrivals_type = MAP_SPAWN_CRYO
 	MAP_LEVELS_SPACE(linemap)
-	goonhub_map = "http://goonhub.com/maps/linemap"
+	goonhub_map = "https://goonhub.com/maps/linemap"
 
 	walls = /turf/simulated/wall/auto/gannets
 	rwalls = /turf/simulated/wall/auto/reinforced/gannets
@@ -520,7 +524,7 @@ var/global/list/mapNames = list()
 	MAP_LEVELS_SPACE(atlas)
 	max_players_allowed = 30
 	style = "ship"
-	goonhub_map = "http://goonhub.com/maps/atlas"
+	goonhub_map = "https://goonhub.com/maps/atlas"
 	arrivals_type = MAP_SPAWN_CRYO
 	dir_fore = NORTH
 
@@ -548,11 +552,146 @@ var/global/list/mapNames = list()
 		"the telescience lab" = list(/area/station/science/teleporter),
 		"the genetics lab" = list(/area/station/medical/research, /area/station/medical/medbay/cloner))
 
+/datum/map_settings/kondaru
+	name = "KONDARU"
+	display_name = "Kondaru"
+	MAP_LEVELS_SPACE(kondaru)
+	goonhub_map = "https://goonhub.com/maps/kondaru"
+	walls = /turf/simulated/wall/auto/supernorn
+	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
+	auto_walls = 1
+
+	arrivals_type = MAP_SPAWN_CRYO
+
+	windows = /obj/window/auto
+	windows_thin = /obj/window/pyro
+	rwindows = /obj/window/auto/reinforced
+	rwindows_thin = /obj/window/reinforced/pyro
+	windows_crystal = /obj/window/auto/crystal
+	windows_rcrystal = /obj/window/auto/crystal/reinforced
+	window_layer_full = COG2_WINDOW_LAYER
+	window_layer_north = GRILLE_LAYER+0.1
+	window_layer_south = FLY_LAYER+1
+	auto_windows = 1
+
+	ext_airlocks = /obj/machinery/door/airlock/pyro/external
+	airlock_style = "pyro"
+
+	escape_centcom = /area/shuttle/escape/centcom/cogmap2
+	escape_transit = /area/shuttle/escape/transit/cogmap2
+	escape_station = /area/shuttle/escape/station/cogmap2
+	escape_dir = EAST
+
+	merchant_left_centcom = /area/shuttle/merchant_shuttle/left_centcom/cogmap
+	merchant_left_station = /area/shuttle/merchant_shuttle/left_station/cogmap
+	merchant_right_centcom = /area/shuttle/merchant_shuttle/right_centcom/cogmap
+	merchant_right_station = /area/shuttle/merchant_shuttle/right_station/cogmap
+
+	valid_nuke_targets = list("the main security room" = list(/area/station/security/main),
+		"the quartermaster's front office" = list(/area/station/quartermaster/office),
+		"the courtroom" = list(/area/station/crew_quarters/courtroom),
+		"the thermo-electric generator room" = list(/area/station/engine/core),
+		"the refinery (arc smelter)" = list(/area/station/mining/refinery),
+		"the medbay" = list(/area/station/medical/medbay, /area/station/medical/medbay/surgery),
+		"the station's cafeteria" = list(/area/station/crew_quarters/cafeteria),
+		"the artifact lab" = list(/area/station/science/artifact),
+		"the janitor's office" = list(/area/station/janitor))
+
+/datum/map_settings/fleet
+	name = "FLEET"
+	display_name = "Bellerophon Fleet"
+	MAP_LEVELS_SPACE(fleet)
+	player_pickable = MAP_PICKABLE_ASSDAY
+	style = "ship"
+	goonhub_map = "https://goonhub.com/maps/bellerophon fleet"
+	walls = /turf/simulated/wall/auto/supernorn
+	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
+	auto_walls = 1
+	arrivals_type = MAP_SPAWN_CRYO
+	dir_fore = WEST
+
+	windows = /obj/window/auto
+	windows_thin = /obj/window/pyro
+	rwindows = /obj/window/auto/reinforced
+	rwindows_thin = /obj/window/reinforced/pyro
+	windows_crystal = /obj/window/auto/crystal
+	windows_rcrystal = /obj/window/auto/crystal/reinforced
+	window_layer_full = COG2_WINDOW_LAYER
+	window_layer_north = GRILLE_LAYER+0.1
+	window_layer_south = FLY_LAYER+1
+	auto_windows = 1
+
+	ext_airlocks = /obj/machinery/door/airlock/pyro/external
+
+	escape_centcom = /area/shuttle/escape/centcom/cogmap2
+	escape_transit = /area/shuttle/escape/transit/cogmap2
+	escape_station = /area/shuttle/escape/station/cogmap2
+	escape_dir = EAST
+
+	merchant_left_centcom = /area/shuttle/merchant_shuttle/left_centcom/cogmap
+	merchant_left_station = /area/shuttle/merchant_shuttle/left_station/cogmap
+	merchant_right_centcom = /area/shuttle/merchant_shuttle/right_centcom/cogmap
+	merchant_right_station = /area/shuttle/merchant_shuttle/right_station/cogmap
+
+	valid_nuke_targets = list("the Demeter primary zone" = list(/area/station/aviary),
+		"the Tenebrae primary zone" = list(/area/station/science),
+		"the Asclepius primary zone" = list(/area/station/medical/medbay),
+		"the Meridian primary zone" = list(/area/station/crew_quarters/captain),
+		"the Dionysus primary zone" = list(/area/station/crew_quarters/cafeteria),
+		"the Maru primary zone" = list(/area/station/engine/engineering),
+		"the Hammer primary zone" = list(/area/station/security/main))
+
+/datum/map_settings/density // I just copied cog2 for now, ok????
+	name = "density"
+	display_name = "Density"
+	MAP_LEVELS_SPACE(density)
+	player_pickable = MAP_PICKABLE_ASSDAY
+	max_players_allowed = 30
+	goonhub_map = "https://goonhub.com/maps/density"
+	walls = /turf/simulated/wall/auto/supernorn
+	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
+	auto_walls = 1
+
+	windows = /obj/window/auto
+	windows_thin = /obj/window/pyro
+	rwindows = /obj/window/auto/reinforced
+	rwindows_thin = /obj/window/reinforced/pyro
+	windows_crystal = /obj/window/auto/crystal
+	windows_rcrystal = /obj/window/auto/crystal/reinforced
+	window_layer_full = COG2_WINDOW_LAYER
+	window_layer_north = GRILLE_LAYER+0.1
+	window_layer_south = FLY_LAYER+1
+	auto_windows = 1
+
+	ext_airlocks = /obj/machinery/door/airlock/pyro/external
+	airlock_style = "pyro"
+
+	escape_centcom = /area/shuttle/escape/centcom/cogmap2
+	escape_transit = /area/shuttle/escape/transit/cogmap2
+	escape_station = /area/shuttle/escape/station/cogmap2
+	escape_dir = EAST
+
+	merchant_left_centcom = /area/shuttle/merchant_shuttle/left_centcom/cogmap2
+	merchant_left_station = /area/shuttle/merchant_shuttle/left_station/cogmap2
+	merchant_right_centcom = /area/shuttle/merchant_shuttle/right_centcom/cogmap2
+	merchant_right_station = /area/shuttle/merchant_shuttle/right_station/cogmap2
+
+	valid_nuke_targets = list("the main security room" = list(/area/station/security/main),
+		"the central research sector hub" = list(/area/station/science),
+		"the cargo bay (QM)" = list(/area/station/quartermaster/office),
+		"the thermo-electric generator room" = list(/area/station/engine/core),
+		"the refinery (arc smelter)" = list(/area/station/quartermaster/refinery),
+		"the medbay" = list(/area/station/medical/medbay, /area/station/medical/medbay/surgery),
+		"the station's cafeteria" = list(/area/station/crew_quarters/cafeteria),
+		"the net cafe" = list(/area/station/crew_quarters/info),
+		"the artifact lab" = list(/area/station/science/artifact),
+		"the genetics lab" = list(/area/station/medical/research))
+
 /datum/map_settings/samedi
 	name = "SAMEDI"
 	display_name = "Samedi"
 	player_pickable = MAP_PICKABLE_ASSDAY
-	goonhub_map = "http://goonhub.com/maps/samedi"
+	goonhub_map = "https://goonhub.com/maps/samedi"
 	MAP_LEVELS_SPACE(samedi)
 	walls = /turf/simulated/wall/auto/supernorn
 	rwalls = /turf/simulated/wall/auto/reinforced/supernorn
@@ -587,7 +726,7 @@ var/global/list/mapNames = list()
 	display_name = "Oshan Laboratory"
 	MAP_LEVELS_OCEAN(oshan)
 	flags = UNDERWATER_MAP
-	goonhub_map = "http://goonhub.com/maps/oshan"
+	goonhub_map = "https://goonhub.com/maps/oshan"
 
 	arrivals_type = MAP_SPAWN_MISSILE
 

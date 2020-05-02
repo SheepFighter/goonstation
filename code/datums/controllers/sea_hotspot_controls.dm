@@ -385,7 +385,7 @@
 
 		//hey recurse at this arbitrary heat value, thanks
 		if (heat > 8000 + (8000 * recursion))
-			if (recursion <= 0)
+			if (recursion <= 0 && get_area_name(phenomena_point) != "Ocean")
 				var/logmsg = "BIG hotspot phenomena (Heat : [heat])  at [log_loc(phenomena_point)]."
 				message_admins(logmsg)
 				logTheThing("bombing", null, null, logmsg)
@@ -395,7 +395,7 @@
 				LAGCHECK(LAG_HIGH)
 				src.do_phenomena( recursion++, heat - (9000 + (9000 * recursion)) )
 		else
-			if (phenomena_flags > PH_QUAKE && recursion <= 0)
+			if (phenomena_flags > PH_QUAKE && recursion <= 0 && get_area_name(phenomena_point) != "Ocean")
 				var/logmsg = "Hotspot phenomena (Heat : [heat])  at [log_loc(phenomena_point)]."
 				message_admins(logmsg)
 				logTheThing("bombing", null, null, logmsg)
@@ -1120,9 +1120,9 @@
 	health = 100
 	var/can_put_up = 1
 
-	examine()
-		if (usr.client && hotspot_controller)
-			hotspot_controller.show_map(usr.client)
+	examine(mob/user)
+		if (user.client && hotspot_controller)
+			hotspot_controller.show_map(user.client)
 		else
 			return ..()
 

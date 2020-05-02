@@ -78,6 +78,10 @@ var/global/list/map_level_names = list()
 	name = "NSS Horizon"
 	file = 'maps/horizon.dmm'
 
+/datum/map_level/station/kondaru
+	name = "Kondaru"
+	file = 'maps/kondaru.dmm'
+
 /datum/map_level/station/underwater/oshan
 	name = "Oshan Laboratory"
 	file = 'maps/oshan.dmm'
@@ -111,6 +115,13 @@ var/global/list/map_level_names = list()
 	name = "SS Samedi"
 	file = 'maps/unused/samedi.dmm'
 
+/datum/map_level/station/fleet
+	name = "Bellerophon Fleet"
+	file = 'maps/fleet.dmm'
+
+/datum/map_level/station/density
+	name = "Density"
+	file = 'maps/density.dmm'
 
 
 /datum/map_level/New(var/index)

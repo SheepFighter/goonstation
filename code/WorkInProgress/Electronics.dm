@@ -4,7 +4,7 @@
 	icon = 'icons/obj/electronics.dmi'
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
 	force = 5
-	damtype = "brute"
+	hit_type = DAMAGE_BLUNT
 	throwforce = 5
 	w_class = 1.0
 	pressure_resistance = 10
@@ -141,12 +141,6 @@
 		store_type = null
 		..()
 
-/obj/item/electronics/frame/verb/rotate()
-	set src in view(1)
-	if (!isliving(usr))
-		return
-	src.dir = turn(src.dir, 90)
-
 /obj/item/electronics/frame/attackby(obj/item/W as obj, mob/user as mob)
 	if(istype(W,/obj/item/electronics/))
 		var/obj/item/electronics/E = W
@@ -174,7 +168,11 @@
 				actions.start(new/datum/action/bar/icon/build_electronics_frame(src), user)
 				//deploy()
 			return
-	if (iswrenchingtool(W))
+	if (ispryingtool(W))
+		if (!anchored)
+			src.dir = turn(src.dir, 90)
+			return
+	else if (iswrenchingtool(W))
 		boutput(user, "<span style=\"color:red\">You deconstruct [src] into its base materials!</span>")
 		src.drop_resources(W,user)
 	..()
@@ -201,7 +199,7 @@
 			if(I.type in bad_types) continue
 			I.set_loc(src)
 			//parts.Add(I)
-			sleep(3)
+			sleep(0.3 SECONDS)
 			if (user.loc != staystill) break
 
 		boutput(user, "<span style=\"color:blue\">You finish adding components to [src]!</span>")
@@ -410,7 +408,7 @@
 	icon = 'icons/obj/electronics.dmi'
 	icon_state = "solderingiron"
 	force = 10
-	damtype = "fire"
+	hit_type = DAMAGE_BURN
 	throwforce = 5
 	w_class = 2.0
 	pressure_resistance = 40
@@ -440,7 +438,7 @@
 	icon_state = "deviceana"
 	desc = "Used for scanning certain items for use with the ruckingenur kit."
 	force = 2
-	damtype = "brute"
+	hit_type = DAMAGE_BLUNT
 	throwforce = 5
 	w_class = 2.0
 	pressure_resistance = 50
@@ -668,9 +666,9 @@
 
 /obj/item/deconstructor
 	name = "deconstruction device"
-	desc = "A device able to break copied objects down into their base materials."
-	icon = 'icons/obj/device.dmi'
-	icon_state = "forensic0"
+	desc = "A device meant to facilitate the deconstruction of scannable machines."
+	icon = 'icons/obj/items/device.dmi'
+	icon_state = "deconstruction"
 	w_class = 3.0
 	var/datum/effects/system/spark_spread/spark_system
 	module_research = list("electronics" = 3, "engineering" = 1)

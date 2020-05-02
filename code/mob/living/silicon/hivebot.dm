@@ -263,7 +263,7 @@
 				var/old_y = src.pixel_y
 				src.pixel_x += rand(-2,2)
 				src.pixel_y += rand(-1,1)
-				sleep(2)
+				sleep(0.2 SECONDS)
 				src.pixel_x = old_x
 				src.pixel_y = old_y
 
@@ -275,7 +275,7 @@
 				var/old_y = src.pixel_y
 				src.pixel_x += rand(-3,3)
 				src.pixel_y += rand(-1,1)
-				sleep(2)
+				sleep(0.2 SECONDS)
 				src.pixel_x = old_x
 				src.pixel_y = old_y
 
@@ -395,29 +395,26 @@
 				O.show_message("<span style='color:#605b59'>[message]</span>", m_type)
 	return
 
-/mob/living/silicon/hivebot/examine()
-	set src in oview()
-	set category = "Local"
+/mob/living/silicon/hivebot/examine(mob/user)
+	if (isghostdrone(user))
+		return list()
 
-	if (isghostdrone(usr))
-		return
-	boutput(usr, "<span style=\"color:blue\">*---------*</span>")
-	boutput(usr, text("<span style=\"color:blue\">This is [bicon(src)] <B>[src.name]</B>!</span>"))
+	. = list("<span style=\"color:blue\">*---------*</span>\n<span style=\"color:blue\">This is [bicon(src)] <B>[src.name]</B>!</span>")
+
 	if (isdead(src))
-		boutput(usr, text("<span style=\"color:red\">[src.name] is powered-down.</span>"))
+		. += "<span style=\"color:red\">[src.name] is powered-down.</span>"
 	if (src.bruteloss)
 		if (src.bruteloss < 75)
-			boutput(usr, text("<span style=\"color:red\">[src.name] looks slightly dented</span>"))
+			. += "<span style=\"color:red\">[src.name] looks slightly dented</span>"
 		else
-			boutput(usr, text("<span style=\"color:red\"><B>[src.name] looks severely dented!</B></span>"))
+			. += "<span style=\"color:red\"><B>[src.name] looks severely dented!</B></span>"
 	if (src.fireloss)
 		if (src.fireloss < 75)
-			boutput(usr, text("<span style=\"color:red\">[src.name] looks slightly burnt!</span>"))
+			. += "<span style=\"color:red\">[src.name] looks slightly burnt!</span>"
 		else
-			boutput(usr, text("<span style=\"color:red\"><B>[src.name] looks severely burnt!</B></span>"))
+			. += "<span style=\"color:red\"><B>[src.name] looks severely burnt!</B></span>"
 	if (isunconscious(src))
-		boutput(usr, text("<span style=\"color:red\">[src.name] doesn't seem to be responding.</span>"))
-	return
+		. += "<span style=\"color:red\">[src.name] doesn't seem to be responding.</span>"
 
 /mob/living/silicon/hivebot/blob_act(var/power)
 	if (!isdead(src))
@@ -1059,7 +1056,7 @@ Frequency:
 					SPAWN_DBG(0)
 						while(src.pixel_y < 10)
 							src.pixel_y++
-							sleep(1)
+							sleep(0.1 SECONDS)
 						if (src.beebot == 1)
 							src.icon_state = "eyebot-bee"
 						else

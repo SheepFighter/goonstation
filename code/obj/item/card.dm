@@ -8,7 +8,7 @@ GAUNTLET CARDS
 
 /obj/item/card
 	name = "card"
-	icon = 'icons/obj/card.dmi'
+	icon = 'icons/obj/items/card.dmi'
 	icon_state = "id"
 	wear_image_icon = 'icons/mob/mob.dmi'
 	w_class = 1.0
@@ -183,11 +183,13 @@ GAUNTLET CARDS
 		DEBUG_MESSAGE("[get_access_desc(new_access)] added to [src]")
 	src.emagged = 1
 
+/*
 /obj/item/card/id/verb/read()
 	set src in usr
 
 	boutput(usr, "[bicon(src)] [src.name]: The current assignment on the card is [src.assignment].")
 	return
+*/
 
 /obj/item/card/id/syndicate
 	name = "agent card"
@@ -257,10 +259,10 @@ GAUNTLET CARDS
 			if(access == starting_access) //don't delete access if it's modified with an ID computer
 				access = list()
 
-/obj/item/card/id/temporary/examine()
-	..()
-	if(usr.client && src.timer)
-		boutput(usr, "A small display in the corner reads: \"Time remaining: [max(0,round((end_time-ticker.round_elapsed_ticks)/10))] seconds.\"")
+/obj/item/card/id/temporary/examine(mob/user)
+	. = ..()
+	if(user.client && src.timer)
+		. += "A small display in the corner reads: \"Time remaining: [max(0,round((end_time-ticker.round_elapsed_ticks)/10))] seconds.\""
 
 /obj/item/card/id/gauntlet
 	icon = 'icons/effects/VR.dmi'
@@ -347,4 +349,3 @@ GAUNTLET CARDS
 				message_admins("[key_name(user)] dropped their license to kill")
 			owner = user
 		..()
-

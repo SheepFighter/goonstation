@@ -426,7 +426,7 @@
 				var/datum/gang/G = hot_zone.gang_owners
 				G.score_event += hot_zone_score
 				broadcast_to_all_gangs("[G.gang_name] has been rewarded for their control of the [hot_zone.name].")
-				sleep(100)
+				sleep(10 SECONDS)
 			process_hot_zones()
 
 //bleh
@@ -570,7 +570,7 @@
 /obj/item/spray_paint
 	name = "Spraypaint Can"
 	desc = "A can of spray paint."
-	icon = 'icons/obj/items.dmi'
+	icon = 'icons/obj/items/items.dmi'
 	icon_state = "spraycan"
 	item_state = "spraycan"
 	flags = FPRINT | EXTRADELAY | TABLEPASS | CONDUCT
@@ -627,7 +627,7 @@
 	duration = 15 SECONDS
 	interrupt_flags = INTERRUPT_STUNNED
 	id = "spray_tag"
-	icon = 'icons/obj/items.dmi'
+	icon = 'icons/obj/items/items.dmi'
 	icon_state = "spraycan"
 	var/turf/target_turf
 	var/area/target_area
@@ -746,27 +746,25 @@
 			new/datum/gang_item/space/stims)
 
 	examine()
-		set src in oview(7)
-
-		..()
+		. = ..()
 
 		if(health == 0)
-			boutput(usr, "It is completely destroyed!")
+			. += "It is completely destroyed!"
 			return
 
 		switch(round(100*health/max_health))
 			if(1 to 25)
-				boutput(usr, "It is almost destroyed!")
+				. += "It is almost destroyed!"
 			if(26 to 50)
-				boutput(usr, "It is badly damaged!")
+				. += "It is badly damaged!"
 			if(51 to 75)
-				boutput(usr, "It is somewhat damaged.")
+				. += "It is somewhat damaged."
 			if(76 to 99)
-				boutput(usr, "It is slightly damaged.")
+				. += "It is slightly damaged."
 			if(100)
-				boutput(usr, "It is undamaged.")
+				. += "It is undamaged."
 
-		boutput(usr, "The screen displays \"Total Score: [gang.gang_score()] and Spendable Points: [gang.spendable_points]\"")
+		. += "The screen displays \"Total Score: [gang.gang_score()] and Spendable Points: [gang.spendable_points]\""
 
 	attack_hand(var/mob/living/carbon/human/user as mob)
 		if(!isalive(user))
@@ -1029,11 +1027,12 @@
 
 		user.lastattacked = src
 
-		if (W.damtype == "brute")
-			take_damage(W.force)
-			user.visible_message("<span style=\"color:red\"><b>[user] hits the [src] with [W]!<b></span>")
-		else
-			user.visible_message("<span style=\"color:red\">[user] ineffectually hits the [src] with [W]!</span>")
+		switch(W.hit_type)
+			if (DAMAGE_BURN)
+				user.visible_message("<span style=\"color:red\">[user] ineffectually hits the [src] with [W]!</span>")
+			else
+				take_damage(W.force)
+				user.visible_message("<span style=\"color:red\"><b>[user] hits the [src] with [W]!<b></span>")
 
 	MouseDrop_T(atom/movable/O as obj, mob/user as mob)
 		if(!istype(O, /obj/item/plant/herb/cannabis))
@@ -1047,7 +1046,7 @@
 			if (I in user)
 				continue
 			I.set_loc(src)
-			sleep(2)
+			sleep(0.2 SECONDS)
 			if (user.loc != staystill) break
 
 		boutput(user, "<span style=\"color:blue\">You finish filling the [src]!</span>")
@@ -1586,7 +1585,7 @@ proc/get_gang_gear(var/mob/living/carbon/human/user)
 // /obj/item/chem_grenade/incendiary
 // 	name = "incendiary grenade"
 // 	desc = "A rather volatile grenade that creates a small fire."
-// 	icon = 'icons/obj/grenade.dmi'
+// 	icon = 'icons/obj/items/grenade.dmi'
 // 	icon_state = "incendiary"
 // 	icon_state_armed = "incendiary1"
 // 	stage = 2

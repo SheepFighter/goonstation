@@ -307,7 +307,7 @@
 
 				if (!src.gen_net_id)
 					src.detect_generator()
-					sleep(8)
+					sleep(0.8 SECONDS)
 					if (!src.gen_net_id)
 						src.print_text("<b>Error:</b> Unable to detect generator.  Please check network cabling.")
 						return
@@ -323,7 +323,7 @@
 
 				if (!src.gen_net_id)
 					src.detect_generator()
-					sleep(8)
+					sleep(0.8 SECONDS)
 					if (!src.gen_net_id)
 						src.print_text("<b>Error:</b> Unable to detect generator.  Please check network cabling.")
 						return

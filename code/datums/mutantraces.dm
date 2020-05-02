@@ -375,10 +375,12 @@
 		..()
 		if(ishuman(mob))
 			mob.blood_color = pick("#FF0000","#FFFF00","#00FF00","#00FFFF","#0000FF","#FF00FF")
-			H.abilityHolder = new /datum/abilityHolder/virtual(H)
-			H.abilityHolder.owner = H
-			H.abilityHolder.addAbility(/datum/targetable/virtual/logout)
-
+			var/datum/abilityHolder/virtual/A = H.get_ability_holder(/datum/abilityHolder/virtual)
+			if (A && istype(A))
+				return
+			var/datum/abilityHolder/virtual/W = H.add_ability_holder(/datum/abilityHolder/virtual)
+			W.addAbility(/datum/targetable/virtual/logout)
+//for sure didnt steal code from ww. no siree
 
 /datum/mutantrace/blank
 	name = "blank"
@@ -1043,13 +1045,13 @@
 					SPAWN_DBG(0)
 						for (var/i = 0, i < 4, i++)
 							src.mob.pixel_x+= 1
-							sleep(1)
+							sleep(0.1 SECONDS)
 						for (var/i = 0, i < 4, i++)
 							src.mob.dir = turn(src.mob.dir, -90)
-							sleep(2)
+							sleep(0.2 SECONDS)
 						for (var/i = 0, i < 4, i++)
 							src.mob.pixel_x-= 1
-							sleep(1)
+							sleep(0.1 SECONDS)
 					SPAWN_DBG(0.5 SECONDS)
 						var/beeMax = 15
 						for (var/obj/critter/domestic_bee/responseBee in range(7, src.mob))

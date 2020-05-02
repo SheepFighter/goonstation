@@ -324,16 +324,16 @@
 		boutput(usr, "<span style=\"color:blue\">The shaper has [metal_count] units of metal and [glass_count] units of glass left.</span>")
 
 	examine()
-		..()
+		. = ..()
 		if (metal)
-			boutput(usr, "<span style=\"color:blue\">Metal: [metal_count] units of [metal.name].</span>")
+			. += "<span style=\"color:blue\">Metal: [metal_count] units of [metal.name].</span>"
 		else
-			boutput(usr, "<span style=\"color:red\">Metal: 0 units.</span>")
+			. += "<span style=\"color:red\">Metal: 0 units.</span>"
 
 		if (glass)
-			boutput(usr, "<span style=\"color:blue\">Glass: [glass_count] units of [glass.name].</span>")
+			. += "<span style=\"color:blue\">Glass: [glass_count] units of [glass.name].</span>"
 		else
-			boutput(usr, "<span style=\"color:red\">Glass: 0 units</span>")
+			. += "<span style=\"color:red\">Glass: 0 units</span>"
 
 	attack_self(mob/user as mob)
 		mode = !mode
@@ -422,7 +422,7 @@
 					else
 						glass_count += 10
 					pool(M)
-					sleep(1)
+					sleep(0.1 SECONDS)
 			processing = 0
 			user.visible_message("<span style=\"color:blue\">[user] finishes stuffing materials into [src].</span>")
 

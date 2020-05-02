@@ -8,7 +8,7 @@
 /obj/item/baton
 	name = "stun baton"
 	desc = "A standard issue baton for stunning people with."
-	icon = 'icons/obj/weapons.dmi'
+	icon = 'icons/obj/items/weapons.dmi'
 	icon_state = "stunbaton"
 	inhand_image_icon = 'icons/mob/inhand/hand_weapons.dmi'
 	item_state = "baton"
@@ -57,7 +57,8 @@
 			processing_items.Add(src)
 		src.update_icon()
 		src.setItemSpecial(/datum/item_special/spark)
-		return
+
+		BLOCK_ROD
 
 	disposing()
 		if (src in processing_items)
@@ -66,13 +67,12 @@
 		return
 
 	examine()
-		..()
+		. = ..()
 		if (src.uses_charges != 0 && src.uses_electricity != 0)
 			if (!src.cell || !istype(src.cell))
-				boutput(usr, "<span style=\"color:red\">No power cell installed.</span>")
+				. += "<span style=\"color:red\">No power cell installed.</span>"
 			else
-				boutput(usr, "The baton is turned [src.status ? "on" : "off"]. There are [src.cell.charge]/[src.cell.max_charge] PUs left! Each stun will use [src.cost_normal] PUs.")
-		return
+				. += "The baton is turned [src.status ? "on" : "off"]. There are [src.cell.charge]/[src.cell.max_charge] PUs left! Each stun will use [src.cost_normal] PUs."
 
 	emp_act()
 		if (src.uses_charges != 0 && src.uses_electricity != 0)
@@ -552,7 +552,7 @@
 /obj/item/barrier
 	name = "barrier"
 	desc = "A personal barrier. Activate this item with both hands free to use it."
-	icon = 'icons/obj/weapons.dmi'
+	icon = 'icons/obj/items/weapons.dmi'
 	icon_state = "barrier_0"
 	inhand_image_icon = 'icons/mob/inhand/hand_weapons.dmi'
 	item_state = "barrier0"
@@ -575,6 +575,17 @@
 	var/status = 0
 	var/obj/itemspecialeffect/barrier/E = 0
 
+	New()
+		..()
+		BLOCK_ALL
+		c_flags &= ~BLOCK_TOOLTIP
+
+	block_prop_setup(source, obj/item/grab/block/B)
+		if(src.status)
+			B.setProperty("rangedprot", 0.5)
+			B.setProperty("exploprot", 1)
+			. = ..()
+
 	proc/update_icon()
 		icon_state = status ? "barrier_1" : "barrier_0"
 		item_state = status ? "barrier1" : "barrier0"
@@ -596,17 +607,19 @@
 				setProperty("disorient_resist_eye", 65)
 				setProperty("disorient_resist_ear", 50) //idk how lol ok
 				flick("barrier_a",src)
+				c_flags |= BLOCK_TOOLTIP
 
 				src.setItemSpecial(/datum/item_special/barrier)
 			else
 				w_class = 2
 				flags |= ONBELT
-				setProperty("meleeprot", 0)
-				setProperty("rangedprot", 0)
-				setProperty("movespeed", 0)
-				setProperty("disorient_resist", 0)
-				setProperty("disorient_resist_eye", 0)
-				setProperty("disorient_resist_ear", 0)
+				delProperty("meleeprot", 0)
+				delProperty("rangedprot", 0)
+				delProperty("movespeed", 0)
+				delProperty("disorient_resist", 0)
+				delProperty("disorient_resist_eye", 0)
+				delProperty("disorient_resist_ear", 0)
+				c_flags &= ~BLOCK_TOOLTIP
 
 				src.setItemSpecial(/datum/item_special/simple)
 
@@ -650,7 +663,7 @@
 /obj/item/syndicate_barrier
 	name = "Aegis Riot Barrier"
 	desc = "A personal barrier."
-	icon = 'icons/obj/weapons.dmi'
+	icon = 'icons/obj/items/weapons.dmi'
 	icon_state = "metal"
 	inhand_image_icon = 'icons/mob/inhand/hand_weapons.dmi'
 	item_state = "barrier0"
@@ -674,3 +687,4 @@
 		setProperty("disorient_resist_ear", 50)
 
 		src.setItemSpecial(/datum/item_special/barrier)
+		BLOCK_ALL

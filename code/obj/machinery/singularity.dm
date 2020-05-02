@@ -569,7 +569,7 @@ for some reason I brought it back and tried to clean it up a bit and I regret ev
 
 		if(state == 1)
 			boutput(user, "You start to weld the field generator to the floor.")
-			sleep(20)
+			sleep(2 SECONDS)
 
 			if ((user.loc == T && user.equipped() == W))
 				state = 3
@@ -584,7 +584,7 @@ for some reason I brought it back and tried to clean it up a bit and I regret ev
 
 		if(state == 3)
 			boutput(user, "You start to cut the field generator free from the floor.")
-			sleep(20)
+			sleep(2 SECONDS)
 
 			if ((user.loc == T && user.equipped() == W))
 				state = 1
@@ -950,7 +950,14 @@ for some reason I brought it back and tried to clean it up a bit and I regret ev
 	..()
 
 /obj/machinery/emitter/attackby(obj/item/W, mob/user)
-	if (iswrenchingtool(W))
+	if (ispryingtool(W))
+		if(!anchored)
+			src.dir = turn(src.dir, -90)
+			return
+		else
+			boutput(user, "The emitter is too firmly secured to be rotated!")
+			return
+	else if (iswrenchingtool(W))
 		if(active)
 			boutput(user, "Turn off the emitter first.")
 			return
@@ -981,7 +988,7 @@ for some reason I brought it back and tried to clean it up a bit and I regret ev
 		if(state == 1)
 			W:eyecheck(user)
 			boutput(user, "You start to weld the emitter to the floor.")
-			sleep(20)
+			sleep(2 SECONDS)
 
 			if ((user.loc == T && user.equipped() == W))
 				state = 3
@@ -996,7 +1003,7 @@ for some reason I brought it back and tried to clean it up a bit and I regret ev
 
 		if(state == 3)
 			boutput(user, "You start to cut the emitter free from the floor.")
-			sleep(20)
+			sleep(2 SECONDS)
 			if ((user.loc == T && user.equipped() == W))
 				state = 1
 				if(src.link) //Time to clear our link.
@@ -1088,14 +1095,6 @@ for some reason I brought it back and tried to clean it up a bit and I regret ev
 		src.active = 0
 		icon_state = "Emitter"
 
-	return
-
-/obj/machinery/emitter/verb/rotate()
-	set src in view(1)
-	if (src.state != 0)
-		boutput(usr, "<span style=\"color:red\">It's secured to the floor and can't be rotated.</span>")
-		return
-	src.dir = turn(src.dir, 90)
 	return
 
 /////////////////////////////////// Collector array /////////////////////////////////
@@ -1475,7 +1474,7 @@ for some reason I brought it back and tried to clean it up a bit and I regret ev
 		if(state == 1)
 			W:eyecheck(user)
 			boutput(user, "You start to weld the bomb to the floor.")
-			sleep(50)
+			sleep(5 SECONDS)
 
 			logTheThing("station", user, null, "welds a [src.name] to the floor at [log_loc(src)].") // Like here (Convair880).
 
@@ -1491,7 +1490,7 @@ for some reason I brought it back and tried to clean it up a bit and I regret ev
 
 		if(state == 3)
 			boutput(user, "You start to cut the bomb free from the floor.")
-			sleep(50)
+			sleep(5 SECONDS)
 
 			logTheThing("station", user, null, "cuts a [src.name] from the floor at [log_loc(src)].") // Hmm (Convair880).
 			if (src.activator)

@@ -45,10 +45,8 @@
 /obj/joeq/spooky
 	name = "Memorial Plaque"
 
-	examine()
-		set src in view()
-		boutput(usr, "Here lies [usr:real_name]. Loved by all. R.I.P.")
-		return
+	examine(mob/user)
+		boutput(usr, "Here lies [user.real_name]. Loved by all. R.I.P.")
 
 /*
  *	Spooky TOMBSTONE.  It is a tombstone.
@@ -295,7 +293,7 @@
 
 		var/turf/the_turf = get_turf(target)
 
-		var/icon/photo = icon('icons/obj/items.dmi',"photo")
+		var/icon/photo = icon('icons/obj/items/items.dmi',"photo")
 
 		var/icon/turficon = build_composite_icon(the_turf)
 		turficon.Scale(22,20)
@@ -483,10 +481,10 @@
 	attack_hand(mob/user as mob)
 		boutput(user, "<span class='combat'>The knobs are fixed in place.  Might as well sit back and watch, I guess?</span>")
 
-	examine()
-		set src in oview()
-		if (ishuman(usr) && !usr.stat)
-			var/mob/living/carbon/human/M = usr
+	examine(mob/user)
+		. = list()
+		if (ishuman(user) && !user.stat)
+			var/mob/living/carbon/human/M = user
 
 			M.visible_message("<span class='combat'>[M] stares blankly into [src], \his eyes growing duller and duller...</span>","<span class='combat'>You stare deeply into [src].  You...can't look away.  It's mesmerizing.  Sights, sounds, colors, shapes.  They blur together into a phantasm of beauty and wonder.</span>")
 			var/mob/living/carbon/wall/halloween/holder = new
@@ -522,8 +520,7 @@
 			stoneman.dir = get_dir(stoneman, src)
 
 		else
-			boutput(usr, desc)
-			return
+			. += desc
 
 /obj/item/toy/halloween2014spellbook
 	name = "Book of Spells"
@@ -629,7 +626,7 @@
 		if (state != 2 && ..())
 			for(var/i, i < 125, i++)
 				SpawnParticle()
-				sleep(3)
+				sleep(0.3 SECONDS)
 			Die()
 
 /datum/particleType/spooky_mist
@@ -691,4 +688,4 @@
 		for (var/i=src.trigger_duration, i>0, i--)
 			src.dir = pick(cardinal)
 			src.pixel_x = rand(-3,3)
-			sleep(1)
+			sleep(0.1 SECONDS)

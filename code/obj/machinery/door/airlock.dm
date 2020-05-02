@@ -645,7 +645,7 @@ About the new airlock wires panel:
 						if (src.secondsElectrified<0)
 							src.secondsElectrified = 0
 						//src.updateUsrDialog()
-						sleep(10)
+						sleep(1 SECOND)
 		if(AIRLOCK_WIRE_OPEN_DOOR)
 			//tries to open the door without ID
 			//will succeed only if the ID wire is cut or the door requires no access
@@ -785,7 +785,7 @@ About the new airlock wires panel:
 		SPAWN_DBG(0)
 			var/cont = 1
 			while (cont)
-				sleep(10)
+				sleep(1 SECOND)
 				cont = 0
 				if (src.secondsMainPowerLost>0)
 					if ((!src.isWireCut(AIRLOCK_WIRE_MAIN_POWER1)) && (!src.isWireCut(AIRLOCK_WIRE_MAIN_POWER2)))
@@ -912,7 +912,7 @@ About the new airlock wires panel:
 		var/mob/living/L = user
 		L.Virus_ShockCure(33)
 		L.shock_cyberheart(33)
-	sleep(1)
+	sleep(0.1 SECONDS)
 	if(user.getStatusDuration("stunned") < shock_damage * 10) user.changeStatus("stunned", shock_damage * 10)
 	if(user.getStatusDuration("weakened") < shock_damage * 10) user.changeStatus("weakened", 10 * prot)
 	for(var/mob/M in AIviewers(src))
@@ -1073,7 +1073,7 @@ About the new airlock wires panel:
 		SPAWN_DBG(2 SECONDS)
 			//TODO: Make this take a minute
 			boutput(user, "Airlock AI control has been blocked. Beginning fault-detection.")
-			sleep(50)
+			sleep(5 SECONDS)
 			if (src.canAIControl())
 				boutput(user, "Alert cancelled. Airlock control has been restored without our assistance.")
 				src.aiHacking=0
@@ -1083,9 +1083,9 @@ About the new airlock wires panel:
 				src.aiHacking=0
 				return
 			boutput(user, "Fault confirmed: airlock control wire disabled or cut.")
-			sleep(20)
+			sleep(2 SECONDS)
 			boutput(user, "Attempting to hack into airlock. This may take some time.")
-			sleep(200)
+			sleep(20 SECONDS)
 			if (src.canAIControl())
 				boutput(user, "Alert cancelled. Airlock control has been restored without our assistance.")
 				src.aiHacking=0
@@ -1095,7 +1095,7 @@ About the new airlock wires panel:
 				src.aiHacking=0
 				return
 			boutput(user, "Upload access confirmed. Loading control program into airlock software.")
-			sleep(170)
+			sleep(17 SECONDS)
 			if (src.canAIControl())
 				boutput(user, "Alert cancelled. Airlock control has been restored without our assistance.")
 				src.aiHacking=0
@@ -1105,11 +1105,11 @@ About the new airlock wires panel:
 				src.aiHacking=0
 				return
 			boutput(user, "Transfer complete. Forcing airlock to execute program.")
-			sleep(50)
+			sleep(5 SECONDS)
 			//disable blocked control
 			src.aiControlDisabled = 2
 			boutput(user, "Receiving control information from airlock.")
-			sleep(10)
+			sleep(1 SECOND)
 			//bring up airlock dialog
 			src.aiHacking = 0
 			src.attack_ai(user)
@@ -1397,7 +1397,7 @@ About the new airlock wires panel:
 									if (src.secondsElectrified<0)
 										src.secondsElectrified = 0
 									src.updateUsrDialog()
-									sleep(10)
+									sleep(1 SECOND)
 				if (6)
 					//electrify door indefinitely
 					if (src.isWireCut(AIRLOCK_WIRE_ELECTRIFY))
@@ -1518,7 +1518,7 @@ About the new airlock wires panel:
 			update_icon(1)
 
 			src.set_density(1)
-			sleep(15)
+			sleep(1.5 SECONDS)
 
 			if (src.visible)
 				if (ignore_light_or_cam_opacity)
@@ -1673,7 +1673,7 @@ obj/machinery/door/airlock
 					locked = 0
 					update_icon()
 
-					sleep(5)
+					sleep(0.5 SECONDS)
 					open(1)
 
 					locked = 1
@@ -1687,7 +1687,7 @@ obj/machinery/door/airlock
 					close(1)
 
 					locked = 1
-					sleep(5)
+					sleep(0.5 SECONDS)
 					update_icon()
 					sleep(src.operation_time)
 					send_status(,senderid)
@@ -1903,4 +1903,4 @@ obj/machinery/door/airlock
 						src.secondsElectrified-=1
 						if (src.secondsElectrified<0)
 							src.secondsElectrified = 0
-						sleep(10)
+						sleep(1 SECOND)

@@ -11,7 +11,7 @@ Contains:
 
 /obj/item/tank
 	name = "tank"
-	icon = 'icons/obj/tank.dmi'
+	icon = 'icons/obj/items/tank.dmi'
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
 	wear_image_icon = 'icons/mob/back.dmi'
 
@@ -37,6 +37,7 @@ Contains:
 		src.air_contents.temperature = T20C
 		if (!(src in processing_items))
 			processing_items.Add(src)
+		BLOCK_TANK
 		return
 
 	disposing()
@@ -236,13 +237,13 @@ Contains:
 			integrity++
 
 	examine()
-		set category = "Local"
-		var/obj/item/icon = src
 		if (istype(src.loc, /obj/item/assembly))
+			var/obj/item/icon = src
+			. = list()
 			icon = src.loc
 			if (!in_range(src, usr))
 				if (icon == src)
-					boutput(usr, "<span style=\"color:blue\">It's a [bicon(icon)]! If you want any more information you'll need to get closer.</span>")
+					. += "<span style=\"color:blue\">It's a [bicon(icon)]! If you want any more information you'll need to get closer.</span>"
 				return
 
 			var/celsius_temperature = src.air_contents.temperature-T0C
@@ -261,12 +262,9 @@ Contains:
 			else
 				descriptive = "furiously hot"
 
-			boutput(usr, "<span style=\"color:blue\">The [bicon(icon)] feels [descriptive]</span>")
-
+			. += "<span style=\"color:blue\">The [bicon(icon)] feels [descriptive]</span>"
 		else
-			..()
-
-		return
+			return ..()
 
 
 	attackby(obj/item/W as obj, mob/user as mob)
@@ -312,15 +310,16 @@ Contains:
 
 	New()
 		if(map_settings.flags & MOVING_SUB_MAP)
-			icon_state = "jetpack_mag0"
-			item_state = "jetpack_mag"
+			if(type == /obj/item/tank/jetpack)
+				icon_state = "jetpack_mag0"
+				item_state = "jetpack_mag"
 			c_flags = IS_JETPACK
 
 		..()
 		src.air_contents.oxygen = (6*ONE_ATMOSPHERE)*70/(R_IDEAL_GAS_EQUATION*T20C)
 		return
 
-	verb/toggle()
+	proc/toggle()
 		src.on = !( src.on )
 		if(map_settings.flags & MOVING_SUB_MAP)
 			src.icon_state = text("jetpack_mag[]", src.on)
@@ -593,7 +592,7 @@ Contains:
 		src.icon_state = text("jetpack_mk2_[]", src.on)
 		if(src.on)
 			boutput(usr, "<span style=\"color:blue\">The jetpack is now on</span>")
-			playsound(src.loc, "sound/misc/JetPackMK2on.ogg", 50, 1)
+			playsound(src.loc, "sound/misc/JetpackMK2on.ogg", 50, 1)
 		else
 			boutput(usr, "<span style=\"color:blue\">The jetpack is now off</span>")
 		return

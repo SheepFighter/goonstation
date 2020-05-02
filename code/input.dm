@@ -161,6 +161,10 @@ var/list/dirty_keystates = list()
 
 		var/list/parameters = params2list(params)
 
+		if (admin_intent)
+			src.mob.admin_interact(object,parameters)
+			return
+
 		if (src.mob.mob_flags & SEE_THRU_CAMERAS)
 			if(isturf(object))
 				var/turf/T = object
@@ -168,7 +172,7 @@ var/list/dirty_keystates = list()
 					return
 				else
 					if (parameters["right"])
-						object.examine()
+						src.mob.examine_verb(object)
 
 
 		if (parameters["drag"] == "middle") //fixes exploit that basically gave everyone access to an aimbot
@@ -260,8 +264,6 @@ var/list/dirty_keystates = list()
 
 	proc/set_keymap(datum/keymap/map)
 		src.keymap = map
-
-	proc/setup_macros()
 
 		// oh god
 		/*

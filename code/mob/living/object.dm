@@ -1,6 +1,6 @@
 /obj/item/attackdummy
 	name = "attack dummy"
-	damtype = "brute"
+	hit_type = DAMAGE_BLUNT
 	force = 5
 	throwforce = 5
 
@@ -108,10 +108,10 @@
 			return src.dummy
 
 	examine()
-		..()
-		boutput(usr, "<span style=\"color:red\">It seems to be alive.</span>")
+		. = ..()
+		. += "<span style=\"color:red\">It seems to be alive.</span>"
 		if (health < 25)
-			boutput(usr, "<span style=\"color:blue\">The ethereal grip on this object appears to be weak.</span>")
+			. += "<span style=\"color:blue\">The ethereal grip on this object appears to be weak.</span>"
 
 	meteorhit(var/obj/O as obj)
 		src.death(1)

@@ -72,7 +72,7 @@ var/image/blob_icon_cache
 				actions.start(new /datum/action/bar/blob_absorb(H, overmind), src)
 
 	proc/right_click_action()
-		examine()
+		usr.examine_verb()
 
 	Click(location, control, params)
 		if (usr != overmind)
@@ -242,7 +242,7 @@ var/image/blob_icon_cache
 
 	attackby(var/obj/item/W, var/mob/user)
 		user.lastattacked = src
-		if( iscritter(user) && user:ghost_spawned )
+		if(iscritter(user) && user:ghost_spawned || isghostdrone(user))
 			src.visible_message("<span class='combat'><b>[user.name]</b> feebly attacks [src] with [W], but is too weak to harm it!</span>")
 			return
 		if( istype(W,/obj/item/clothing/head) && overmind )
@@ -260,14 +260,14 @@ var/image/blob_icon_cache
 		var/damage = W.force
 		var/damage_mult = 1
 		var/damtype = "brute"
-		if (W.damtype == "burn" || W.damtype == "fire")
+		if (W.hit_type == DAMAGE_BURN)
 			damtype = "burn"
 
 		if (damage)
 			if (overmind)
 				overmind.onBlobHit(src, user)
 
-			if (src.type == /obj/blob && damtype == "brute")
+			if (src.type == /obj/blob && W.hit_type != DAMAGE_BURN)
 				var/chunk_chance = 2
 				if (W.hit_type == DAMAGE_CUT)
 					chunk_chance = 8
@@ -342,7 +342,7 @@ var/image/blob_icon_cache
 				SPAWN_DBG(1 SECOND)
 					while (poison)
 						Life()
-						sleep(10)
+						sleep(1 SECOND)
 
 		src.health -= amount
 		src.health = max(0,min(src.health_max,src.health))
@@ -572,14 +572,14 @@ var/image/blob_icon_cache
 	New()
 		. = ..()
 		START_TRACKING
-	
+
 	disposing()
 		. = ..()
 		STOP_TRACKING
 
 	bullet_act(var/obj/projectile/P)
 		if (P.proj_data.damage_type == D_ENERGY && src.overmind && prob(src.overmind.nucleus_reflectivity))
-			shoot_reflected(P, src)
+			shoot_reflected_to_sender(P, src)
 		else
 			..()
 
@@ -659,17 +659,17 @@ var/image/blob_icon_cache
 		if (!overlay_image)
 			overlay_image = image('icons/mob/new_blob.dmi', "deposit-material")
 
-	examine()
+	examine(mob/user)
 		if (disposed)
-			return
-		..()
-		if (usr == overmind)
+			return list()
+		. = ..()
+		if (user == overmind)
 			if (movable)
-				boutput(usr, "<span style=\"color:blue\">Clickdrag this onto any standard (not special) blob tile to move the reagent deposit there.</span>")
-			boutput(usr, "<span style=\"color:blue\">It contains:</span>")
+				. += "<span style=\"color:blue\">Clickdrag this onto any standard (not special) blob tile to move the reagent deposit there.</span>"
+			. += "<span style=\"color:blue\">It contains:</span>"
 			for (var/id in src.reagents.reagent_list)
 				var/datum/reagent/R = src.reagents.reagent_list[id]
-				boutput(usr, "<span style=\"color:blue\">- [R.volume] unit[R.volume != 1 ? "s" : null] of [R.name]</span>")
+				. += "<span style=\"color:blue\">- [R.volume] unit[R.volume != 1 ? "s" : null] of [R.name]</span>"
 
 	proc/update_reagent_overlay()
 		if (disposed)
@@ -1029,7 +1029,7 @@ var/image/blob_icon_cache
 
 	bullet_act(var/obj/projectile/P)
 		if (P.proj_data.damage_type == D_ENERGY)
-			shoot_reflected(P, src)
+			shoot_reflected_to_sender(P, src)
 		else
 			..()
 

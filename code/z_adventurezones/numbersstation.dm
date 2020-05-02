@@ -63,7 +63,7 @@ Thanks to our agents inside the organization, we were able to identify two infil
 		info = "<html><body style='margin:0px'><img src='[resource("images/bloody_numbers_note.png")]'></body></html>"
 
 	examine()
-		..()
+		return ..()
 
 	attackby()
 		return
@@ -282,7 +282,7 @@ Nanotrasen, Inc.<br>
 			broadcast_sound(period)
 			batch++
 			if (batch >= 3)
-				sleep(1)
+				sleep(0.1 SECONDS)
 
 	proc/process()
 		if (ticker.round_elapsed_ticks >= next_warning)

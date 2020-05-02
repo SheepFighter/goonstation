@@ -414,7 +414,7 @@
 /obj/item/record/poo/attackby(obj/item/P as obj, mob/user as mob)
 	if (istype(P, /obj/item/magnifying_glass))
 		boutput(user, "<span style=\"color:blue\">You examine the record with the magnifying glass.</span>")
-		sleep(20)
+		sleep(2 SECONDS)
 		boutput(user, "The scratch on the record, upon close examination, is actually tiny lettering. It says, <i>Fuck Discount Dan's. I hope more of your factories go under and you all drown in your toxic sewage.</i>")
 
 /obj/item/record/atlas

@@ -259,12 +259,14 @@
 								P = path_list[uid]
 							user.show_message("<span style=\"color:blue\">Apparent features of the pathogen:</span>")
 							var/lines = 1
+							var/DNA = ""
 							user.show_message(P.suppressant.may_react_to())
 							for (var/datum/pathogeneffects/E in P.effects)
 								var/res = E.may_react_to()
 								if (res)
 									lines++
-									user.show_message("[res]")
+									DNA = pathogen_controller.symptom_to_UID[E.type]
+									user.show_message("([DNA]) [res]")
 							if (!lines)
 								user.show_message("You cannot see anything out of the ordinary.")
 							if (src.symptom_action_in.len)
@@ -408,7 +410,6 @@
 	var/datum/pathobank/db = new
 	var/predictive_data = ""
 	var/datum/spyGUI/gui = null
-	var/manip_cooldown = 4 DECI SECONDS // was 20
 	var/manipulating = false //are we currently irradiating the pathogen?
 	New()
 		..()
@@ -558,6 +559,8 @@
 				for (var/bit in bits)
 					if (bit != "|")
 						src.manip.analysis_list += bit
+				src.manip.analysis_list -= src.manip.analysis_list[1]
+				src.manip.analysis_list = sortList(src.manip.analysis_list)
 				qdel(src.manip.loaded)
 				src.manip.loaded = null
 				visible_message("<span style=\"color:blue\">The manipulator ejects the empty vial.</span>")
@@ -626,8 +629,8 @@
 								match++
 								if (i == bits)
 									// get symptom from dna, so we can check if it is good or bad
-									var/sym = pathogen_controller.path_to_symptom[pathogen_controller.UID_to_symptom[dna]]
-									if(istype(sym, /datum/pathogeneffects/benevolent))
+									var/datum/pathogeneffects/S = pathogen_controller.path_to_symptom[pathogen_controller.UID_to_symptom[dna]]
+									if(S.beneficial)
 										stableType = "Good"
 									else
 										stableType = "Bad"
@@ -638,8 +641,8 @@
 								match++
 								if (i == bits)
 									// get symptom from dna, so we can check if it is good or bad
-									var/sym = pathogen_controller.path_to_symptom[pathogen_controller.UID_to_symptom[dna]]
-									if(istype(sym, /datum/pathogeneffects/benevolent))
+									var/datum/pathogeneffects/S = pathogen_controller.path_to_symptom[pathogen_controller.UID_to_symptom[dna]]
+									if(S.beneficial)
 										transGood++
 									else
 										transBad++
@@ -753,6 +756,8 @@
 			var/dir = text2num(href_list["dir"])
 			if(mut_type && dir && (src.manip.machine_state == PATHOGEN_MANIPULATOR_STATE_MANIPULATE) && !(manipulating))
 				manipulating = true
+				var/mal = src.manip.loaded.reference.maliciousness
+				var/manip_cooldown = mal < 15 ? 1 : mal < 65 ? 10 : 20
 				SPAWN_DBG(manip_cooldown)
 					var/act = src.manip.loaded.manipulate(mut_type, dir)
 					var/out

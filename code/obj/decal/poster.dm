@@ -2,7 +2,7 @@
 /obj/decal/poster
 	desc = "A piece of paper with an image on it. Clearly dealing with incredible technology here."
 	name = "poster"
-	icon = 'icons/obj/items.dmi'
+	icon = 'icons/obj/items/items.dmi'
 	icon_state = "poster"
 	anchored = 1
 	opacity = 0
@@ -15,6 +15,7 @@
 	examine()
 		if (usr.client && src.popup_win)
 			src.show_popup_win(usr)
+			return list()
 		else
 			return ..()
 

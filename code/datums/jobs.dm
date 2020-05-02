@@ -208,17 +208,16 @@
 	receives_disk = 1
 	recieves_implant = /obj/item/implant/health/security
 
-
 	slot_back = /obj/item/storage/backpack/withO2
 	slot_belt = /obj/item/gun/energy/taser_gun
 	slot_poc1 = /obj/item/device/pda2/hos
+	slot_poc2 = /obj/item/storage/security_pouch //replaces sec starter kit
 	slot_jump = /obj/item/clothing/under/rank/head_of_securityold
 	slot_suit = /obj/item/clothing/suit/armor/vest
 	slot_foot = /obj/item/clothing/shoes/swat
 	slot_head = /obj/item/clothing/head/helmet/HoS
 	slot_ears = /obj/item/device/radio/headset/command/hos
 	slot_eyes = /obj/item/clothing/glasses/sunglasses/sechud
-	items_in_backpack = list(/obj/item/storage/box/security_starter_kit) // Don't make them spawn with a full backpack again, please.
 
 	New()
 		if(map_settings.flags & SUBMARINE_MAP)
@@ -231,7 +230,6 @@
 			slot_head = /obj/item/clothing/head/helmet/HoS
 			slot_ears = /obj/item/device/radio/headset/command/hos
 			slot_eyes = /obj/item/clothing/glasses/sunglasses/sechud
-			items_in_backpack = list(/obj/item/storage/box/security_starter_kit) // Don't make them spawn with a full backpack again, please.
 
 		..()
 		src.access = get_access("Head of Security")
@@ -416,7 +414,7 @@
 	slot_foot = /obj/item/clothing/shoes/swat
 	slot_ears =  /obj/item/device/radio/headset/security
 	slot_eyes = /obj/item/clothing/glasses/sunglasses/sechud
-	items_in_backpack = list(/obj/item/storage/box/security_starter_kit) // Don't make them spawn with a full backpack again, please.
+	slot_poc1 = /obj/item/storage/security_pouch //replaces sec starter kit
 
 	New()
 		..()
@@ -846,16 +844,14 @@
 
 /datum/job/civilian/clown
 	name = "Clown"
+	limit = 1
 	wages = 1000
-	needs_college = 1
 	linkcolor = "#FF99FF"
 	slot_back = null
 	slot_belt = /obj/item/storage/fanny/funny
 	slot_mask = /obj/item/clothing/mask/clown_hat
-	slot_head = /obj/item/clothing/head/graduation_cap
 	slot_jump = /obj/item/clothing/under/misc/clown
 	slot_foot = /obj/item/clothing/shoes/clown_shoes
-	slot_rhan = /obj/item/toy/diploma
 	slot_lhan = /obj/item/instrument/bikehorn
 	slot_poc1 = /obj/item/device/pda2/clown
 	slot_poc2 = /obj/item/reagent_containers/food/snacks/plant/banana
@@ -1002,7 +998,7 @@
 	slot_jump = /obj/item/clothing/under/misc/vice
 	slot_foot = /obj/item/clothing/shoes/brown
 	slot_ears =  /obj/item/device/radio/headset/security
-	items_in_backpack = list(/obj/item/storage/box/security_starter_kit) // Don't make them spawn with a full backpack again, please.
+	slot_poc1 = /obj/item/storage/security_pouch //replaces sec starter kit
 
 	New()
 		..()

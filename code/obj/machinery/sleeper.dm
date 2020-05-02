@@ -713,9 +713,8 @@
 			interact_particle(user,src)
 
 	examine()
-		..()
-		boutput(usr, "Home turf: [get_area(src.homeloc)].")
-		return
+		. = ..()
+		. += "Home turf: [get_area(src.homeloc)]."
 
 	// Could be useful (Convair880).
 	MouseDrop(over_object, src_location, over_location)
@@ -746,7 +745,7 @@
 		return
 
 /obj/machinery/sleeper/compact
-	name = "Compact sleeper"
+	name = "Compact Sleeper"
 	desc = "Your usual sleeper, but compact this time. Wow!"
 	icon = 'icons/obj/compact_machines.dmi'
 	icon_state = "compact_sleeper"

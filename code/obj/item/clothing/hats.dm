@@ -174,14 +174,14 @@
 
 		if (src.on)
 			src.force = 10
-			src.damtype = "fire"
+			src.hit_type = DAMAGE_BURN
 			src.icon_state = "cakehat1"
 			light.enable()
 			if (!(src in processing_items))
 				processing_items.Add(src)
 		else
 			src.force = 3
-			src.damtype = "brute"
+			src.hit_type = DAMAGE_BLUNT
 			src.icon_state = "cakehat0"
 			light.disable()
 
@@ -263,34 +263,28 @@
 
 	New()
 		..()
-		items = list("bodybag" = /obj/item/body_bag, \
-									"scanner" = /obj/item/device/detective_scanner, \
-									"lighter" = /obj/item/device/light/zippo/, \
-									"spray" = /obj/item/spraybottle, \
-									"monitor" = /obj/item/device/camera_viewer, \
-									"camera" = /obj/item/camera_test, \
-									"audiolog" = /obj/item/device/audio_log , \
-									"flashlight" = /obj/item/device/light/flashlight, \
+		items = list("bodybag" = /obj/item/body_bag,
+									"scanner" = /obj/item/device/detective_scanner,
+									"lighter" = /obj/item/device/light/zippo/,
+									"spray" = /obj/item/spraybottle,
+									"monitor" = /obj/item/device/camera_viewer,
+									"camera" = /obj/item/camera_test,
+									"audiolog" = /obj/item/device/audio_log ,
+									"flashlight" = /obj/item/device/light/flashlight,
 									"glasses" = /obj/item/clothing/glasses)
 		cigs = list()
 	examine()
-		set src in view()
-		set category = "Local"
-
-		..()
-		var/str = "<span style=\"color:blue\">Current activation phrase is <b>\"[phrase]\"</b>.</span>"
+		. = ..()
+		. += "<span style=\"color:blue\">Current activation phrase is <b>\"[phrase]\"</b>.</span>"
 		for (var/name in items)
 			var/type = items[name]
 			var/obj/item/I = locate(type) in contents
 			if(I)
-				str += "<br><span style=\"color:blue\">[bicon(I)][I] is ready and bound to the word \"[name]\"!</span>"
+				. += "<br><span style=\"color:blue\">[bicon(I)][I] is ready and bound to the word \"[name]\"!</span>"
 			else
-				str += "<br>There is no [name]!"
+				. += "<br>There is no [name]!"
 		if (cigs.len)
-			str += "<br><span style=\"color:blue\">It contains <b>[cigs.len]</b> cigarettes!</span>"
-
-		usr.show_message(str)
-		return
+			. += "<br><span style=\"color:blue\">It contains <b>[cigs.len]</b> cigarettes!</span>"
 
 	hear_talk(mob/M as mob, msg, real_name, lang_id)
 		var/turf/T = get_turf(src)
@@ -572,6 +566,12 @@
 	item_state = "cowboy"
 	c_flags = SPACEWEAR
 
+/obj/item/clothing/head/fancy // placeholder icons until someone sprites an actual fancy hat
+	name = "fancy hat"
+	icon_state = "rank-fancy"
+	item_state = "that"  // todo actual inhands for this and children ?
+	desc = "What do you mean this is hat isn't fancy?"
+
 /obj/item/clothing/head/fancy/captain
 	name = "captain's hat"
 	icon_state = "captain-fancy"
@@ -581,7 +581,7 @@
 		setProperty("meleeprot", 3)
 
 /obj/item/clothing/head/fancy/rank
-	name = "hat"
+	name = "officer's hat"
 	icon_state = "rank-fancy"
 	c_flags = SPACEWEAR
 	setupProperties()
@@ -698,7 +698,7 @@
 
 	attack_self (mob/user as mob)
 		user.visible_message("<span class='combat'><b>[user] fiddles with [src]!</b></span>")
-		sleep(10)
+		sleep(1 SECOND)
 		src.toggle_active(user)
 		user.update_inhands()
 		src.add_fingerprint(user)
@@ -1008,10 +1008,9 @@
 		item_state = "sunhatg"
 
 	examine()
-		..()
+		. = ..()
 		if (src.stunready)
-			boutput(usr, "It appears to be been modified into a... stunhat? [src.max_uses > 0 ? " There are [src.uses]/[src.max_uses] charges left!" : ""]")
-		return
+			. += "It appears to be been modified into a... stunhat? [src.max_uses > 0 ? " There are [src.uses]/[src.max_uses] charges left!" : ""]"
 
 	attackby(obj/item/W, mob/user)
 		if (istype(W, /obj/item/cable_coil))

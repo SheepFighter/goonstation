@@ -1,6 +1,6 @@
 /obj/item/medical
 	name = "medical pack"
-	icon = 'icons/obj/items.dmi'
+	icon = 'icons/obj/items/items.dmi'
 	inhand_image_icon = 'icons/mob/inhand/hand_medical.dmi'
 	amount = 5
 	w_class = 1
@@ -13,17 +13,8 @@
 	stamina_crit_chance = 3
 
 	examine()
-		set src in view(1)
-		set category = "Local"
-
-		if (src.amount <= 0)
-			qdel(src)
-			return
-
-		..()
-
-		boutput(usr, "[bicon(src)] <span style=\"color:blue\">There [src.amount == 1 ? "is" : "are"] [src.amount] [src.name]\s left on the stack!</span>")
-		return
+		. = ..()
+		. += "[bicon(src)] <span style=\"color:blue\">There [src.amount == 1 ? "is" : "are"] [src.amount] [src.name]\s left on the stack!</span>"
 
 	attack_hand(mob/user as mob)
 		if (user.r_hand == src || user.l_hand == src)

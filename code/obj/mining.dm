@@ -32,7 +32,7 @@
 				return
 			user.visible_message("<b>[user]</b> begins constructing a new magnet.")
 			var/turf/T = get_turf(user)
-			sleep(240)
+			sleep(24 SECONDS)
 			if (user.loc == T && user.equipped() == W && !user.stat)
 				var/obj/magnet = new W:constructed_magnet(get_turf(src))
 				magnet.dir = src.dir
@@ -208,13 +208,13 @@
 	var/obj/machinery/mining_magnet/construction/magnet = null
 
 	examine()
-		..()
+		. = ..()
 		if (loaded)
-			boutput(usr, "<span style=\"color:blue\">The magnetizer is loaded with a plasmastone. Designate the mineral magnet to attach, then designate the lower left tile of the area to magnetize.</span>")
-			boutput(usr, "<span style=\"color:blue\">The magnetized area must be a clean shot of space, surrounded by bordering tiles on all sides.</span>")
-			boutput(usr, "<span style=\"color:blue\">A small mineral magnet requires an 7x7 area of space, a large one requires a 15x15 area of space.</span>")
+			. += "<span style=\"color:blue\">The magnetizer is loaded with a plasmastone. Designate the mineral magnet to attach, then designate the lower left tile of the area to magnetize.</span>"
+			. += "<span style=\"color:blue\">The magnetized area must be a clean shot of space, surrounded by bordering tiles on all sides.</span>"
+			. += "<span style=\"color:blue\">A small mineral magnet requires an 7x7 area of space, a large one requires a 15x15 area of space.</span>"
 		else
-			boutput(usr, "<span style=\"color:red\">The magnetizer must be loaded with a chunk of plasmastone to use.</span>")
+			. += "<span style=\"color:red\">The magnetizer must be loaded with a chunk of plasmastone to use.</span>"
 
 	attackby(obj/item/W as obj, mob/user as mob)
 		if (istype(W, /obj/item/raw_material/plasmastone) && !loaded)
@@ -438,12 +438,12 @@
 		..()
 
 	examine()
-		..()
+		. = ..()
 		if (src.health < 100)
 			if (src.health < 50)
-				boutput(usr, "<span style=\"color:red\">It's rather badly damaged. It probably needs some wiring replaced inside.</span>")
+				. += "<span style=\"color:red\">It's rather badly damaged. It probably needs some wiring replaced inside.</span>"
 			else
-				boutput(usr, "<span style=\"color:red\">It's a bit damaged. It looks like it needs some welding done.</span>")
+				. += "<span style=\"color:red\">It's a bit damaged. It looks like it needs some welding done.</span>"
 
 	ex_act(severity)
 		switch(severity)
@@ -1110,7 +1110,7 @@
 			var/obj/item/mining_tool/T = W
 			src.dig_asteroid(user,T)
 			if (T.status)
-				T.process_charges(1)
+				T.process_charges(T.digcost)
 
 		else if (istype(W, /obj/item/oreprospector))
 			var/message = "----------------------------------<br>"
@@ -1434,7 +1434,7 @@
 /obj/item/mining_tool
 	name = "pickaxe"
 	desc = "A thing to bash rocks with until they become smaller rocks."
-	icon = 'icons/obj/mining.dmi'
+	icon = 'icons/obj/items/mining.dmi'
 	icon_state = "pickaxe"
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
 	item_state = "pick"
@@ -1442,42 +1442,51 @@
 	flags = ONBELT
 	force = 7
 	var/dig_strength = 1
-	var/charges = 0
-	var/maximum_charges = 0
+	var/obj/item/ammo/power_cell/cell = null
 	var/status = 0
+	var/digcost = 0
 	var/weakener = 0
 	var/image/powered_overlay = null
 	var/sound/hitsound_charged = 'sound/impact_sounds/Stone_Cut_1.ogg'
 	var/sound/hitsound_uncharged = 'sound/impact_sounds/Stone_Cut_1.ogg'
 	module_research = list("tools" = 3, "engineering" = 1, "mining" = 1)
 
-	// Seems like a basic bit of user feedback to me (Convair880).
-	examine()
+	New()
 		..()
-		if (src.maximum_charges <= 0) return
-		if (isrobot(usr)) return // Drains battery instead.
-		boutput(usr, "The [src.name] is turned [src.status ? "on" : "off"]. There are [src.charges]/[src.maximum_charges] charges left!")
-		return
+		BLOCK_ROD
+
+	// Seems like a basic bit of user feedback to me (Convair880).
+	examine(mob/user)
+		. = ..()
+		if (!src.cell)
+			return
+		if (isrobot(user))
+			return // Drains battery instead.
+		. += "The [src.name] is turned [src.status ? "on" : "off"]. There are [src.cell.charge]/[src.cell.max_charge] PUs left!"
 
 	proc/process_charges(var/use)
 		if (!isnum(use) || use < 0)
 			return 0
-		if (src.charges < 1)
+		if (cell.charge < 1)
 			return 0
-		src.charges -= use
-		src.charges = max(0,min(src.charges,src.maximum_charges))
-		if (charges == 0)
+		src.cell.use(use)
+		if (src.cell.charge == 0)
 			src.power_down()
 			var/turf/T = get_turf(src)
 			T.visible_message("<span style=\"color:red\">[src] runs out of charge and powers down!</span>")
 		return 1
 
+	afterattack(target as mob, mob/user as mob)
+		..()
+		if (src.status && !isturf(target))
+			src.process_charges(digcost*5)
+
 	proc/charge(var/amount)
 		//Support for recharge stations. Increment uses by one until we reach max.
-		src.charges = src.charges + 1 > src.maximum_charges ? src.maximum_charges : src.charges + 1
-
-		//Return if we are finished charging or not to the recharger
-		return src.charges < src.maximum_charges
+		if(src.cell)
+			return src.cell.charge(amount)
+		else//No cell, or not rechargeable. Tell anything trying to charge it.
+			return -1
 
 	proc/power_up()
 		src.status = 1
@@ -1493,6 +1502,17 @@
 			signal_event("icon_updated")
 		return
 
+	attackby(obj/item/b as obj, mob/user as mob)
+		if (istype(b, /obj/item/ammo/power_cell/))
+			var/obj/item/ammo/power_cell/pcell = b
+			if (src.cell)
+				if (pcell.swap(src))
+					user.visible_message("<span style=\"color:red\">[user] swaps [src]'s power cell.</span>")
+		else
+			..()
+
+	proc/update_icon()
+		return
 obj/item/clothing/gloves/concussive
 	name = "concussion gauntlets"
 	desc = "These gloves enable miners to punch through solid rock with their hands instead of using tools."
@@ -1514,20 +1534,20 @@ obj/item/clothing/gloves/concussive
 /obj/item/mining_tool/power_pick
 	name = "power pick"
 	desc = "An energised mining tool."
-	icon = 'icons/obj/mining.dmi'
+	icon = 'icons/obj/items/mining.dmi'
 	icon_state = "powerpick"
-	item_state = "ppick"
+	item_state = "ppick1"
 	flags = ONBELT
 	dig_strength = 2
-	maximum_charges = 50
+	digcost = 2
+	cell = new/obj/item/ammo/power_cell
 	hitsound_charged = 'sound/impact_sounds/Metal_Hit_Heavy_1.ogg'
 	hitsound_uncharged = 'sound/impact_sounds/Stone_Cut_1.ogg'
 	module_research = list("tools" = 5, "engineering" = 2, "mining" = 3)
 
 	New()
 		..()
-		powered_overlay = image('icons/obj/mining.dmi', "pp-glow")
-		charges = maximum_charges
+		powered_overlay = image('icons/obj/items/mining.dmi', "pp-glow")
 		src.power_up()
 
 	attack_self(var/mob/user as mob)
@@ -1535,18 +1555,18 @@ obj/item/clothing/gloves/concussive
 			if (!src.status)
 				boutput(user, "<span style=\"color:blue\">You power up [src].</span>")
 				src.power_up()
+				item_state = "ppick1"
+				user.update_inhands()
 				playsound(user.loc, "sound/items/miningtool_on.ogg", 50, 1)
 			else
 				boutput(user, "<span style=\"color:blue\">You power down [src].</span>")
 				src.power_down()
+				item_state = "ppick0"
+				user.update_inhands()
 				playsound(user.loc, "sound/items/miningtool_off.ogg", 50, 1)
 		else
 			boutput(user, "<span style=\"color:red\">No charge left in [src].</span>")
 
-	afterattack(target as mob, mob/user as mob)
-		if(src.status)
-			src.process_charges(1)
-		..()
 
 	power_up()
 		..()
@@ -1558,12 +1578,13 @@ obj/item/clothing/gloves/concussive
 		src.force = 7
 		src.dig_strength = 1
 
+
 	borg
 		process_charges(var/use)
 			var/mob/living/silicon/robot/R = usr
 			if (istype(R))
-				if (R.cell.charge > use * 200)
-					R.cell.use(200 * use)
+				if (R.cell.charge > use * 66)
+					R.cell.use(66 * use)
 					return 1
 				return 0
 			else
@@ -1572,7 +1593,7 @@ obj/item/clothing/gloves/concussive
 /obj/item/mining_tool/drill
 	name = "laser drill"
 	desc = "Safe mining tool that doesn't require recharging."
-	icon = 'icons/obj/mining.dmi'
+	icon = 'icons/obj/items/mining.dmi'
 	icon_state = "lasdrill"
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
 	item_state = "drill"
@@ -1587,21 +1608,21 @@ obj/item/clothing/gloves/concussive
 /obj/item/mining_tool/powerhammer
 	name = "power hammer"
 	desc = "An energised mining tool."
-	icon = 'icons/obj/mining.dmi'
+	icon = 'icons/obj/items/mining.dmi'
 	icon_state = "powerhammer"
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
-	item_state = "hammer"
-	maximum_charges = 30
+	item_state = "phammer1"
+	cell = new/obj/item/ammo/power_cell
 	force = 9
 	dig_strength = 3
+	digcost = 3
 	hitsound_charged = 'sound/impact_sounds/Metal_Hit_Heavy_1.ogg'
 	hitsound_uncharged = 'sound/impact_sounds/Stone_Cut_1.ogg'
 	module_research = list("tools" = 5, "engineering" = 1, "mining" = 5)
 
 	New()
 		..()
-		src.powered_overlay = image('icons/obj/mining.dmi', "ph-glow")
-		charges = maximum_charges
+		src.powered_overlay = image('icons/obj/items/mining.dmi', "ph-glow")
 		src.power_up()
 
 	power_up()
@@ -1623,25 +1644,24 @@ obj/item/clothing/gloves/concussive
 			if (!src.status)
 				boutput(user, "<span style=\"color:blue\">You power up [src].</span>")
 				src.power_up()
+				item_state = "phammer1"
+				user.update_inhands()
 				playsound(user.loc, "sound/items/miningtool_on.ogg", 50, 1)
 			else
 				boutput(user, "<span style=\"color:blue\">You power down [src].</span>")
 				src.power_down()
+				item_state = "phammer0"
+				user.update_inhands()
 				playsound(user.loc, "sound/items/miningtool_off.ogg", 50, 1)
 		else
 			boutput(user, "<span style=\"color:red\">No charge left in [src].</span>")
-
-	afterattack(target as mob, mob/user as mob)
-		..()
-		if (src.status)
-			src.process_charges(1)
 
 	borg
 		process_charges(var/use)
 			var/mob/living/silicon/robot/R = usr
 			if (istype(R))
-				if (R.cell.charge > use * 200)
-					R.cell.use(200 * use)
+				if (R.cell.charge > use * 66)
+					R.cell.use(66 * use)
 					return 1
 				return 0
 			else
@@ -1653,10 +1673,11 @@ obj/item/clothing/gloves/concussive
 	icon = 'icons/obj/sealab_power.dmi'
 	icon_state = "powershovel"
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
-	item_state = "powershovel"
+	item_state = "pshovel1"
 	flags = ONBELT
 	dig_strength = 0
-	maximum_charges = 50
+	digcost = 2
+	cell = new/obj/item/ammo/power_cell
 	hitsound_charged = 'sound/impact_sounds/Metal_Hit_Heavy_1.ogg'
 	hitsound_uncharged = 'sound/impact_sounds/Stone_Cut_1.ogg'
 	module_research = list("tools" = 5, "engineering" = 2, "mining" = 3)
@@ -1665,7 +1686,6 @@ obj/item/clothing/gloves/concussive
 		..()
 		src.setItemSpecial(/datum/item_special/swipe)
 		powered_overlay = image('icons/obj/sealab_power.dmi', "ps-glow")
-		charges = maximum_charges
 		src.power_up()
 
 	attack_self(var/mob/user as mob)
@@ -1673,18 +1693,17 @@ obj/item/clothing/gloves/concussive
 			if (!src.status)
 				boutput(user, "<span style=\"color:blue\">You power up [src].</span>")
 				src.power_up()
+				item_state = "pshovel1"
+				user.update_inhands()
 				playsound(user.loc, "sound/items/miningtool_on.ogg", 50, 1)
 			else
 				boutput(user, "<span style=\"color:blue\">You power down [src].</span>")
 				src.power_down()
+				item_state = "pshovel0"
+				user.update_inhands()
 				playsound(user.loc, "sound/items/miningtool_off.ogg", 50, 1)
 		else
 			boutput(user, "<span style=\"color:red\">No charge left in [src].</span>")
-
-	afterattack(target as mob, mob/user as mob)
-		if(src.status)
-			src.process_charges(1)
-		..()
 
 	power_up()
 		..()
@@ -1700,8 +1719,8 @@ obj/item/clothing/gloves/concussive
 		process_charges(var/use)
 			var/mob/living/silicon/robot/R = usr
 			if (istype(R))
-				if (R.cell.charge > use * 200)
-					R.cell.use(200 * use)
+				if (R.cell.charge > use * 100)
+					R.cell.use(100 * use)
 					return 1
 				return 0
 			else
@@ -1836,7 +1855,7 @@ obj/item/clothing/gloves/concussive
 /obj/item/cargotele
 	name = "cargo transporter"
 	desc = "A device for teleporting crated goods."
-	icon = 'icons/obj/mining.dmi'
+	icon = 'icons/obj/items/mining.dmi'
 	icon_state = "cargotele"
 	var/charges = 8
 	var/maximum_charges = 8
@@ -1846,11 +1865,11 @@ obj/item/clothing/gloves/concussive
 	flags = ONBELT
 	mats = 4
 
-	examine()
-		..()
-		if (isrobot(usr)) return // Drains battery instead.
-		boutput(usr, "There are [src.charges]/[src.maximum_charges] charges left!")
-		return
+	examine(mob/user)
+		. = ..()
+		if (isrobot(user))
+			return // Drains battery instead.
+		. += "There are [src.charges]/[src.maximum_charges] charges left!"
 
 	attack_self() // Fixed --melon
 		if (src.charges < 1)
@@ -1993,7 +2012,7 @@ obj/item/clothing/gloves/concussive
 /obj/item/oreprospector
 	name = "geological scanner"
 	desc = "A device capable of detecting nearby mineral deposits."
-	icon = 'icons/obj/mining.dmi'
+	icon = 'icons/obj/items/mining.dmi'
 	icon_state = "minanal"
 	flags = ONBELT
 	w_class = 1.0
@@ -2043,7 +2062,7 @@ obj/item/clothing/gloves/concussive
 
 /proc/mining_scandecal(var/mob/living/user, var/turf/T, var/decalicon)
 	if(!user || !T || !decalicon) return
-	var/image/O = image('icons/obj/mining.dmi',T,decalicon,AREA_LAYER+1)
+	var/image/O = image('icons/obj/items/mining.dmi',T,decalicon,AREA_LAYER+1)
 	user << O
 	SPAWN_DBG(2 MINUTES)
 		if (user && user.client)
@@ -2057,7 +2076,7 @@ obj/item/clothing/gloves/concussive
 /obj/item/device/chargehacker
 	name = "geological scanner"
 	desc = "The scanner doesn't look right somehow."
-	icon = 'icons/obj/mining.dmi'
+	icon = 'icons/obj/items/mining.dmi'
 	icon_state = "minanal"
 	flags = ONBELT
 	w_class = 1.0
@@ -2264,7 +2283,7 @@ var/global/list/cargopads = list()
 /obj/item/ore_scoop
 	name = "ore scoop"
 	desc = "A device that sucks up ore into a satchel automatically. Just load in a satchel and walk over ore to scoop it up."
-	icon = 'icons/obj/mining.dmi'
+	icon = 'icons/obj/items/mining.dmi'
 	icon_state = "scoop"
 	inhand_image_icon = 'icons/mob/inhand/hand_tools.dmi'
 	item_state = "buildpipe"

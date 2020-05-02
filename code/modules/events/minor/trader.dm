@@ -71,7 +71,7 @@
 
 		command_alert("The merchant shuttle is preparing to undock, please stand clear.", "Merchant Departure Alert")
 
-		sleep(300)
+		sleep(30 SECONDS)
 
 		// hey you, get out of my shuttle! I ain't taking you back to centcom!
 		var/area/teleport_to_location = locate_area(/area/station/crew_quarters/bar)

@@ -78,12 +78,7 @@
 	var/custom = 0 //For custom borgs. Basically just prevents appearance changes. Obviously needs more work.
 
 	New(loc, var/obj/item/parts/robot_parts/robot_frame/frame = null, var/starter = 0, var/syndie = 0, var/frame_emagged = 0)
-		hud = new(src)
-		src.attach_hud(hud)
 
-		src.zone_sel = new(src, "CENTER+3, SOUTH")
-		src.zone_sel.change_hud_style('icons/mob/hud_robot.dmi')
-		src.attach_hud(zone_sel)
 		src.internal_pda = new /obj/item/device/pda2/cyborg(src)
 		src.internal_pda.name = "[src]'s Internal PDA Unit"
 		src.internal_pda.owner = "[src]"
@@ -142,6 +137,13 @@
 		src.cosmetic_mods = new /datum/robot_cosmetic(src)
 
 		. = ..()
+
+		hud = new(src)
+		src.attach_hud(hud)
+
+		src.zone_sel = new(src, "CENTER+3, SOUTH")
+		src.zone_sel.change_hud_style('icons/mob/hud_robot.dmi')
+		src.attach_hud(zone_sel)
 
 		if (src.shell)
 			if (!(src in available_ai_shells))
@@ -437,7 +439,7 @@
 					var/old_y = src.pixel_y
 					src.pixel_x += rand(-2,2)
 					src.pixel_y += rand(-1,1)
-					sleep(2)
+					sleep(0.2 SECONDS)
 					src.pixel_x = old_x
 					src.pixel_y = old_y
 
@@ -449,7 +451,7 @@
 					var/old_y = src.pixel_y
 					src.pixel_x += rand(-3,3)
 					src.pixel_y += rand(-1,1)
-					sleep(2)
+					sleep(0.2 SECONDS)
 					src.pixel_x = old_x
 					src.pixel_y = old_y
 
@@ -590,38 +592,44 @@
 		return
 
 	examine()
-		set src in oview()
-
+		. = list()
 		if(src.hiddenFrom && hiddenFrom.Find(usr.client)) //invislist
 			return
 
 		if (isghostdrone(usr))
 			return
-		var/rendered = "<span style=\"color:blue\">*---------*</span><br>"
-		rendered += "<span style=\"color:blue\">This is [bicon(src)] <B>[src.name]</B>!</span><br>"
-		if (isdead(src)) rendered += "<span style=\"color:red\">[src.name] is powered-down.</span><br>"
+		. += "<span style=\"color:blue\">*---------*</span><br>"
+		. += "<span style=\"color:blue\">This is [bicon(src)] <B>[src.name]</B>!</span><br>"
+
+		if (isdead(src))
+			. += "<span style=\"color:red\">[src.name] is powered-down.</span><br>"
+
 		var/brute = get_brute_damage()
 		var/burn = get_burn_damage()
 		if (brute)
-			if (brute < 75) rendered += "<span style=\"color:red\">[src.name] looks slightly dented</span><br>"
-			else rendered += "<span style=\"color:red\"><B>[src.name] looks severely dented!</B></span><br>"
+			if (brute < 75)
+				. += "<span style=\"color:red\">[src.name] looks slightly dented</span><br>"
+			else
+				. += "<span style=\"color:red\"><B>[src.name] looks severely dented!</B></span><br>"
 		if (burn)
-			if (burn < 75) rendered += "<span style=\"color:red\">[src.name] has slightly burnt wiring!</span><br>"
-			else rendered += "<span style=\"color:red\"><B>[src.name] has severely burnt wiring!</B></span><br>"
-		if (src.health <= 50) rendered += "<span style=\"color:red\">[src.name] is twitching and sparking!</span><br>"
-		if (isunconscious(src)) rendered += "<span style=\"color:red\">[src.name] doesn't seem to be responding.</span><br>"
+			if (burn < 75)
+				. += "<span style=\"color:red\">[src.name] has slightly burnt wiring!</span><br>"
+			else
+				. += "<span style=\"color:red\"><B>[src.name] has severely burnt wiring!</B></span><br>"
+		if (src.health <= 50)
+			. += "<span style=\"color:red\">[src.name] is twitching and sparking!</span><br>"
+		if (isunconscious(src))
+			. += "<span style=\"color:red\">[src.name] doesn't seem to be responding.</span><br>"
 
-		rendered += "The cover is [opened ? "open" : "closed"].<br>"
-		rendered += "The power cell display reads: [ cell ? "[round(cell.percent())]%" : "WARNING: No cell installed."]<br>"
+		. += "The cover is [opened ? "open" : "closed"].<br>"
+		. += "The power cell display reads: [ cell ? "[round(cell.percent())]%" : "WARNING: No cell installed."]<br>"
 
 		if (src.module)
-			rendered += "[src.name] has a [src.module.name] installed.<br>"
+			. += "[src.name] has a [src.module.name] installed.<br>"
 		else
-			rendered += "[src.name] does not appear to have a module installed.<br>"
+			. += "[src.name] does not appear to have a module installed.<br>"
 
-		rendered += "<span style=\"color:blue\">*---------*</span>"
-		out(usr, rendered)
-		return
+		. += "<span style=\"color:blue\">*---------*</span>"
 
 	choose_name(var/retries = 3)
 		var/newname
@@ -809,13 +817,13 @@
 
 		for (var/obj/item/roboupgrade/R in src.contents)
 			if (istype(R, /obj/item/roboupgrade/physshield) && R.activated && dmgtype == 0)
-				shoot_reflected(P, src)
+				shoot_reflected_to_sender(P, src)
 				src.cell.use(damage * 30)
 				boutput(src, "<span style=\"color:blue\">Your force shield deflects the shot!</span>")
 				playsound(src.loc, "sound/impact_sounds/Energy_Hit_1.ogg", 40, 1)
 				return
 			if (istype(R, /obj/item/roboupgrade/fireshield) && R.activated && dmgtype == 1)
-				shoot_reflected(P, src)
+				shoot_reflected_to_sender(P, src)
 				src.cell.use(damage * 20)
 				boutput(src, "<span style=\"color:blue\">Your fire shield deflects the shot!</span>")
 				playsound(src.loc, "sound/impact_sounds/Energy_Hit_1.ogg", 40, 1)
@@ -3019,28 +3027,28 @@
 
 	if (this_hand)
 		if (this_hand == "right" || this_hand == 3)
-			if (src.module_states[3] && istype(I, src.module_states[3]))
+			if (src.module_states[3] && istype(src.module_states[3], I))
 				return 1
 			else
 				return 0
 		else if (this_hand == "middle" || this_hand == 2)
-			if (src.module_states[2] && istype(I, src.module_states[2]))
+			if (src.module_states[2] && istype(src.module_states[2], I))
 				return 1
 			else
 				return 0
 		else if (this_hand == "left" || this_hand == 1)
-			if (src.module_states[1] && istype(I, src.module_states[1]))
+			if (src.module_states[1] && istype(src.module_states[1], I))
 				return 1
 			else
 				return 0
 		else
 			return 0
 
-	if (src.module_states[3] && istype(I, src.module_states[3]))
+	if (src.module_states[3] && istype(src.module_states[3], I))
 		return src.module_states[3]
-	else if (src.module_states[2] && istype(I, src.module_states[2]))
+	else if (src.module_states[2] && istype(src.module_states[2], I))
 		return src.module_states[2]
-	else if (src.module_states[1] && istype(I, src.module_states[1]))
+	else if (src.module_states[1] && istype(src.module_states[1], I))
 		return src.module_states[1]
 	else
 		return 0

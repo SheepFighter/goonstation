@@ -13,7 +13,7 @@ var/global/list/portable_machinery = list() // stop looping through world for th
 // Adapted from the PDA program in portable_machinery_control.dm (Convair880).
 /obj/item/remote/porter
 	name = "Remote"
-	icon = 'icons/obj/device.dmi'
+	icon = 'icons/obj/items/device.dmi'
 	desc = "You shouldn't be able to see this!"
 	icon_state = "locator"
 	item_state = "electronic"
@@ -307,9 +307,8 @@ var/global/list/portable_machinery = list() // stop looping through world for th
 		..()
 
 	examine()
-		..()
-		boutput(usr, "Home turf: [get_area(src.homeloc)]. The interface is [src.locked ? "locked" : "unlocked"].")
-		return
+		. = ..()
+		. += "Home turf: [get_area(src.homeloc)]. The interface is [src.locked ? "locked" : "unlocked"]."
 
 	SubscribeToProcess()
 		..()
@@ -412,7 +411,7 @@ var/global/list/portable_machinery = list() // stop looping through world for th
 			var/turf/T = user.loc
 			boutput(user, "<span style=\"color:blue\">Prying door open.</span>")
 			playsound(src.loc, "sound/items/Crowbar.ogg", 100, 1)
-			sleep(150)
+			sleep(15 SECONDS)
 			if ((user.loc == T && user.equipped() == W))
 				src.locked = 0
 				boutput(user, "<span style=\"color:blue\">You pried the door open.</span>")
@@ -672,9 +671,8 @@ var/global/list/portable_machinery = list() // stop looping through world for th
 		..()
 
 	examine()
-		..()
-		boutput(usr, "Home turf: [get_area(src.homeloc)].")
-		return
+		. = ..()
+		. += "Home turf: [get_area(src.homeloc)]."
 
 	// This thing isn't z-level-restricted except for the homeloc.
 	// Somebody WILL find an exploit otherwise (Convair880).
@@ -864,9 +862,8 @@ var/global/list/portable_machinery = list() // stop looping through world for th
 		..()
 
 	examine()
-		..()
-		boutput(usr, "Home turf: [get_area(src.homeloc)].")
-		return
+		. = ..()
+		. += "Home turf: [get_area(src.homeloc)]."
 
 	// Could be useful (Convair880).
 	MouseDrop(over_object, src_location, over_location)

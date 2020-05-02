@@ -1096,7 +1096,7 @@ var/global/noir = 0
 				if (picklist && picklist.len >= 1)
 					var/string_version
 					for(pick in picklist)
-						X.bioHolder.AddEffect(pick)
+						X.bioHolder.AddEffect(pick, magical = 1)
 
 						if (string_version)
 							string_version = "[string_version], \"[pick]\""
@@ -1148,7 +1148,7 @@ var/global/noir = 0
 				var/atom/A = locate(href_list["target"])
 				if (A)
 					usr.client.cmd_admin_check_health(A)
-
+					return
 		if ("addreagent")
 			if(( src.level >= LEVEL_PA ) || ((src.level >= LEVEL_SA) ))
 				var/mob/M = locate(href_list["target"])
@@ -1416,18 +1416,6 @@ var/global/noir = 0
 			if (!M) return
 			if (alert("Make [M] a macho man?", "Make Macho", "Yes", "No") == "Yes")
 				M.machoize()
-
-		if ("makewelder")
-			if( src.level < LEVEL_PA )
-				alert("You must be at least a Primary Administrator to make someone a Welder.")
-				return
-			if(!ticker || !ticker.mode)
-				alert("The game hasn't started yet!")
-				return
-			var/mob/M = locate(href_list["target"])
-			if (!M) return
-			if (alert("Make [M] a welder? Best used on a ghost.", "Make Welder", "Yes", "No") == "Yes")
-				M.make_welder()
 
 		if ("makecritter")
 			if( src.level < LEVEL_PA )
@@ -2323,7 +2311,7 @@ var/global/noir = 0
 												X.bioHolder.AddEffect(pick)
 											else
 												X.bioHolder.RemoveEffect(pick)
-										sleep(1)
+										sleep(0.1 SECONDS)
 
 								message_admins("[key_name(usr)] [adding ? "added" : "removed"] the [string_version] bio-effect[picklist.len > 1 ? "s" : ""] [adding ? "to" : "from"] everyone.")
 								logTheThing("admin", usr, null, "[adding ? "added" : "removed"] the [string_version] bio-effect[picklist.len > 1 ? "s" : ""] [adding ? "to" : "from"] everyone.")
@@ -2366,7 +2354,7 @@ var/global/noir = 0
 											else
 												if (X.reagents)
 													X.reagents.remove_reagent(pick,amt)
-										sleep(1)
+										sleep(0.1 SECONDS)
 
 								message_admins("[key_name(usr)] [adding ? "added" : "removed"] [string_version] [adding ? "to" : "from"] everyone.")
 								logTheThing("admin", usr, null, "[adding ? "added" : "removed"] [string_version] [adding ? "to" : "from"] everyone.")
@@ -2492,7 +2480,7 @@ var/global/noir = 0
 							for(var/obj/item/W in world)
 								if(istype(W, /obj/item/clothing) || istype(W, /obj/item/card/id) || istype(W, /obj/item/disk) || istype(W, /obj/item/tank))
 									continue
-								W.icon = 'icons/obj/gun.dmi'
+								W.icon = 'icons/obj/items/gun.dmi'
 								W.icon_state = "revolver"
 								W.item_state = "gun"
 								LAGCHECK(LAG_LOW)
@@ -3167,11 +3155,6 @@ var/global/noir = 0
 						logTheThing("diary", src, null, "has spawned a Smiling Man.", "admin")
 	*/
 
-					if("spawn_welder")
-						var/datum/special_respawn/SR = new /datum/special_respawn
-						SR.spawn_welder(1)
-						logTheThing("admin", src, null, "has spawned a Welder.")
-
 					if("spawn_custom")
 						var/datum/special_respawn/SR = new /datum/special_respawn
 						var/blType = input(usr, "Select a mob type", "Spawn Custom") as null|anything in typesof(/mob/living)
@@ -3388,7 +3371,7 @@ var/global/noir = 0
 			world << "Undefined action [href_list["action"]]"
 
 	//Wires bad hack part 2
-	sleep(5)
+	sleep(0.5 SECONDS)
 	switch (originWindow)
 		if ("adminplayeropts")
 			if (href_list["targetckey"])
@@ -3473,7 +3456,6 @@ var/global/noir = 0
 			<A href='?src=\ref[src];action=s_rez;type=spawn_normal'>Spawn normal players</A><BR>
 			<A href='?src=\ref[src];action=s_rez;type=spawn_job'>Spawn normal players as a job</A><BR>
 			<A href='?src=\ref[src];action=s_rez;type=spawn_syndies'>Spawn a Syndicate attack force</A><BR>
-			<A href='?src=\ref[src];action=s_rez;type=spawn_syndies'>Spawn a Welder</A><BR>
 			<A href='?src=\ref[src];action=s_rez;type=spawn_custom'>Spawn a custom mob type</A><BR>
 			"}
 	usr.Browse(dat, "window=SRespawn")
@@ -3762,7 +3744,7 @@ var/global/noir = 0
 
 		round_end_data(2) //Wire: Export round end packet (manual restart)
 
-		sleep(30)
+		sleep(3 SECONDS)
 		Reboot_server()
 
 /datum/admins/proc/announce()
