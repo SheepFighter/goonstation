@@ -126,6 +126,11 @@
 
 /obj/cable/New(var/newloc, var/obj/item/cable_coil/source)
 	..()
+	if(current_state > GAME_STATE_MAP_LOADING)	Initiate(source)
+	else	initiation_queue += src
+
+/obj/cable/Initiate(var/obj/item/cable_coil/source)
+	..()
 	// ensure d1 & d2 reflect the icon_state for entering and exiting cable
 	d1 = text2num( icon_state )
 
@@ -170,12 +175,17 @@
 	..()													// then go ahead and delete the cable
 
 /obj/cable/hide(var/i)
+	if(current_state <= GAME_STATE_MAP_LOADING)
+		return
 
 	if(level == 1)// && istype(loc, /turf/simulated))
 		invisibility = i ? 101 : 0
 	updateicon()
 
 /obj/cable/proc/updateicon()
+	if(current_state <= GAME_STATE_MAP_LOADING)
+		return
+
 	icon_state = "[d1]-[d2][iconmod]"
 	alpha = invisibility ? 128 : 255
 	//if (cableimg)
@@ -292,7 +302,7 @@
 	for (var/obj/cable/new_cable_d2 in src.get_connections_one_dir(is_it_d2 = 1))
 		cable_d2 = new_cable_d2
 		break
-	
+
 	// due to the first two lines of this proc it can happen that some cables are left at netnum 0, oh no
 	// this is bad and should be fixed, probably by having a queue of stuff to process once current makepowernets finishes
 	// but I'm too lazy to do that, so here's a bandaid
@@ -387,7 +397,7 @@
 			else if(M.netnum != src.netnum)
 				request_rebuild = 1
 				break
-	
+
 	if(request_rebuild)
 		makepowernets()
 

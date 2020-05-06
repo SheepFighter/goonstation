@@ -177,9 +177,9 @@ dmm_suite
 			for(var/atomModel in text2list(models, ","))
 				var bracketPos = findtext(atomModel, "{")
 				var atomPath = text2path(copytext(atomModel, 1, bracketPos))
-				var /list/attributes
+				var /list/attributes = list()
 				if(bracketPos)
-					attributes = new()
+	//				attributes = new()
 					var attributesText = copytext(atomModel, bracketPos+1, -1)
 					var /list/paddedAttributes = text2list(attributesText, "; ") // "Key = Value"
 					for(var/paddedAttribute in paddedAttributes)
@@ -196,6 +196,8 @@ dmm_suite
 			// Layer all turf appearances into final turf
 			if(!turfStackTypes.len) return
 			var /turf/topTurf = loadModel(turfStackTypes[1], turfStackAttributes[1], originalStrings, originalLists, xcrd, ycrd, zcrd)
+			if(!topTurf)
+				topTurf = locate(xcrd, ycrd, zcrd)
 			for(var/turfIndex = 2 to turfStackTypes.len)
 				var /mutable_appearance/underlay = new(turfStackTypes[turfIndex])
 				loadModel(underlay, turfStackAttributes[turfIndex], originalStrings, originalLists, xcrd, ycrd, zcrd)
@@ -205,7 +207,8 @@ dmm_suite
 			// Cancel if atomPath is a placeholder (DMM_IGNORE flags used to write file)
 			if(ispath(atomPath, /turf/dmm_suite/clear_turf) || ispath(atomPath, /area/dmm_suite/clear_area))
 				return
-			if(ispath(atomPath, /turf/space)) return //Dont load space
+			if(ispath(atomPath, /turf/space)) //Dont load space
+				if(!attributes.len || !(ispath(default_world_turf, /turf/space))) return
 			// Parse all attributes and create preloader
 			var /list/attributesMirror = list()
 			var /turf/location = locate(xcrd, ycrd, zcrd)
@@ -260,12 +263,16 @@ dmm_suite
 				if(ispath(atomPath, /turf))
 					//instance = new atomPath(location)
 					instance = location.ReplaceWith(atomPath, keep_old_material = 0, handle_air = 0, handle_dir = 0)
+					if(attributesMirror.len)
+						preloader.load(instance)
+						instance.Initiate()
 				else
 					instance = new atomPath(location)
 
 			// Handle cases where Atom/New was redifined without calling Super()
-			if(preloader && instance) // Atom could delete itself in New()
+			if(location.dmm_preloader && instance) // Atom could delete itself in New()
 				preloader.load(instance)
+				location.dmm_preloader = null
 			//
 			return instance
 

@@ -44,7 +44,7 @@ var/datum/preMapLoad/preMapLoad = new
 
 //Secret Code Handling
 #ifdef FASTDMM
-#include "+secret\__secret.dme"
+//#include "+secret\__secret.dme"
 #endif
 #include "code\__secret.dm"
 
@@ -1636,7 +1636,7 @@ var/datum/preMapLoad/preMapLoad = new
 // END_INCLUDE
 
 #ifdef SECRETS_ENABLED
-#include "+secret\_secretAfter.dme"
+//#include "+secret\_secretAfter.dme"
 #endif
 
 #ifdef INCLUDE_BUGGY_LUA_SHIT

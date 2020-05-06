@@ -249,6 +249,9 @@
 	// hide called by levelupdate if turf intact status changes
 	// change visibility status and force update of icon
 	hide(var/intact)
+		if(current_state <= GAME_STATE_MAP_LOADING)
+			return
+
 		invisibility = intact ? 101: 0	// hide if floor is intact
 		updateicon()
 

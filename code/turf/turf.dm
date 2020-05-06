@@ -220,6 +220,21 @@ var/global/client/ff_debugger = null
 		src.desc = "There appears to be a spatial disturbance in this area of space."
 		new/obj/item/device/key/random(src)
 
+/turf/space/Initiate()
+	..()
+	//icon = 'icons/turf/space.dmi'
+	if (icon_state == "placeholder") icon_state = "[rand(1,25)]"
+	if (icon_state == "aplaceholder") icon_state = "a[rand(1,10)]"
+	if (icon_state == "dplaceholder") icon_state = "[rand(1,25)]"
+	if (icon_state == "d2placeholder") icon_state = "near_blank"
+	if (blowout == 1) icon_state = "blowout[rand(1,5)]"
+	if (derelict_mode == 1)
+		icon = 'icons/turf/floors.dmi'
+		icon_state = "darkvoid"
+		name = "void"
+		desc = "Yep, this is fine."
+
+
 // override for space turfs, since they should never hide anything
 /turf/space/levelupdate()
 	for(var/obj/O in src)
