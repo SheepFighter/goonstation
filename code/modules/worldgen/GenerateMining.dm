@@ -274,10 +274,10 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 /*/proc/makeMiningLevel()
 	var/startTime = world.timeofday
 	if(world.maxz < AST_ZLEVEL)
-		boutput(world, "<span style=\"color:red\">Skipping Mining Generation!</span>")
+		boutput(world, "<span class='alert'>Skipping Mining Generation!</span>")
 		return
 	else
-		boutput(world, "<span style=\"color:red\">Generating Mining Level ...</span>")
+		boutput(world, "<span class='alert'>Generating Mining Level ...</span>")
 
 	var/extra = rand(0,AST_NUMPREFABSEXTRA)
 	for(var/n=0, n<AST_NUMPREFABS+extra, n++)
@@ -310,7 +310,7 @@ var/list/miningModifiersUsed = list()//Assoc list, type:times used
 
 	D.generate()
 
-	boutput(world, "<span style=\"color:red\">Generated Mining Level in [((world.timeofday - startTime)/10)] seconds!")
+	boutput(world, "<span class='alert'>Generated Mining Level in [((world.timeofday - startTime)/10)] seconds!")
 
 	if (map_currently_underwater)
 		hotspot_controller.generate_map()*/
